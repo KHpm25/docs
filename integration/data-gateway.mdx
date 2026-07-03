@@ -1,7 +1,7 @@
 ---
-title: "Connect 3D Data Sources with the Data Gateway"
+title: "Configure the Data Gateway to Connect 3D Data Sources"
 sidebarTitle: "Data Gateway"
-description: "How to configure the instant3Dhub Data Gateway to connect external 3D data sources, PLM systems, and file stores via HTTP."
+description: "Configure the instant3Dhub Data Gateway to connect PLM systems, file servers, and blob stores via HTTP using URN-to-URL mapping and authentication."
 ---
 
 The Data Gateway is the HTTP-based bridge between instant3Dhub and wherever your 3D files actually live. Rather than pushing your CAD data into a proprietary storage layer, instant3Dhub resolves 3D resources by URN and delegates all actual data retrieval to the Data Gateway. This keeps your existing data infrastructure in place while giving instant3Dhub a consistent, protocol-neutral interface to work with.
@@ -10,7 +10,7 @@ The Data Gateway is the HTTP-based bridge between instant3Dhub and wherever your
 
 When a client requests a 3D model, instant3Dhub receives a resource URN — a stable, opaque identifier like `urn:company:models:assembly-4711`. The hub hands that URN to the Data Gateway, which consults its **URN Mapper** configuration to translate the URN into a concrete HTTP URL. It then fetches the resource over HTTP(S) and streams the response back to the hub.
 
-```
+```text
 instant3Dhub Core
       │  requests URN
       ▼
@@ -47,65 +47,30 @@ You can define as many mappings as you need. Each mapping can point to a differe
 
 If your backend requires authentication, the Data Gateway forwards the `Authorization` header from the incoming request directly to the backend. This means:
 
-- Bearer token authentication works transparently — the client's token is forwarded.
-- For service-account or machine-to-machine scenarios, configure a static header injection in the gateway:
-
-```yaml
-urnMapper:
-  mappings:
-    - urnPrefix: "urn:company:models:"
-      baseUrl: "https://plm.example.com/api/3d/"
-      headers:
-        Authorization: "Bearer {{ env.PLM_SERVICE_TOKEN }}"
-```
+- **Bearer token pass-through** — the end user's token is forwarded automatically, so backend access controls are respected without any extra configuration.
+- **Service-account authentication** — for machine-to-machine scenarios where a dedicated service account authenticates on behalf of all users, the gateway can inject credentials on a per-mapping basis. The exact configuration syntax for header injection, OAuth 2.0 token exchange, and credential storage depends on your instant3Dhub version. Refer to the reference implementation packages available on the [support portal](https://support.threedy.io) for your specific backend.
 
 <Warning>
-  Never hard-code credentials in your `values.yaml` when storing it in version control. Use environment variable references (as shown above) or Kubernetes Secrets mounted into the gateway pod.
+  Never hard-code credentials directly in your `values.yaml` when storing it in version control. Use Kubernetes Secrets and reference them via environment variables in your gateway configuration.
 </Warning>
 
 ## Signed Input Configuration
 
-Signed Input Configuration lets you create cryptographically signed references to specific resources. Instead of passing a raw URN, a client presents a signed token that encodes the URN, optional access scope, and an expiry time. The Data Gateway verifies the signature before resolving the resource, preventing unauthorized access to URNs that a client did not receive explicitly.
+Signed Input Configuration lets you create cryptographically signed references to specific resources. Instead of passing a raw URN, a client presents a signed token that encodes the URN, an optional access scope, and an expiry time. The Data Gateway verifies the signature before resolving the resource, preventing unauthorized access to URNs that a client did not receive explicitly.
 
-To enable signed inputs, add a signing key to your configuration:
-
-```yaml
-dataGateway:
-  signedInput:
-    enabled: true
-    signingKey: "{{ env.GATEWAY_SIGNING_KEY }}"
-    algorithm: RS256
-```
-
-Generate signed tokens using the instant3Dhub SDK or the Threedy CLI, then pass them to the client instead of bare URNs.
+Enabling signed inputs requires a signing key to be configured in your instant3Dhub deployment. Consult the [Data Gateway API reference](/api/data-gateway-api) and the [support portal](https://support.threedy.io) for the configuration values applicable to your version, including key algorithm options and token generation utilities.
 
 ## Caching
 
-The Data Gateway supports response caching to reduce repeated round-trips to your PLM or file backend. Caching is especially valuable when many users load the same large assembly simultaneously.
-
-```yaml
-dataGateway:
-  cache:
-    enabled: true
-    maxSizeMb: 4096
-    ttlSeconds: 3600
-```
+The Data Gateway supports response caching to reduce repeated round-trips to your PLM or file backend. Caching is especially valuable when many users load the same large assembly simultaneously. Cache size and TTL are tunable deployment parameters — consult the support portal at [support.threedy.io](https://support.threedy.io) for the specific configuration keys for your instant3Dhub version.
 
 <Note>
-  Cached entries are keyed by the resolved URL plus any request-variant headers. If your backend uses query-string tokens for authentication, ensure those are excluded from the cache key or your cache hit rate will be very low.
+  Cached entries are keyed by the resolved URL. If your backend uses query-string tokens for authentication, review the caching documentation to ensure those tokens are excluded from the cache key, or your cache hit rate will be very low.
 </Note>
 
 ## Enabling TLS Between the Hub and the Gateway
 
-By default, instant3Dhub and the Data Gateway communicate over the cluster-internal network. If your gateway is external to the cluster, configure TLS:
-
-```yaml
-dataGateway:
-  endpoint: "https://gateway.internal.example.com"
-  tls:
-    verify: true
-    caCert: /etc/ssl/certs/internal-ca.pem
-```
+By default, instant3Dhub and the Data Gateway communicate over the cluster-internal network. If your gateway is deployed outside the cluster — for example, on a separate host or behind a corporate proxy — you can configure TLS for hub-to-gateway traffic by supplying a gateway endpoint URL and a CA certificate for verification. Contact [support@threedy.io](mailto:support@threedy.io) for the configuration values applicable to your deployment.
 
 ## Testing Your Configuration
 

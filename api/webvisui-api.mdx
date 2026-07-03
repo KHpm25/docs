@@ -295,19 +295,39 @@ setLogLevel(context, LogLevel.WARN); // suppress info and debug messages
 
 Listen for UI-layer events such as panel open/close or toolbar button clicks.
 
-### `addUIEventListener(context, eventType, handler)`
+### `addEventListener(eventType, handler)`
+
+Registers a handler for UI-layer events. This is a module-level function imported as `addUIEventListener` in the example above to avoid naming conflicts with the DOM `addEventListener`.
 
 ```typescript
-addUIEventListener(context, 'PANEL_OPENED', (event) => {
+addUIEventListener('PANEL_OPENED', (event) => {
   console.log('Panel opened:', event.panelId);
 });
 ```
 
-### `removeUIEventListener(context, eventType, handler)`
+<ParamField body="eventType" type="string" required>
+  The UI event type to listen for, e.g. `'PANEL_OPENED'`, `'PANEL_CLOSED'`, `'TOOLBAR_CLICKED'`.
+</ParamField>
+
+<ParamField body="handler" type="function" required>
+  A callback that receives the event object when the specified event fires.
+</ParamField>
+
+### `removeEventListener(eventType, handler)`
+
+Unregisters a previously added UI event handler.
 
 ```typescript
-removeUIEventListener(context, 'PANEL_OPENED', myHandler);
+removeUIEventListener('PANEL_OPENED', myHandler);
 ```
+
+<ParamField body="eventType" type="string" required>
+  The event type string that was used when registering the handler.
+</ParamField>
+
+<ParamField body="handler" type="function" required>
+  The exact handler function reference that was passed to `addEventListener`.
+</ParamField>
 
 ---
 
@@ -378,15 +398,19 @@ localStorage.setItem('hubUISettings', JSON.stringify(settings));
 
 ---
 
-### `getStaticUIElement(id)`
+### `getStaticUIElement(context, elementId)`
 
 Returns a reference to a static DOM element in the instant3Dhub UI shell by its well-known ID. Use this for integration with external tooltip libraries or accessibility tooling.
 
 ```typescript
-const toolbar = getStaticUIElement('webvis-toolbar');
+const toolbar = getStaticUIElement(context, 'webvis-toolbar');
 ```
 
-<ParamField body="id" type="string" required>
+<ParamField body="context" type="WebvisContext" required>
+  The context whose UI shell should be queried.
+</ParamField>
+
+<ParamField body="elementId" type="string" required>
   The element identifier. Contact Threedy support for a list of stable element IDs.
 </ParamField>
 

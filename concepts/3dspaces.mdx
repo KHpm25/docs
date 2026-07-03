@@ -1,5 +1,5 @@
 ---
-title: "3DSpaces: Persistent Collaborative 3D Sessions"
+title: "3DSpaces: Persistent, URL-Addressable Collaboration Sessions"
 sidebarTitle: "3DSpaces"
 description: "Learn what 3DSpaces are and how they enable real-time collaboration with shared annotations, measurements, clipping planes, and persistent session state."
 ---
@@ -73,11 +73,11 @@ Every 3DSpace contains two distinct types of data with different ownership and m
     </Steps>
   </Tab>
   <Tab title="Via the REST API">
-    Use the experimental 3DSpaces REST API to create a space programmatically — for example, as part of a CI/CD pipeline or a PLM workflow integration.
+    Use the experimental 3DSpaces REST API to create a space programmatically — for example, from a PLM workflow integration or a custom application.
 
     ```bash
     curl --request POST \
-      --url https://<your-instance>/api/v1/spaces \
+      --url https://your-hub.example.com/api/v1/spaces \
       --header "Authorization: Bearer <access_token>" \
       --header "Content-Type: application/json" \
       --data '{
@@ -93,7 +93,7 @@ Every 3DSpace contains two distinct types of data with different ownership and m
     {
       "id": "spc_01hxyz4abcdef",
       "name": "Wing Assembly Review — Sprint 42",
-      "url": "https://<your-instance>/spaces/spc_01hxyz4abcdef",
+      "url": "https://your-hub.example.com/spaces/spc_01hxyz4abcdef",
       "accessPolicy": "organization",
       "createdAt": "2024-06-10T09:15:00Z"
     }
@@ -163,7 +163,7 @@ You manage members from the **Members** panel inside the viewer or through the 3
 
 ## Programmatic Management with the 3DSpaces API
 
-The experimental **3DSpaces REST API** lets you integrate space lifecycle management into your existing tooling — PLM systems, CI/CD pipelines, or custom dashboards.
+The experimental **3DSpaces REST API** lets you integrate space lifecycle management into your existing tooling — PLM systems, automation workflows, or custom dashboards.
 
 Key operations available through the API:
 
@@ -176,7 +176,7 @@ Key operations available through the API:
 ```bash
 # List all spaces visible to the authenticated service account
 curl --request GET \
-  --url https://<your-instance>/api/v1/spaces \
+  --url https://your-hub.example.com/api/v1/spaces \
   --header "Authorization: Bearer <access_token>"
 ```
 

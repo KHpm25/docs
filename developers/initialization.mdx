@@ -1,7 +1,7 @@
 ---
-title: "Initialize and Configure a webvis Context"
+title: "Context Initialization and Lifecycle in the webvisAPI"
 sidebarTitle: "Initialization"
-description: "Deep-dive into requestContext options, context lifecycle management, and connecting your application to an instant3Dhub instance."
+description: "Deep-dive into requestContext options, context lifecycle management, and connecting your application to an instant3Dhub instance securely."
 ---
 
 A **context** is the central object in the webvisAPI. It represents a live connection to a single instant3Dhub instance and owns everything associated with that session: the rendered scene, loaded models, event subscriptions, and API surface. Before you can do anything with the webvisAPI — loading models, querying nodes, listening for events — you need a context.
@@ -18,7 +18,7 @@ const context = await requestContext({
 });
 ```
 
-`requestContext` is asynchronous. It connects to the hub, negotiates a session, and resolves with a fully initialised context object. The returned `context` exposes all API namespaces (`context.openSpace`, `context.setProperty`, `context.addEventListener`, and so on).
+`requestContext` is asynchronous. It connects to the hub, negotiates a session, and resolves with a fully initialised context object. The returned `context` exposes all API namespaces (`context.space`, `context.annotations`, `context.viewer`, `context.setProperty`, `context.addEventListener`, and so on).
 
 ## requestContext Options
 
@@ -39,7 +39,7 @@ const context = await requestContext({
 </ParamField>
 
 <ParamField path="config" type="object">
-  An optional initial configuration object. Settings passed here are applied before the first frame renders. You can update most settings at runtime via `context.setConfig`. See the [Configuration](/developers/configuration) page for the full schema.
+  An optional initial configuration object. Settings passed here are applied before the first frame renders. See the [Configuration](/developers/configuration) page for the full schema.
 
   ```javascript
   config: {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 ```
 
 <Tip>
-  If you resize the container after initialisation (for example, in a resizable panel), call `context.resize()` to notify the renderer so it can update the canvas dimensions and aspect ratio.
+  If you resize the container after initialisation (for example, in a resizable panel), the renderer detects dimension changes automatically on the next render cycle. Ensure the container's CSS dimensions are updated so the viewer canvas adjusts correctly.
 </Tip>
 
 ## React Integration

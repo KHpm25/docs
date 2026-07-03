@@ -1,5 +1,5 @@
 ---
-title: "Data Gateway API: Resolve and Cache 3D Resources"
+title: "Data Gateway API: URN Resolution and Cache Control"
 sidebarTitle: "Data Gateway API"
 description: "REST API reference for the instant3Dhub Data Gateway — resolve URNs to signed resource URLs, prefetch data, and monitor cache statistics."
 ---
@@ -22,13 +22,13 @@ You can interact with this pipeline directly via the REST API to pre-warm the ca
 
 ## Base URL
 
-```
+```text
 https://your-hub.example.com/api/v1/gateway
 ```
 
 ## Authentication
 
-```
+```http
 Authorization: Bearer <token>
 ```
 
@@ -80,7 +80,7 @@ No authorization header is required.
 </ResponseField>
 
 <ResponseField name="cacheConnected" type="boolean">
-  Whether the cache layer (Redis or in-process) is operational.
+  Whether the cache layer is operational.
 </ResponseField>
 
 **Response `503 Service Unavailable`** — returned when `status` is `"DOWN"`.

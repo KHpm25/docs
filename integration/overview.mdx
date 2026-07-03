@@ -1,7 +1,7 @@
 ---
 title: "Deploy and Integrate instant3Dhub in Your Infrastructure"
 sidebarTitle: "Overview"
-description: "Overview of instant3Dhub deployment options including Kubernetes, single-node, data gateway configuration, and PLM integration."
+description: "Overview of instant3Dhub deployment options: Kubernetes, single-node with microk8s, Data Gateway configuration, PLM backends, and Hub Mesh federation."
 ---
 
 instant3Dhub is a containerized 3D data visualization and streaming platform that fits into your existing infrastructure with minimal friction. Whether you need a production-grade cluster deployment or a quick single-node setup for development, this section walks you through every deployment path, data connectivity option, and integration pattern available.
@@ -17,7 +17,7 @@ instant3Dhub ships as a set of container images orchestrated by a Helm chart. Yo
 
 At its core, instant3Dhub sits between your users' browsers and your 3D data sources. The **Data Gateway** is the HTTP-based bridge that connects instant3Dhub to wherever your 3D files actually live — PLM systems, PDM repositories, cloud blob stores, or plain file servers.
 
-```
+```text
 Browser / Client App
         │
         ▼

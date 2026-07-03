@@ -1,5 +1,5 @@
 ---
-title: "Troubleshoot Common webvisAPI Integration Issues"
+title: "Troubleshooting Common webvisAPI Integration Problems"
 sidebarTitle: "Troubleshooting"
 description: "Solutions for the most common problems when integrating the webvisAPI — covering CORS errors, rendering failures, event issues, and performance problems."
 ---
@@ -68,7 +68,7 @@ The issues listed here cover the most common stumbling blocks when building with
 
     3. In React, ensure you're passing `containerRef.current` inside `useEffect` (not during render), so the ref is populated.
 
-    4. If the container is inside a CSS grid or flexbox layout that computes its size after render, call `context.resize()` once the layout has settled.
+    4. If the container is inside a CSS grid or flexbox layout that computes its size after render, ensure the container's CSS dimensions are explicitly set once the layout has settled so the renderer can pick up the correct size.
   </Accordion>
 
   <Accordion title="Model not loading or not appearing in the scene" icon="cube">
@@ -307,7 +307,7 @@ If none of the above resolves your issue, gather the following before contacting
 
 1. The exact error message and stack trace from the browser console.
 2. The webvisAPI version (`@threedy/webvis` package version from your `package.json`).
-3. The hub version (available from `context.getHubInfo()` or the hub admin panel).
+3. The hub version (available from the hub admin panel or your deployment configuration).
 4. A minimal reproduction — the smallest possible code snippet that triggers the problem.
 5. Hub server logs covering the time window when the error occurred.
 

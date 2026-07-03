@@ -1,14 +1,14 @@
 ---
-title: "Resource API: Manage 3D Resources via REST"
+title: "Resource API: Register and Manage 3D Hub Resources"
 sidebarTitle: "Resource API"
-description: "REST API reference for managing instant3Dhub 3D resources — list, register, check status, and remove resources from your hub."
+description: "REST API reference for managing instant3Dhub 3D resources — list, register, check processing status, and remove resources from your hub."
 ---
 
 The Resource API is a REST interface that lets you programmatically manage the 3D resources registered with your instant3Dhub instance. A **resource** in this context is a reference that the hub uses to locate, fetch, and process a 3D model or assembly file. You can list available resources, register new references, poll their processing status, and remove resources that are no longer needed — all over plain HTTPS.
 
 ## Base URL
 
-```
+```text
 https://your-hub.example.com/api/v1
 ```
 
@@ -18,7 +18,7 @@ Replace `your-hub.example.com` with the hostname of your hub instance.
 
 All Resource API endpoints require a valid bearer token in the `Authorization` header:
 
-```
+```http
 Authorization: Bearer <token>
 ```
 

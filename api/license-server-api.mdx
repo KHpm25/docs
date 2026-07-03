@@ -1,7 +1,7 @@
 ---
-title: "License Server API: Monitor Usage and Sessions"
+title: "License Server API: Monitor Seats and Usage Reports"
 sidebarTitle: "License API"
-description: "REST API reference for the instant3Dhub License Server — check license status, list active sessions, and export usage reports."
+description: "REST API reference for the instant3Dhub License Server — monitor seat consumption, inspect active sessions, and export session usage reports."
 ---
 
 The License Server API gives you programmatic access to the instant3Dhub license engine. Use it to verify your current entitlements, monitor seat consumption in real time, audit active sessions, and export usage reports for cost-allocation or compliance purposes.
@@ -12,7 +12,7 @@ License keys are issued by Threedy GmbH as part of your instant3Dhub subscriptio
 
 ## Base URL
 
-```
+```text
 https://your-license-server.example.com/api/v1
 ```
 
@@ -20,7 +20,7 @@ The License Server may run on the same host as your hub or on a dedicated machin
 
 ## Authentication
 
-```
+```http
 Authorization: Bearer <token>
 ```
 
@@ -288,7 +288,7 @@ Content-Type: application/json
 
 The response body is a UTF-8 encoded CSV file:
 
-```
+```http
 Content-Type: text/csv
 Content-Disposition: attachment; filename="session-usage-2024-05.csv"
 ```

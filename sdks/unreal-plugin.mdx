@@ -72,13 +72,12 @@ Once the plugin is installed, you establish a connection to your instant3Dhub in
     }
     ```
 
-    To check connection state or retrieve hub metadata at runtime, use the companion methods:
+    To check connection state at runtime, use `IsConnectedToHub`:
 
     ```cpp
     if (UInstant3DHubConnector::IsConnectedToHub())
     {
-        FHubInfo Info = UInstant3DHubConnector::GetHubInfo();
-        UE_LOG(LogTemp, Log, TEXT("Connected to hub: %s"), *Info.Name);
+        UE_LOG(LogTemp, Log, TEXT("Connected to instant3Dhub."));
     }
     ```
   </Tab>
@@ -95,7 +94,7 @@ The following Blueprint node groups are available after the plugin is enabled. A
 
 <CardGroup cols={2}>
   <Card title="Connector" icon="plug">
-    **ConnectToHub**, **Disconnect**, **IsConnectedToHub**, and **GetHubInfo** — manage the lifecycle of your hub connection.
+    **ConnectToHub**, **Disconnect**, and **IsConnectedToHub** — manage the lifecycle of your hub connection.
   </Card>
   <Card title="Selection" icon="arrow-pointer">
     Get and set the currently selected nodes in the scene. Useful for driving UI panels or triggering contextual actions when a user picks a part.
@@ -137,7 +136,7 @@ The InstanceGraph interface lets you walk the assembly tree and act on individua
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="webvis JavaScript SDK" href="/sdks/jxvis" icon="java">
+  <Card title="JxVis Java SDK" href="/sdks/jxvis" icon="java">
     Need a desktop Java integration? See the JxVis SDK for Swing and SWT support.
   </Card>
   <Card title="MCP Server" href="/sdks/mcp-server" icon="robot">

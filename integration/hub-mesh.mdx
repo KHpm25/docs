@@ -25,7 +25,7 @@ Common use cases include:
 
 When a client requests a resource from Hub A, and Hub A's URN Mapper does not contain a local mapping for that URN, Hub A queries its mesh peers in priority order. The first peer that claims ownership of the URN proxies the resource back through Hub A to the client. From the client's perspective, all resources come from a single hub URL.
 
-```
+```text
 Client
   │ requests urn:eu:models:assembly-4711
   ▼
@@ -40,24 +40,22 @@ Routing decisions are made at the hub level, so you do not need to change anythi
 
 ## Configuring Hub Mesh Peers
 
-Define your mesh peers in `values.yaml` for each hub. Each peer entry requires a name, the peer's public URL, and a shared secret used to authenticate hub-to-hub requests:
+Define your mesh peers in `values.yaml` for each hub. Each peer entry requires at minimum a name and the peer's public URL:
 
 ```yaml
 hubMesh:
-  enabled: true
   peers:
     - name: hub-eu
       url: https://hub-eu.example.com
-      sharedSecret: "{{ env.MESH_SECRET_EU }}"
     - name: hub-na
       url: https://hub-na.example.com
-      sharedSecret: "{{ env.MESH_SECRET_NA }}"
     - name: hub-apac
       url: https://hub-apac.example.com
-      sharedSecret: "{{ env.MESH_SECRET_APAC }}"
 ```
 
-Apply the same peer list (with corresponding secrets) to every hub in the mesh. Each hub must be able to reach every peer over HTTPS.
+Hub-to-hub requests are authenticated using a shared secret that you configure for each peer. Store secrets as Kubernetes Secrets and reference them via environment variables — do not hard-code them in `values.yaml`. The reference implementation packages on the [support portal](https://support.threedy.io) include full examples with secret configuration.
+
+Apply the same peer list to every hub in the mesh. Each hub must be able to reach every peer over HTTPS.
 
 <Warning>
   Hub-to-hub traffic carries 3D model data. Ensure all mesh peer URLs use HTTPS and that your network allows direct hub-to-hub connections on port 443. If hubs are behind NAT or firewalls, configure appropriate rules before enabling Hub Mesh.

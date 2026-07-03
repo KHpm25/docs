@@ -1,7 +1,7 @@
 ---
 title: "Connect PLM Systems: Teamcenter, Windchill, and More"
 sidebarTitle: "PLM Backends"
-description: "How to connect instant3Dhub to Siemens Teamcenter, PTC Windchill, Azure Blob Store, and SharePoint as 3D data sources."
+description: "Connect instant3Dhub to Siemens Teamcenter, PTC Windchill, Azure Blob Store, and Microsoft SharePoint as 3D data sources using Data Gateway URN mapping."
 ---
 
 instant3Dhub connects to your existing PLM, PDM, and cloud storage systems through the Data Gateway without requiring any agent software on the backend side. Threedy provides reference implementations — pre-built gateway configurations and lightweight adapter services — for the most common enterprise backends. This page describes the connection pattern and key configuration points for each supported system.
@@ -23,26 +23,20 @@ instant3Dhub connects to your existing PLM, PDM, and cloud storage systems throu
     - **User credential pass-through** — the end user's Teamcenter session token is forwarded to the Data Gateway, ensuring that data access respects Teamcenter's own access control rules.
     - **Service account** — a dedicated Teamcenter service account authenticates on behalf of all users. Use this mode when you want to centralize access control at the instant3Dhub layer.
 
-    Configure the service account credentials as environment variables and reference them in your gateway configuration:
+    The Threedy Teamcenter adapter handles session management and credential injection. Store your Teamcenter service account credentials as Kubernetes Secrets and reference them via environment variables in the adapter configuration. The reference implementation package from the support portal includes ready-to-use configuration snippets for both authentication modes.
+
+    ### URN Mapping Pattern
+
+    Define the URN prefix for Teamcenter items in your `values.yaml`. Teamcenter items map naturally to URNs using the item ID and revision:
 
     ```yaml
     urnMapper:
       mappings:
         - urnPrefix: "urn:tc:item:"
           baseUrl: "https://teamcenter.example.com/tc/api/3d/"
-          headers:
-            Authorization: "Bearer {{ env.TC_SERVICE_TOKEN }}"
     ```
 
-    ### URN Mapping Pattern
-
-    Teamcenter items map naturally to URNs using the item ID and revision:
-
-    ```
-    urn:tc:item:<ItemID>/<RevisionID>
-    ```
-
-    For example, `urn:tc:item:000123/A` resolves to the JT geometry for item 000123 revision A.
+    With this mapping, a URN like `urn:tc:item:000123/A` resolves to the JT geometry for item 000123 revision A at the configured base URL.
 
     ### Reference Implementation
 
@@ -56,39 +50,20 @@ instant3Dhub connects to your existing PLM, PDM, and cloud storage systems throu
 
     ### Authentication
 
-    Windchill uses Basic Authentication or OAuth 2.0 (Windchill+ and later). Configure header injection in the Data Gateway:
-
-    ```yaml
-    urnMapper:
-      mappings:
-        - urnPrefix: "urn:wc:part:"
-          baseUrl: "https://windchill.example.com/Windchill/servlet/3d/"
-          headers:
-            Authorization: "Basic {{ env.WC_BASIC_CREDENTIALS }}"
-    ```
-
-    For OAuth 2.0, use the token endpoint URL and client credentials:
-
-    ```yaml
-    urnMapper:
-      mappings:
-        - urnPrefix: "urn:wc:part:"
-          baseUrl: "https://windchill.example.com/Windchill/servlet/3d/"
-          oauth2:
-            tokenUrl: "https://windchill.example.com/oauth/token"
-            clientId: "{{ env.WC_CLIENT_ID }}"
-            clientSecret: "{{ env.WC_CLIENT_SECRET }}"
-    ```
+    Windchill uses Basic Authentication or OAuth 2.0 (Windchill+ and later). The Threedy Windchill adapter handles credential exchange and token refresh automatically. Store your Windchill credentials as Kubernetes Secrets and reference them via environment variables. The reference implementation package from the support portal includes pre-configured examples for both Basic Auth and OAuth 2.0 modes.
 
     ### URN Mapping for Windchill OIDs
 
-    Windchill identifies CAD documents by Object Identifier (OID). Map them to URNs:
+    Windchill identifies CAD documents by Object Identifier (OID). Define your Windchill prefix in `values.yaml`:
 
-    ```
-    urn:wc:part:<OID>
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:wc:part:"
+          baseUrl: "https://windchill.example.com/Windchill/servlet/3d/"
     ```
 
-    For example, `urn:wc:part:OR:wt.part.WTPart:2048431` maps to the 3D representation of that Windchill part.
+    For example, `urn:wc:part:OR:wt.part.WTPart:2048431` maps to the 3D representation of that Windchill part at the configured base URL.
 
     ### CAD Document Access
 
@@ -104,34 +79,23 @@ instant3Dhub connects to your existing PLM, PDM, and cloud storage systems throu
 
     ### Authentication
 
-    Two authentication methods are supported:
+    Two authentication methods are supported for Azure Blob Storage:
 
-    **SAS Token** — generate a Shared Access Signature token with read permissions on the container and inject it as a query parameter:
+    - **SAS Token** — generate a Shared Access Signature with read permissions on the container and configure it as a credential in the adapter.
+    - **Service Principal** — authenticate via Azure AD using a service principal. The adapter obtains a bearer token from the Azure token endpoint and attaches it to each blob request.
 
-    ```yaml
-    urnMapper:
-      mappings:
-        - urnPrefix: "urn:azure:models:"
-          baseUrl: "https://youraccount.blob.core.windows.net/3dmodels/"
-          queryParams:
-            sv: "{{ env.AZURE_SAS_TOKEN }}"
-    ```
+    Store your Azure credentials as Kubernetes Secrets. The reference implementation package includes configuration examples for both methods.
 
-    **Service Principal** — authenticate via Azure AD using a service principal. The Data Gateway obtains a bearer token from the Azure token endpoint and attaches it to each blob request:
+    ### URN Mapping and Container Structure
+
+    Define your Azure Blob Storage prefix in `values.yaml`:
 
     ```yaml
     urnMapper:
       mappings:
         - urnPrefix: "urn:azure:models:"
           baseUrl: "https://youraccount.blob.core.windows.net/3dmodels/"
-          oauth2:
-            tokenUrl: "https://login.microsoftonline.com/{{ env.AZURE_TENANT_ID }}/oauth2/v2.0/token"
-            clientId: "{{ env.AZURE_CLIENT_ID }}"
-            clientSecret: "{{ env.AZURE_CLIENT_SECRET }}"
-            scope: "https://storage.azure.com/.default"
     ```
-
-    ### Container Structure and Naming
 
     Organize your blob container so that blob paths map cleanly to URN suffixes. A flat structure works well for small libraries:
 
@@ -161,31 +125,28 @@ instant3Dhub connects to your existing PLM, PDM, and cloud storage systems throu
     - `Sites.Read.All` — read access to SharePoint sites
     - `Files.Read.All` — read access to files in document libraries
 
-    Configure the Data Gateway to obtain tokens from the Azure AD token endpoint:
+    The adapter uses OAuth 2.0 client credentials flow to obtain tokens from the Azure AD token endpoint on behalf of the hub. Store your Azure AD application credentials as Kubernetes Secrets. The reference implementation package includes ready-to-use configuration for token acquisition and refresh.
+
+    ### Folder Structure Mapping
+
+    Define your SharePoint URN prefix in `values.yaml`, pointing the base URL at the relevant Microsoft Graph endpoint for your site and drive:
 
     ```yaml
     urnMapper:
       mappings:
         - urnPrefix: "urn:sp:models:"
-          baseUrl: "https://graph.microsoft.com/v1.0/sites/{{ env.SP_SITE_ID }}/drives/{{ env.SP_DRIVE_ID }}/root:/"
-          oauth2:
-            tokenUrl: "https://login.microsoftonline.com/{{ env.AZURE_TENANT_ID }}/oauth2/v2.0/token"
-            clientId: "{{ env.SP_CLIENT_ID }}"
-            clientSecret: "{{ env.SP_CLIENT_SECRET }}"
-            scope: "https://graph.microsoft.com/.default"
+          baseUrl: "https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/root:/"
     ```
 
-    ### Folder Structure Mapping
-
-    Map URN suffixes to SharePoint folder paths within the document library. For example, if your models live in a `3D Models` folder:
+    URN suffixes map to SharePoint folder paths within the document library. For example:
 
     ```
     urn:sp:models:Assemblies/Engine/v3.jt
               ↓
-    https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/root:/3D Models/Assemblies/Engine/v3.jt:/content
+    https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/root:/Assemblies/Engine/v3.jt:/content
     ```
 
-    Configure the adapter to append `:/content` to the resolved path to trigger the Graph API's download redirect.
+    The adapter appends `:/content` to the resolved path to trigger the Graph API's download redirect.
 
     <Note>
       SharePoint applies its own permission model. The Azure AD application you register must be granted access to the relevant SharePoint site by a SharePoint administrator before the Data Gateway can retrieve files.
