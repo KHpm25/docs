@@ -1,0 +1,321 @@
+---
+title: "Troubleshoot Common webvisAPI Integration Issues"
+sidebarTitle: "Troubleshooting"
+description: "Solutions for the most common problems when integrating the webvisAPI — covering CORS errors, rendering failures, event issues, and performance problems."
+---
+
+The issues listed here cover the most common stumbling blocks when building with the webvisAPI. Each section describes the symptom, the root cause, and the steps to fix it. If your problem isn't listed, check the [instant3Dhub community forum](https://threedy.io) or open a support ticket with the hub server logs attached.
+
+<Tip>
+  Enable the statistics overlay during development to monitor streaming health in real time: set `config.viewer.enableStatistics: true` in your `requestContext` call. It shows live frame rate, geometry throughput, and connection status.
+</Tip>
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="CORS error when connecting to the hub" icon="shield-halved">
+    **Symptom:** The browser console shows a `CORS policy` error when `requestContext` is called, and the context never resolves.
+
+    **Cause:** The hub instance has not been configured to allow cross-origin requests from your application's domain.
+
+    **Fix:**
+
+    1. Verify that `hubURL` uses the exact origin (scheme + hostname + port) that your hub is deployed on — a trailing slash or a mismatched port causes the browser to reject preflight responses.
+
+    2. Ask your hub administrator to add your application's origin to the hub's allowed-origins list. In the hub configuration this is typically the `cors.allowedOrigins` setting:
+
+    ```json
+    {
+      "cors": {
+        "allowedOrigins": [
+          "https://your-app.example.com",
+          "http://localhost:3000"
+        ]
+      }
+    }
+    ```
+
+    3. During local development, run your dev server on the same origin as the hub (e.g. via a reverse proxy), or add `http://localhost:<port>` to the hub's allowed origins explicitly.
+
+    <Note>
+      Wildcard origins (`*`) are not supported for credentialed requests. Always specify exact origins in the hub CORS configuration.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Viewer container not rendering (blank or black canvas)" icon="display">
+    **Symptom:** `requestContext` resolves without error but the viewer area remains blank, black, or has zero dimensions.
+
+    **Cause:** Most commonly the container element either has no explicit size or is not yet attached to the DOM when `requestContext` is called.
+
+    **Fix:**
+
+    1. Give the container element an explicit `width` and `height` via CSS before calling `requestContext`:
+
+    ```html
+    <div id="viewer" style="width: 100%; height: 600px;"></div>
+    ```
+
+    2. Make sure the element is in the DOM before you pass it to `requestContext`. If your script runs in `<head>`, wait for `DOMContentLoaded`:
+
+    ```javascript
+    document.addEventListener('DOMContentLoaded', async () => {
+      const context = await requestContext({
+        hubURL: 'https://your-hub.example.com',
+        container: document.getElementById('viewer')
+      });
+    });
+    ```
+
+    3. In React, ensure you're passing `containerRef.current` inside `useEffect` (not during render), so the ref is populated.
+
+    4. If the container is inside a CSS grid or flexbox layout that computes its size after render, call `context.resize()` once the layout has settled.
+  </Accordion>
+
+  <Accordion title="Model not loading or not appearing in the scene" icon="cube">
+    **Symptom:** `context.add(url)` resolves with a node ID but nothing appears in the viewer, or the call hangs indefinitely.
+
+    **Cause:** The resource URL is not accessible to the hub, the file format is not supported, or the hub is reporting an error that isn't surfaced to the browser.
+
+    **Fix:**
+
+    1. Open the resource URL directly in your browser to confirm it returns a valid file with a `200 OK` response. A `404` or `403` at this step means the URL itself is wrong or the resource is protected.
+
+    2. Verify the file format is supported by your hub version. Common formats include STEP, JT, CATIA, NX, and OBJ. Check the hub release notes for the full list.
+
+    3. Subscribe to `ErrorEvent` to capture hub-side loading errors:
+
+    ```javascript
+    context.addEventListener('ErrorEvent', (event) => {
+      console.error(`Hub error [${event.code}]: ${event.message}`);
+    });
+    ```
+
+    4. Check the hub server logs for conversion or streaming errors. The log entry will include the resource URL and an error code that pinpoints the problem.
+
+    5. If the hub URL is on a different origin than the resource URL, ensure the resource server also permits the hub to fetch it.
+  </Accordion>
+
+  <Accordion title="Context already exists / duplicate context error" icon="copy">
+    **Symptom:** `requestContext` throws an error like `"A context for this hub already exists"`, or you end up with two viewers rendering on top of each other.
+
+    **Cause:** `requestContext` was called twice with the same `hubURL` — commonly in React because `useEffect` fires twice in Strict Mode, or because a component re-renders and the effect re-runs without proper cleanup.
+
+    **Fix:**
+
+    1. Use `getContext` to retrieve an existing context before creating a new one:
+
+    ```javascript
+    import { requestContext, getContext, getContexts } from '@threedy/webvis';
+
+    async function getOrCreateContext(hubURL, container) {
+      // Check if a context already exists
+      const existing = getContexts().find(ctx => ctx.hubURL === hubURL);
+      if (existing) return existing;
+
+      return requestContext({ hubURL, container });
+    }
+    ```
+
+    2. In React, ensure your `useEffect` cleanup function calls `removeContext`:
+
+    ```tsx
+    useEffect(() => {
+      let contextId;
+      requestContext({ hubURL, container: containerRef.current })
+        .then((ctx) => { contextId = ctx.id; });
+
+      return () => {
+        if (contextId) removeContext(contextId);  // prevents duplicate on re-mount
+      };
+    }, [hubURL]);
+    ```
+
+    3. If you genuinely need two simultaneous contexts for the same hub (e.g. two viewports), confirm the hub licence permits multiple concurrent sessions per client.
+  </Accordion>
+
+  <Accordion title="Events not firing" icon="bolt">
+    **Symptom:** Handlers registered with `addEventListener` are never called, even when the expected interaction occurs.
+
+    **Cause:** The handler was registered before the context was ready, the event type name is misspelled, or the handler was accidentally unregistered.
+
+    **Fix:**
+
+    1. Register event listeners **after** `requestContext` has resolved:
+
+    ```javascript
+    // ✅ Correct — register after the context is ready
+    const context = await requestContext({ hubURL: '...' });
+    context.addEventListener('SelectionChangedEvent', handler);
+
+    // ❌ Incorrect — context is not ready yet
+    requestContext({ hubURL: '...' });
+    context.addEventListener('SelectionChangedEvent', handler); // context is undefined here
+    ```
+
+    2. Check the spelling of the event type exactly — event names are case-sensitive:
+
+    ```javascript
+    // ✅ Correct
+    context.addEventListener('SelectionChangedEvent', handler);
+
+    // ❌ Wrong casing
+    context.addEventListener('selectionchangedevent', handler);
+    context.addEventListener('selectionChanged', handler);
+    ```
+
+    3. Confirm you haven't accidentally passed a new function reference on each render (a common React mistake):
+
+    ```javascript
+    // ❌ Creates a new function on every render — removeEventListener won't work
+    context.addEventListener('SelectionChangedEvent', (e) => handleSelection(e));
+
+    // ✅ Stable reference
+    const handler = useCallback((e) => handleSelection(e), []);
+    context.addEventListener('SelectionChangedEvent', handler);
+    ```
+  </Accordion>
+
+  <Accordion title="Performance issues (low frame rate, stuttering)" icon="gauge">
+    **Symptom:** The viewer runs below the expected frame rate, geometry loads slowly, or the camera movement is jerky.
+
+    **Cause:** The streaming quality is set too high for the network or device, the browser's GPU is under heavy load, or WebGL hardware acceleration is disabled.
+
+    **Fix:**
+
+    1. Reduce streaming quality and lower the target FPS:
+
+    ```javascript
+    const context = await requestContext({
+      hubURL: '...',
+      config: {
+        streaming: {
+          quality: 'medium',   // try 'low' for very constrained environments
+          targetFPS: 24
+        }
+      }
+    });
+    ```
+
+    2. Disable expensive visual effects on low-end devices:
+
+    ```javascript
+    config: {
+      viewer: {
+        enableShadows: false,
+        ambientOcclusion: false
+      }
+    }
+    ```
+
+    3. In Chrome or Edge, navigate to `chrome://gpu` and verify that **WebGL** and **Hardware-accelerated canvas** show as "Enabled". If they are software-rendered, update the graphics drivers or add a `--enable-gpu-rasterization` flag for testing.
+
+    4. Close other GPU-intensive browser tabs or applications. Multiple WebGL contexts share GPU memory.
+
+    5. Enable the statistics overlay (`enableStatistics: true`) to identify whether the bottleneck is streaming throughput or rendering time.
+  </Accordion>
+
+  <Accordion title="Memory leak warnings in the browser console" icon="triangle-exclamation">
+    **Symptom:** The browser reports memory leak warnings, heap size grows over time, or you see `"Cannot perform operation on a lost context"` errors after navigating.
+
+    **Cause:** Event listeners and/or contexts are not being cleaned up when views or components are destroyed.
+
+    **Fix:**
+
+    1. Call `removeEventListener` for every handler you registered, before or alongside `removeContext`:
+
+    ```javascript
+    // Track all handlers
+    const handlers = {
+      selection: handleSelection,
+      error: handleError
+    };
+
+    context.addEventListener('SelectionChangedEvent', handlers.selection);
+    context.addEventListener('ErrorEvent', handlers.error);
+
+    // On teardown
+    function cleanup(contextId) {
+      context.removeEventListener('SelectionChangedEvent', handlers.selection);
+      context.removeEventListener('ErrorEvent', handlers.error);
+      removeContext(contextId);
+    }
+    ```
+
+    2. In React, return the cleanup function from `useEffect`:
+
+    ```tsx
+    useEffect(() => {
+      let contextId;
+      const handler = (e) => console.log(e);
+
+      requestContext({ hubURL, container: containerRef.current }).then((ctx) => {
+        contextId = ctx.id;
+        ctx.addEventListener('SelectionChangedEvent', handler);
+      });
+
+      return () => {
+        if (contextId) {
+          const ctx = getContext(contextId);
+          ctx?.removeEventListener('SelectionChangedEvent', handler);
+          removeContext(contextId);
+        }
+      };
+    }, [hubURL]);
+    ```
+
+    3. Avoid creating closures over large objects inside event handlers. If a handler only needs a node ID, don't capture the entire context or component state in the closure.
+  </Accordion>
+
+  <Accordion title="Authentication errors (403 Forbidden)" icon="lock">
+    **Symptom:** `requestContext` rejects with a `403` or `401` HTTP error, or `ErrorEvent` fires with code `'AUTH_FAILED'`.
+
+    **Cause:** The hub requires authentication and either no token was provided, the token has expired, or the token does not have the required scopes.
+
+    **Fix:**
+
+    1. Pass your access token in the `token` option of `requestContext`:
+
+    ```javascript
+    const token = await fetchAccessToken(); // your auth logic
+
+    const context = await requestContext({
+      hubURL: 'https://your-hub.example.com',
+      container: document.getElementById('viewer'),
+      token
+    });
+    ```
+
+    2. Verify the token is valid and not expired by decoding the JWT payload (the middle Base64-encoded segment) and checking the `exp` claim against the current Unix timestamp.
+
+    3. Confirm the token has the scopes required by your hub. Consult your hub administrator for the required scope list — typically something like `instant3dhub:read` or `instant3dhub:stream`.
+
+    4. If the token expires during a session, destroy the context, obtain a fresh token, and call `requestContext` again. The webvisAPI does not automatically refresh tokens.
+
+    ```javascript
+    async function reconnectWithFreshToken(contextId, hubURL, container) {
+      removeContext(contextId);
+      const newToken = await fetchAccessToken();
+      return requestContext({ hubURL, container, token: newToken });
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Still Stuck?
+
+If none of the above resolves your issue, gather the following before contacting support — it will significantly speed up diagnosis:
+
+1. The exact error message and stack trace from the browser console.
+2. The webvisAPI version (`@threedy/webvis` package version from your `package.json`).
+3. The hub version (available from `context.getHubInfo()` or the hub admin panel).
+4. A minimal reproduction — the smallest possible code snippet that triggers the problem.
+5. Hub server logs covering the time window when the error occurred.
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/developers/getting-started">
+    Return to the basics — install the package and run a working example.
+  </Card>
+  <Card title="Initialization" icon="gear" href="/developers/initialization">
+    Review all requestContext options and context lifecycle patterns.
+  </Card>
+</CardGroup>

@@ -1,0 +1,170 @@
+---
+title: "3D Measurement, Clipping, and Snapshot Tools"
+sidebarTitle: "Tools"
+description: "How to use instant3Dhub's built-in tools: measurements, clipping planes, capping, and snapshots for 3D model analysis and review."
+---
+
+instant3Dhub includes a set of built-in analysis tools that let you measure distances and angles, slice through assemblies with clipping planes, and save viewpoints as snapshots for later review or sharing. These tools are all non-destructive — they never modify the underlying model data and can be activated, adjusted, or removed at any time. This page covers each tool with step-by-step instructions.
+
+## Measurements
+
+The measurement tool lets you annotate your model with precise point-to-point distances and face-to-face angles, displayed directly on the geometry in the viewport.
+
+### Point-to-Point Distance
+
+<Steps>
+  <Step title="Activate the Measurement tool">
+    Click the **Measure** icon in the toolbar (ruler symbol), or press **M** on your keyboard. The cursor changes to a crosshair to indicate measurement mode is active.
+  </Step>
+  <Step title="Pick the first point">
+    Click on any surface, edge, or vertex in the viewport. A snap indicator highlights the nearest geometric snap point — vertex, edge midpoint, or face centroid — as you hover.
+  </Step>
+  <Step title="Pick the second point">
+    Click a second location on the model. instant3Dhub draws a dimension line between the two points and displays the distance in the current unit system (configurable in Settings).
+  </Step>
+  <Step title="Continue or exit">
+    Click additional point pairs to create more measurements. Press **Escape** or click the **Measure** toolbar button again to exit measurement mode. All measurements remain visible until explicitly removed.
+  </Step>
+</Steps>
+
+### Angle Between Faces
+
+<Steps>
+  <Step title="Switch to Angle mode">
+    With the Measurement tool active, click the **Angle** option in the measurement sub-toolbar that appears when the tool is enabled.
+  </Step>
+  <Step title="Click the first face">
+    Click on the first planar face. The face highlights to confirm the selection.
+  </Step>
+  <Step title="Click the second face">
+    Click the second planar face. instant3Dhub computes and displays the dihedral angle between the two surfaces.
+  </Step>
+</Steps>
+
+### Clearing Measurements
+
+To remove an individual measurement, click it in the viewport to select it and press **Delete**. To remove all measurements at once, right-click in the viewport and choose **Clear All Measurements**, or use **Edit → Clear Measurements** from the menu.
+
+---
+
+## Clipping Planes
+
+Clipping planes let you slice through a model along any axis to inspect interior geometry, channel layouts, or hidden details — without modifying the original data.
+
+### Creating a Clipping Plane
+
+<Steps>
+  <Step title="Open the Clipping tool">
+    Click the **Clip** icon in the toolbar (shown as a plane cutting through a cube). The Clip panel opens on the right side of the screen.
+  </Step>
+  <Step title="Choose an axis or free placement">
+    Select **X**, **Y**, or **Z** to create an axis-aligned clip plane, or choose **Free** to position the plane at an arbitrary angle. Axis-aligned planes are most common for quickly exposing cross-sections.
+  </Step>
+  <Step title="Drag to position the plane">
+    A semi-transparent plane appears in the viewport. Click and drag the plane handle (an arrow gizmo) to slide it through the model. The cross-section updates in real time as you drag.
+  </Step>
+  <Step title="Flip the clip direction if needed">
+    Click the **Flip** button in the Clip panel or click the arrow at the center of the plane to reverse which side of the plane is cut away.
+  </Step>
+</Steps>
+
+### Enabling Capping
+
+Capping fills the open cross-section created by a clip plane with a solid surface, making it easier to read interior geometry.
+
+<Steps>
+  <Step title="Enable Capping in the Clip panel">
+    With at least one clip plane active, toggle **Capping** on in the Clip panel. A solid cap surface immediately fills the cross-section.
+  </Step>
+  <Step title="Customize the cap color">
+    Click the color swatch next to the Capping toggle to choose a fill color that contrasts with your model material. A bright color helps distinguish the cut face from surrounding geometry.
+  </Step>
+</Steps>
+
+### Using Multiple Clip Planes
+
+You can add up to **six simultaneous clip planes** to create box-cuts or complex cross-sections.
+
+<Steps>
+  <Step title="Add a second clip plane">
+    While the Clip panel is open, click **+ Add Plane**. Choose a different axis (for example, add a Z-plane after an X-plane) to create a corner cut.
+  </Step>
+  <Step title="Toggle individual planes on/off">
+    Use the eye icon next to each plane entry in the Clip panel to temporarily hide a plane without deleting it. This is useful when you want to compare the clipped and unclipped view.
+  </Step>
+  <Step title="Remove a plane">
+    Click the trash icon next to a plane entry to permanently delete it.
+  </Step>
+</Steps>
+
+<Tip>
+  Clip plane positions are saved as part of a Snapshot. Save your clip setup as a snapshot before clearing planes so you can restore it later.
+</Tip>
+
+---
+
+## Snapshots
+
+Snapshots save the complete state of a view — camera position, visible parts, clip planes, and measurements — so you can return to it instantly or share it with a colleague.
+
+### Saving a Snapshot
+
+<Steps>
+  <Step title="Set up the view you want to save">
+    Navigate to the angle, zoom level, and part visibility that you want to capture. Apply any clip planes or measurements you need.
+  </Step>
+  <Step title="Open the Snapshots panel">
+    Click the **Snapshot** icon in the toolbar (camera symbol). The Snapshots panel opens, listing any previously saved snapshots.
+  </Step>
+  <Step title="Click Save Snapshot">
+    Click **+ Save Snapshot**. Give the snapshot a descriptive name (for example, "Interior cross-section – engine bay"). The snapshot appears as a thumbnail in the panel.
+  </Step>
+</Steps>
+
+### Restoring a Snapshot
+
+Click any snapshot thumbnail in the Snapshots panel. The viewport animates smoothly back to the saved camera position, restores part visibility, and reapplies any clip planes or measurements that were active when the snapshot was saved.
+
+### Sharing a Snapshot Link
+
+<Steps>
+  <Step title="Hover over the snapshot thumbnail">
+    Move your cursor over the snapshot you want to share. A **Share** icon (chain link) appears.
+  </Step>
+  <Step title="Click Share">
+    Click the Share icon. instant3Dhub generates a direct URL that encodes the full snapshot state.
+  </Step>
+  <Step title="Copy and send the URL">
+    Copy the URL from the dialog and paste it into an email, chat message, or issue tracker. Anyone with access to the instant3Dhub instance can open the link and land directly in that exact view.
+  </Step>
+</Steps>
+
+<Note>
+  Snapshot links are valid as long as the underlying model data remains accessible at its source. If the model is moved or removed from the Data Gateway, the link will load the correct view state but show an empty scene.
+</Note>
+
+---
+
+## Model Tree Filtering and Visibility
+
+The Tree View is not just for browsing — it is a powerful visibility and isolation tool.
+
+### Show and Hide Parts
+
+- **Hide a part**: Right-click a node in the Tree View and select **Hide**, or select it and press **H**. Hidden parts are greyed out in the tree but remain in the hierarchy.
+- **Show all**: Press **Shift + H** or choose **Show All** from the context menu to make all hidden parts visible again.
+- **Toggle visibility**: Click the eye icon that appears when you hover over any tree node.
+
+### Isolating a Subtree
+
+<Steps>
+  <Step title="Select the sub-assembly or part to isolate">
+    Click the node in the Tree View that represents the assembly or part you want to focus on.
+  </Step>
+  <Step title="Isolate">
+    Press **I**, or right-click the node and choose **Isolate**. Everything outside the selected subtree is hidden, and the camera fits to the isolated geometry.
+  </Step>
+  <Step title="Exit isolation">
+    Press **Shift + H** or choose **Show All** from the context menu to restore full model visibility.
+  </Step>
+</Steps>

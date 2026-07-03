@@ -1,0 +1,224 @@
+---
+title: "Configure the webvisAPI Viewer and Streaming Settings"
+sidebarTitle: "Configuration"
+description: "Reference for all webvisAPI configuration options controlling viewer appearance, streaming quality, and interaction behaviour for your 3D application."
+---
+
+The webvisAPI exposes a structured configuration object that controls how the viewer looks, how geometry is streamed from the hub, and how users interact with the scene. You can supply configuration at context creation time — so the first frame renders exactly as intended — and update most settings at runtime without recreating the context.
+
+## Setting Configuration
+
+Pass a `config` object to `requestContext` to apply settings before the first render:
+
+```javascript
+import { requestContext } from '@threedy/webvis';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+  config: {
+    viewer: {
+      background: '#1a1a2e',
+      defaultSelectionColor: '#ef7025',
+      enableNavCube: true,
+      enableStatistics: false,
+      enableShadows: true,
+      ambientOcclusion: true
+    },
+    streaming: {
+      targetFPS: 30,
+      quality: 'high',
+      enableProgressive: true
+    },
+    interaction: {
+      enableSelection: true,
+      multiSelect: true,
+      selectionMode: 'node'
+    }
+  }
+});
+```
+
+## Viewer Settings (`config.viewer`)
+
+These options control the visual appearance of the rendered scene.
+
+<ParamField path="viewer.background" type="string">
+  The background color of the viewer canvas. Accepts any CSS color string — hex (`'#1a1a2e'`), `rgb()`, or named colors. You can also pass a gradient string for a two-tone background.
+
+  **Default:** `'#ffffff'`
+
+  ```javascript
+  background: '#1a1a2e'
+  ```
+</ParamField>
+
+<ParamField path="viewer.defaultSelectionColor" type="string">
+  The highlight color applied to nodes when they are selected. Accepts any CSS hex color string.
+
+  **Default:** `'#0077ff'`
+
+  ```javascript
+  defaultSelectionColor: '#ef7025'
+  ```
+</ParamField>
+
+<ParamField path="viewer.enableNavCube" type="boolean">
+  Show or hide the orientation cube (NavCube) in the corner of the viewer. The NavCube lets users click face labels to snap the camera to standard views.
+
+  **Default:** `true`
+
+  ```javascript
+  enableNavCube: true
+  ```
+</ParamField>
+
+<ParamField path="viewer.enableStatistics" type="boolean">
+  Show a real-time overlay displaying streaming statistics: frames per second, geometry throughput, and active node count. Useful during development; disable for production.
+
+  **Default:** `false`
+
+  ```javascript
+  enableStatistics: false
+  ```
+</ParamField>
+
+<ParamField path="viewer.enableShadows" type="boolean">
+  Enable shadow rendering. Shadows add visual depth and ground contact cues but increase GPU load. Consider disabling on low-end devices.
+
+  **Default:** `false`
+
+  ```javascript
+  enableShadows: true
+  ```
+</ParamField>
+
+<ParamField path="viewer.ambientOcclusion" type="boolean">
+  Enable Screen Space Ambient Occlusion (SSAO). SSAO adds soft shadowing in crevices and contact areas, significantly improving perceived depth and realism. Has a moderate GPU cost.
+
+  **Default:** `false`
+
+  ```javascript
+  ambientOcclusion: true
+  ```
+</ParamField>
+
+## Streaming Settings (`config.streaming`)
+
+These options control how geometry data is fetched from the hub and rendered progressively.
+
+<ParamField path="streaming.targetFPS" type="number">
+  The target frame rate in frames per second. The streaming system throttles the amount of data it requests per frame to maintain this target. Lower values reduce bandwidth and GPU usage; higher values improve visual responsiveness.
+
+  **Default:** `30`
+
+  **Range:** `1`–`60`
+
+  ```javascript
+  targetFPS: 30
+  ```
+</ParamField>
+
+<ParamField path="streaming.quality" type="'low' | 'medium' | 'high'">
+  A streaming quality preset. Each preset combines a set of internal parameters — geometry level of detail, texture resolution, and compression settings — tuned for different network and hardware conditions.
+
+  | Value | Description |
+  |---|---|
+  | `'low'` | Best performance on slow networks or low-end GPUs. Reduced geometry detail. |
+  | `'medium'` | Balanced quality and performance. Suitable for most deployments. |
+  | `'high'` | Maximum fidelity. Requires a fast network and a capable GPU. |
+
+  **Default:** `'medium'`
+
+  ```javascript
+  quality: 'high'
+  ```
+</ParamField>
+
+<ParamField path="streaming.enableProgressive" type="boolean">
+  When `true`, the viewer displays coarse geometry immediately and progressively refines it as more data arrives from the hub. This dramatically reduces time-to-first-render at the cost of a brief period of lower-fidelity geometry.
+
+  **Default:** `true`
+
+  ```javascript
+  enableProgressive: true
+  ```
+</ParamField>
+
+## Interaction Settings (`config.interaction`)
+
+These options control how users can interact with the scene.
+
+<ParamField path="interaction.enableSelection" type="boolean">
+  Allow users to select nodes by clicking on them. Set to `false` for view-only scenarios where you want to prevent accidental selection.
+
+  **Default:** `true`
+
+  ```javascript
+  enableSelection: true
+  ```
+</ParamField>
+
+<ParamField path="interaction.multiSelect" type="boolean">
+  When `true`, holding Shift (or your platform's multi-select modifier) while clicking adds nodes to the current selection rather than replacing it. When `false`, each click replaces the selection.
+
+  **Default:** `false`
+
+  ```javascript
+  multiSelect: true
+  ```
+</ParamField>
+
+<ParamField path="interaction.selectionMode" type="'node' | 'leaf'">
+  Controls which node is selected when the user clicks on geometry.
+
+  | Value | Description |
+  |---|---|
+  | `'node'` | Selects the clicked node at whatever level it sits in the hierarchy. |
+  | `'leaf'` | Always selects the deepest (leaf) node in the hierarchy — useful for part-level interaction regardless of how deeply nested a part is. |
+
+  **Default:** `'node'`
+
+  ```javascript
+  selectionMode: 'leaf'
+  ```
+</ParamField>
+
+## Complete Configuration Example
+
+The following snippet shows a complete configuration object representing a production-ready setup — dark-themed viewer, high-quality streaming, and part-level selection:
+
+```javascript
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+  config: {
+    viewer: {
+      background: '#1a1a2e',
+      defaultSelectionColor: '#ef7025',
+      enableNavCube: true,
+      enableStatistics: false,
+      enableShadows: true,
+      ambientOcclusion: true
+    },
+    streaming: {
+      targetFPS: 30,
+      quality: 'high',
+      enableProgressive: true
+    },
+    interaction: {
+      enableSelection: true,
+      multiSelect: true,
+      selectionMode: 'leaf'
+    }
+  }
+});
+```
+
+<Tip>
+  Start with `enableStatistics: true` during development to monitor frame rate and streaming throughput in real time. Switch it off before deploying to production.
+</Tip>
+
+<Note>
+  Streaming quality settings (`targetFPS`, `quality`) are applied on the next streaming cycle after they are set. Viewer appearance settings (`background`, `enableShadows`, etc.) take effect on the next rendered frame.
+</Note>

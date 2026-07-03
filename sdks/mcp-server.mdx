@@ -1,0 +1,147 @@
+---
+title: "Connect AI Assistants to 3D Data with MCP Server"
+sidebarTitle: "MCP Server"
+description: "Configure the instant3Dhub MCP Server to give AI assistants like ChatGPT and GitHub Copilot safe, structured access to your CAD and 3D data."
+---
+
+The Model Context Protocol (MCP) is an open standard that lets AI assistants communicate with external tools and data sources in a structured, auditable way. The instant3Dhub MCP Server implements this protocol as a bridge between your AI tools and your 3D data — enabling natural-language queries, geometry inspection, and scene manipulation without ever exposing raw geometry to an AI model.
+
+<Note>
+  The instant3Dhub MCP Server is currently in **early access** and is expected to reach general availability in **Q1 2026**. To request early access, contact [sales@threedy.ai](mailto:sales@threedy.ai) or reach out to your Threedy account manager.
+</Note>
+
+## What the MCP Server Enables
+
+Instead of switching between your AI assistant and your 3D viewer, the MCP Server lets the two work together. Your AI tool can ask questions about what is in the scene, execute queries against the model structure, and trigger viewport actions — all from inside the chat interface you already use.
+
+<CardGroup cols={2}>
+  <Card title="Query geometry & metadata" icon="magnifying-glass">
+    Ask the AI to find parts by material, mass, revision state, or any structured attribute attached to the model.
+  </Card>
+  <Card title="Execute scene actions" icon="wand-magic-sparkles">
+    The AI can select parts, toggle visibility, take measurements, or navigate to a named view — with your approval.
+  </Card>
+  <Card title="Works with any MCP client" icon="plug">
+    Claude Desktop, Cursor, GitHub Copilot, ChatGPT (via plugin), and any other MCP-compatible AI tool can connect.
+  </Card>
+  <Card title="Human-in-the-loop controls" icon="user-shield">
+    Every action that modifies the 3D scene requires explicit user confirmation before it is applied.
+  </Card>
+</CardGroup>
+
+## Security Model
+
+The instant3Dhub MCP Server is designed so that your proprietary geometry never leaves your infrastructure uncontrolled.
+
+- **Raw geometry is never sent to AI models.** Only structured metadata — part names, properties, hierarchy, measurements — travels over the MCP protocol.
+- **No AI training on customer data.** The MCP Server does not expose any endpoint that AI providers could use for model training or data retention.
+- **Authentication is required.** Every MCP client must present a bearer token scoped to your hub instance.
+- **Human-in-the-loop.** Destructive or modifying actions (selection changes, visibility toggles, measurement creation) always surface a confirmation step in the AI client before execution.
+
+<Warning>
+  Never share your API token publicly or commit it to source control. Rotate tokens immediately if you suspect they have been compromised. Manage tokens in the instant3Dhub admin console.
+</Warning>
+
+## Configuration
+
+To connect an MCP-compatible AI client to your instant3Dhub instance, add the following server entry to your MCP client's configuration file. The exact file path varies by client — consult your AI tool's documentation for the correct location (for example, `claude_desktop_config.json` for Claude Desktop, or `.cursor/mcp.json` for Cursor).
+
+```json
+{
+  "mcpServers": {
+    "instant3dhub": {
+      "url": "https://your-hub.example.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "bearer",
+        "token": "YOUR_API_TOKEN"
+      }
+    }
+  }
+}
+```
+
+Replace `https://your-hub.example.com` with your hub's base URL and `YOUR_API_TOKEN` with a token generated in the instant3Dhub admin console.
+
+<Tip>
+  If you manage multiple hub environments (development, staging, production), define a separate `mcpServers` entry for each one using distinct keys — for example, `instant3dhub-dev` and `instant3dhub-prod` — so you can switch contexts without editing the token.
+</Tip>
+
+## Example AI Queries
+
+Once the MCP Server is configured, your AI assistant gains the ability to understand and act on questions like these:
+
+<Accordion title="Parts & materials">
+  ```
+  "Show me all parts made of aluminum in this assembly."
+  ```
+  The AI resolves the material filter against the model's metadata index and highlights the matching nodes in your 3D viewer — no manual searching required.
+</Accordion>
+
+<Accordion title="Mass & physical properties">
+  ```
+  "What is the mass of the engine block?"
+  ```
+  The AI queries the structured properties attached to the relevant node and returns the value directly in the chat, including the unit of measure.
+</Accordion>
+
+<Accordion title="Revision history">
+  ```
+  "Highlight all parts that were modified in the last revision."
+  ```
+  The AI compares revision metadata across nodes and drives a selection or color override in the viewer to make the diff visually obvious.
+</Accordion>
+
+<Accordion title="Hierarchy exploration">
+  ```
+  "What subassemblies are inside the gearbox?"
+  ```
+  The AI traverses the InstanceGraph, lists the child assemblies and their part counts, and can optionally isolate them in the viewer.
+</Accordion>
+
+<Accordion title="Measurement">
+  ```
+  "What is the clearance between the rotor and the housing?"
+  ```
+  The AI identifies the relevant faces from metadata context and invokes the instant3Dhub measurement API, returning the distance and displaying it in the scene.
+</Accordion>
+
+## Supported AI Providers
+
+The MCP Server is model-agnostic and works with any AI provider that supports the Model Context Protocol:
+
+| Provider          | Compatible Clients                                   |
+|-------------------|------------------------------------------------------|
+| **Anthropic**     | Claude Desktop, Claude API                           |
+| **OpenAI**        | ChatGPT (plugin), OpenAI API                         |
+| **Microsoft**     | GitHub Copilot (MCP mode), Azure OpenAI              |
+| **Cursor**        | Cursor editor built-in AI                            |
+| **Any MCP client**| Any tool implementing the open MCP specification     |
+
+## Getting Early Access
+
+<Steps>
+  <Step title="Contact Threedy">
+    Send an early-access request to [sales@threedy.ai](mailto:sales@threedy.ai) or speak to your Threedy account manager. Include your hub URL and the AI tools you plan to integrate.
+  </Step>
+  <Step title="Receive credentials">
+    Threedy will provision an MCP endpoint on your hub instance and issue an initial API token scoped to MCP access.
+  </Step>
+  <Step title="Configure your AI client">
+    Follow the [Configuration](#configuration) section above to wire up your preferred AI tool and verify the connection.
+  </Step>
+  <Step title="Run your first query">
+    Open a model in instant3Dhub, then ask your AI assistant a question about the assembly. Confirm any scene-modifying actions when prompted.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Unreal Engine Plugin" href="/sdks/unreal-plugin" icon="gamepad">
+    Stream instant3Dhub CAD data into Unreal Engine for immersive VR/AR experiences.
+  </Card>
+  <Card title="JxVis Java SDK" href="/sdks/jxvis" icon="java">
+    Embed instant3Dhub 3D visualization in Java Swing or Eclipse SWT desktop applications.
+  </Card>
+</CardGroup>

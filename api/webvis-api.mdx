@@ -1,0 +1,515 @@
+---
+title: "webvisAPI Reference: Build Custom 3D Applications"
+sidebarTitle: "webvis API"
+description: "Complete reference for the webvisAPI JavaScript library — context creation, resource loading, node properties, and event handling."
+---
+
+The webvisAPI is the core JavaScript library for instant3Dhub. It gives you full programmatic control over 3D contexts, resource loading, scene graph manipulation, and event handling. Import individual functions from `@threedy/webvis` to keep your bundle lean, or import the entire module — every exported symbol is tree-shakeable.
+
+## Installation
+
+```bash
+npm install @threedy/webvis
+```
+
+## Module-Level Functions
+
+These functions live at the top of the module and manage the lifecycle of **contexts** — the isolated runtime environments that each connect to a hub instance and own a viewer.
+
+```typescript
+import {
+  requestContext,
+  getContext,
+  getContexts,
+  removeContext,
+  addContextCreatedListener,
+  addContextRemovedListener,
+  removeContextCreatedListener,
+  removeContextRemovedListener,
+} from '@threedy/webvis';
+```
+
+---
+
+### `requestContext(options)`
+
+Creates a new webvis context connected to a hub instance. This is the primary entry point for every instant3Dhub integration. The function returns a `Promise` that resolves to a fully initialized `WebvisContext` object.
+
+```typescript
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+  token: 'eyJhbGciOiJSUzI1NiJ9...',
+  config: {
+    background: '#1a1a2e',
+    navigationMode: 'ORBIT',
+  },
+});
+```
+
+<ParamField body="hubURL" type="string" required>
+  The fully qualified URL of the instant3Dhub instance you want to connect to. Must include the protocol (`https://`). Obtain this URL from your hub administrator or your Threedy deployment configuration.
+</ParamField>
+
+<ParamField body="container" type="HTMLElement">
+  The DOM element into which the 3D viewer canvas is mounted. When omitted, a context is created without an attached viewer (headless mode), which is useful for server-side processing or background data loading.
+</ParamField>
+
+<ParamField body="config" type="object">
+  A key/value map of initial configuration options applied before the viewer renders its first frame. Common keys include `background`, `navigationMode`, `renderQuality`, and `enableShadows`. Refer to the Configuration Reference for the full list of supported keys.
+</ParamField>
+
+<ParamField body="token" type="string">
+  A JWT or opaque bearer token used to authenticate the session against the hub. When your hub enforces authentication, omitting this field causes context creation to fail. Tokens are typically obtained from your identity provider and passed through your application backend.
+</ParamField>
+
+**Returns:** `Promise<WebvisContext>`
+
+---
+
+### `getContext(id)`
+
+Returns a previously created context by its unique identifier. Useful when you need to reach a context from a different module without passing references manually.
+
+```typescript
+const context = getContext('ctx-42a9f1');
+if (context) {
+  await context.add('urn:my-org:assembly:latest');
+}
+```
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | The unique context identifier exposed as `context.id`. |
+
+**Returns:** `WebvisContext | undefined` — `undefined` when no context with the given ID exists.
+
+---
+
+### `getContexts()`
+
+Returns an array of all currently active contexts in the application. Iterate over the result to broadcast operations across all open viewers.
+
+```typescript
+const contexts = getContexts();
+contexts.forEach(ctx => ctx.viewer.setBackground('#000000'));
+```
+
+**Returns:** `WebvisContext[]`
+
+---
+
+### `removeContext(id)`
+
+Destroys a context, disconnects from the hub, tears down the WebGL renderer, and frees all associated resources. Always call this when navigating away from a page that hosts a viewer to prevent memory leaks.
+
+```typescript
+removeContext(context.id);
+```
+
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | The `context.id` of the context to destroy. |
+
+**Returns:** `void`
+
+---
+
+### Global Lifecycle Listeners
+
+Register callbacks that fire whenever any context is created or removed — regardless of which module initiated the change.
+
+```typescript
+function onCreated(context) {
+  console.log('Context ready:', context.id);
+}
+
+addContextCreatedListener(onCreated);
+
+// Later, when you no longer need the listener:
+removeContextCreatedListener(onCreated);
+```
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `addContextCreatedListener` | `(fn: (ctx: WebvisContext) => void) => void` | Called after a new context is fully initialized. |
+| `removeContextCreatedListener` | `(fn: (ctx: WebvisContext) => void) => void` | Unregisters a previously added created-listener. |
+| `addContextRemovedListener` | `(fn: (id: string) => void) => void` | Called after a context is destroyed; receives the context ID. |
+| `removeContextRemovedListener` | `(fn: (id: string) => void) => void` | Unregisters a previously added removed-listener. |
+
+---
+
+## Context Methods
+
+Every method on a `WebvisContext` instance operates within that context's isolated scene graph. Node IDs are integers scoped to their context and are not portable across contexts.
+
+### `context.add(url, parentNodeId?)`
+
+Loads a 3D resource into the scene and returns the root node ID of the loaded hierarchy. The URL may be an HTTP/HTTPS URL, a URN resolved by the Data Gateway, or a relative path.
+
+```typescript
+const rootId = await context.add('https://cdn.example.com/models/engine.glb');
+console.log('Loaded at node:', rootId);
+
+// Load as a child of an existing node
+const partId = await context.add('urn:my-org:part:gear-001', rootId);
+```
+
+<ParamField body="url" type="string" required>
+  The resource locator. Supports HTTPS URLs, hub-relative paths, and URNs that your Data Gateway is configured to resolve.
+</ParamField>
+
+<ParamField body="parentNodeId" type="number">
+  The node ID under which the loaded resource is attached in the scene graph. Defaults to the scene root when omitted.
+</ParamField>
+
+**Returns:** `Promise<number>` — the root node ID of the loaded resource.
+
+---
+
+### `context.remove(nodeId)`
+
+Removes a previously loaded resource and all its descendant nodes from the scene. The node ID is typically the value returned by `context.add`.
+
+```typescript
+await context.remove(rootId);
+```
+
+<ParamField body="nodeId" type="number" required>
+  The root node ID of the resource to unload.
+</ParamField>
+
+**Returns:** `Promise<void>`
+
+---
+
+### `context.setProperty(nodeId, property, value)`
+
+Sets a property on a node. Properties control visual and behavioral aspects such as visibility, highlight color, transform, and opacity.
+
+```typescript
+// Hide a subtree
+await context.setProperty(nodeId, 'VISIBLE', false);
+
+// Apply a highlight color
+await context.setProperty(nodeId, 'HIGHLIGHT_COLOR', '#ff6600');
+```
+
+<ParamField body="nodeId" type="number" required>
+  The target node. Pass `0` to target the scene root and affect all loaded nodes.
+</ParamField>
+
+<ParamField body="property" type="string" required>
+  The property name. Common values: `VISIBLE`, `ENABLED`, `HIGHLIGHT_COLOR`, `OPACITY`, `TRANSFORM`.
+</ParamField>
+
+<ParamField body="value" type="any" required>
+  The new property value. The accepted type depends on the property — booleans, strings, numbers, and matrix arrays are all valid depending on the target property.
+</ParamField>
+
+**Returns:** `Promise<void>`
+
+---
+
+### `context.getProperty(nodeId, property)`
+
+Reads the current value of a node property.
+
+```typescript
+const isVisible = await context.getProperty(nodeId, 'VISIBLE');
+```
+
+<ParamField body="nodeId" type="number" required>
+  The target node ID.
+</ParamField>
+
+<ParamField body="property" type="string" required>
+  The property name to read.
+</ParamField>
+
+**Returns:** `Promise<any>`
+
+---
+
+### `context.query(filter)`
+
+Searches the scene graph and returns node IDs matching the given filter criteria. Use this to find parts by name, metadata value, bounding-box overlap, or any other queryable attribute.
+
+```typescript
+// Find all nodes with a specific part number
+const nodes = await context.query({
+  metadata: { PART_NUMBER: 'PN-42X' },
+});
+```
+
+<ParamField body="filter" type="object" required>
+  A filter descriptor. Supported keys vary by hub version — common options include `metadata`, `name`, `boundingBox`, and `nodeType`. Refer to the Query Reference for the full filter schema.
+</ParamField>
+
+**Returns:** `Promise<number[]>` — an array of matching node IDs.
+
+---
+
+### `context.addEventListener(eventType, handler)`
+
+Registers a handler for scene and context events. Events cover user interactions, loading progress, selection changes, and more.
+
+```typescript
+context.addEventListener('SELECTION_CHANGED', (event) => {
+  console.log('Selected nodes:', event.nodeIds);
+});
+```
+
+<ParamField body="eventType" type="string" required>
+  The event type string. Common values: `SELECTION_CHANGED`, `NODE_ADDED`, `NODE_REMOVED`, `CAMERA_CHANGED`, `LOADING_STARTED`, `LOADING_FINISHED`.
+</ParamField>
+
+<ParamField body="handler" type="function" required>
+  A callback that receives an event object. The shape of the event object depends on `eventType`.
+</ParamField>
+
+**Returns:** `void`
+
+---
+
+### `context.removeEventListener(eventType, handler)`
+
+Unregisters a previously added event handler.
+
+```typescript
+context.removeEventListener('SELECTION_CHANGED', myHandler);
+```
+
+**Returns:** `void`
+
+---
+
+### `context.id`
+
+A read-only string that uniquely identifies this context within the current page. Use it with `getContext()` and `removeContext()`.
+
+```typescript
+console.log('Context ID:', context.id);
+```
+
+---
+
+## Interface APIs
+
+Each interface API is accessible as a property on the context object and groups related functionality into a focused namespace.
+
+---
+
+### SpaceAPI — `context.space`
+
+Manage 3DSpaces — persistent, shareable collaborative scenes.
+
+```typescript
+const space = await context.space.openSpace('https://your-hub.example.com/spaces/abc123');
+console.log('Joined space:', space.id);
+
+const allSpaces = context.space.getSpaces();
+await context.space.closeSpace(space.id);
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `openSpace` | `(url: string) => Promise<Space>` | Connect to an existing 3DSpace by URL. |
+| `closeSpace` | `(id: string) => Promise<void>` | Disconnect and release the space. |
+| `getSpaces` | `() => Space[]` | List all currently open spaces in this context. |
+
+---
+
+### AnnotationAPI — `context.annotations`
+
+Create and manage text annotations pinned to positions in 3D space.
+
+```typescript
+const annotation = await context.annotations.createAnnotation(
+  nodeId,
+  'Inspect this weld seam',
+  { x: 12.4, y: 3.1, z: -0.5 }
+);
+
+const all = context.annotations.getAnnotations();
+await context.annotations.removeAnnotation(annotation.id);
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `createAnnotation` | `(nodeId, text, position) => Promise<Annotation>` | Pin a text annotation to a 3D position on a node. |
+| `removeAnnotation` | `(id: string) => Promise<void>` | Delete an annotation. |
+| `getAnnotations` | `() => Annotation[]` | Return all annotations in the current scene. |
+
+---
+
+### ClipPlaneAPI — `context.clipPlanes`
+
+Slice the model with interactive cutting planes.
+
+```typescript
+const plane = await context.clipPlanes.createClipPlane(
+  { x: 0, y: 1, z: 0 }, // normal (cut along Y axis)
+  { x: 0, y: 5, z: 0 }  // position
+);
+
+await context.clipPlanes.setClipPlaneEnabled(plane.id, false);
+await context.clipPlanes.removeClipPlane(plane.id);
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `createClipPlane` | `(normal, position) => Promise<ClipPlane>` | Create a cutting plane with the given normal vector and world-space position. |
+| `removeClipPlane` | `(id: string) => Promise<void>` | Remove a clip plane. |
+| `setClipPlaneEnabled` | `(id: string, enabled: boolean) => Promise<void>` | Temporarily disable or re-enable a clip plane without removing it. |
+
+---
+
+### MeasurementAPI — `context.measurements`
+
+Measure distances between points in the 3D scene.
+
+```typescript
+const measurement = await context.measurements.createMeasurement(
+  { x: 0, y: 0, z: 0 },
+  { x: 10, y: 0, z: 0 }
+);
+
+console.log('Distance:', measurement.distance, 'mm');
+
+const all = context.measurements.getMeasurements();
+await context.measurements.removeMeasurement(measurement.id);
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `createMeasurement` | `(pointA, pointB) => Promise<Measurement>` | Create a linear distance measurement between two 3D points. |
+| `removeMeasurement` | `(id: string) => Promise<void>` | Remove a measurement. |
+| `getMeasurements` | `() => Measurement[]` | Return all measurements in the current scene. |
+
+---
+
+### SnapshotAPI — `context.snapshots`
+
+Save and restore named viewpoints and scene states.
+
+```typescript
+const snap = await context.snapshots.createSnapshot('Exploded view - final review');
+console.log('Snapshot ID:', snap.id);
+
+await context.snapshots.restoreSnapshot(snap.id);
+
+const all = context.snapshots.getSnapshots();
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `createSnapshot` | `(name: string) => Promise<Snapshot>` | Capture the current camera, selection, and visibility state. |
+| `restoreSnapshot` | `(id: string) => Promise<void>` | Animate the viewer back to the saved state. |
+| `getSnapshots` | `() => Snapshot[]` | List all snapshots in the current context. |
+
+---
+
+### ViewerAPI — `context.viewer`
+
+Control camera, background, and image capture.
+
+```typescript
+await context.viewer.setBackground('#0f0f1a');
+await context.viewer.setCameraToFitAll();
+
+const png = await context.viewer.screenshot();
+// png is a Base64-encoded PNG data URL
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `setBackground` | `(color: string) => Promise<void>` | Set the viewer background to a CSS color string or `'transparent'`. |
+| `setCameraToFitAll` | `() => Promise<void>` | Animate the camera to frame all visible geometry. |
+| `screenshot` | `() => Promise<string>` | Capture the current frame as a Base64 PNG data URL. |
+
+---
+
+### MemberAPI — `context.members`
+
+Manage collaborators in a shared 3DSpace session.
+
+```typescript
+const members = await context.members.getMembers();
+await context.members.inviteMember('colleague@example.com');
+await context.members.removeMember(members[0].id);
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `getMembers` | `() => Promise<Member[]>` | List all current session members. |
+| `inviteMember` | `(email: string) => Promise<void>` | Send a collaboration invite by email. |
+| `removeMember` | `(id: string) => Promise<void>` | Remove a member from the session. |
+
+---
+
+### HubAPI — `context.hub`
+
+Inspect hub capabilities and version information.
+
+```typescript
+const version = await context.hub.getVersion();
+console.log('Hub version:', version.semver);
+
+const caps = await context.hub.getCapabilities();
+if (caps.includes('BREP_TOPOLOGY')) {
+  // topology queries are available
+}
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `getVersion` | `() => Promise<HubVersion>` | Return hub version metadata including semantic version string. |
+| `getCapabilities` | `() => Promise<string[]>` | Return a list of capability identifiers enabled on this hub instance. |
+
+---
+
+## Complete Example
+
+The following example connects to a hub, loads a model, highlights a selection, and tears down cleanly when the user navigates away.
+
+```typescript
+import { requestContext, removeContext } from '@threedy/webvis';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+  token: sessionStorage.getItem('hubToken'),
+});
+
+// Load a CAD assembly
+const rootId = await context.add('urn:my-org:assembly:turbine-v3');
+
+// Highlight a specific part on selection
+context.addEventListener('SELECTION_CHANGED', async (event) => {
+  // Clear all highlights first
+  await context.setProperty(rootId, 'HIGHLIGHT_COLOR', null);
+
+  for (const nodeId of event.nodeIds) {
+    await context.setProperty(nodeId, 'HIGHLIGHT_COLOR', '#ff6600');
+  }
+});
+
+// Fit the camera once loading finishes
+context.addEventListener('LOADING_FINISHED', () => {
+  context.viewer.setCameraToFitAll();
+});
+
+// Clean up on navigation
+window.addEventListener('beforeunload', () => {
+  removeContext(context.id);
+});
+```
+
+<Note>
+  Node IDs returned by `context.add` are integers scoped to their context. Never share node IDs across different context instances — they are not globally unique.
+</Note>

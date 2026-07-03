@@ -1,0 +1,172 @@
+---
+title: "ContextAPI: Read PLM Metadata from 3D Nodes"
+sidebarTitle: "Context API"
+description: "Reference for the instant3Dhub ContextAPI — read PLM metadata, part properties, and custom attributes attached to 3D assembly nodes."
+---
+
+The ContextAPI surfaces the metadata that travels alongside your 3D geometry from the originating PLM or PDM system. Every node in the scene graph can carry an arbitrary set of key/value attributes — part numbers, revision codes, material designations, owner information, lifecycle states, and any custom fields your integration defines. The ContextAPI gives you programmatic read access to all of it.
+
+## Where Metadata Comes From
+
+Metadata is ingested by the **Data Gateway** when a resource is registered with the hub. The exact field names and their values depend entirely on your PLM integration configuration — common source systems include PTC Windchill, Siemens Teamcenter, Dassault 3DEXPERIENCE, SAP, and custom in-house systems. The field names shown in the examples below (`PART_NUMBER`, `MATERIAL`, `REVISION`) are illustrative; query your hub administrator for the exact attribute names in your environment.
+
+## Accessing the ContextAPI
+
+The ContextAPI is available as `context.context` on any initialized `WebvisContext`:
+
+```typescript
+const context = await requestContext({ hubURL: 'https://your-hub.example.com' });
+// context.context is the ContextAPI
+```
+
+<Note>
+  The naming `context.context` is intentional — the outer `context` is the `WebvisContext` instance and the inner `.context` property is the ContextAPI sub-module. You can destructure it for clarity: `const { context: contextAPI } = context;`
+</Note>
+
+---
+
+## Methods
+
+### `context.context.getMetadata(nodeId)`
+
+Returns all metadata attributes for the given node as a flat key/value object. This is the primary way to retrieve the full attribute set associated with a part or assembly node.
+
+```typescript
+const meta = await context.context.getMetadata(nodeId);
+
+console.log('Part number:', meta.PART_NUMBER);
+console.log('Revision   :', meta.REVISION);
+console.log('Material   :', meta.MATERIAL);
+console.log('Owner      :', meta.OWNER);
+
+// Render all attributes in a sidebar
+Object.entries(meta).forEach(([key, value]) => {
+  console.log(`${key}: ${value}`);
+});
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of the part or assembly whose metadata you want to read. Obtain node IDs from `context.add()`, `context.query()`, or a `SELECTION_CHANGED` event.
+</ParamField>
+
+**Returns:** `Promise<Record<string, any>>`
+
+The returned object is a plain dictionary. Values may be strings, numbers, booleans, dates (as ISO strings), or arrays depending on how the source system represents them. Fields not present in the source data are simply absent from the object.
+
+---
+
+### `context.context.getProperty(nodeId, key)`
+
+Reads a single named metadata attribute from a node. Use this when you only need one specific field and don't want to transfer the full metadata payload.
+
+```typescript
+const material = await context.context.getProperty(nodeId, 'MATERIAL');
+console.log('Material:', material); // e.g. 'Stainless Steel 316L'
+
+const revision = await context.context.getProperty(nodeId, 'REVISION');
+```
+
+<ParamField body="nodeId" type="number" required>
+  The target node ID.
+</ParamField>
+
+<ParamField body="key" type="string" required>
+  The metadata attribute key to read. Key names are case-sensitive and must match the exact field name as stored by the Data Gateway.
+</ParamField>
+
+**Returns:** `Promise<any>` — the attribute value, or `undefined` if the key does not exist on this node.
+
+---
+
+### `context.context.searchByMetadata(query)`
+
+Searches all loaded nodes and returns the IDs of those whose metadata matches the query criteria. Use this to find parts programmatically without iterating the entire scene graph manually.
+
+```typescript
+// Find all parts made of a specific material
+const aluminumParts = await context.context.searchByMetadata({
+  MATERIAL: 'Aluminum 6061-T6',
+});
+
+// Highlight all matching parts
+for (const nodeId of aluminumParts) {
+  await context.setProperty(nodeId, 'HIGHLIGHT_COLOR', '#4dabf7');
+}
+```
+
+<ParamField body="query" type="Record<string, any>" required>
+  A key/value map specifying the metadata criteria. All provided keys must match on a node for it to be included in the results (logical AND). Pass a single key/value pair to match on one attribute. String values are matched case-insensitively. Numeric values use exact equality unless you pass a range object `{ $gte: number, $lte: number }`.
+</ParamField>
+
+**Returns:** `Promise<number[]>` — an array of node IDs whose metadata satisfies all criteria.
+
+---
+
+## Practical Example: Searching Parts by Material
+
+The following example loads a complex assembly, finds all parts made from a specific material, highlights them in a distinctive color, and shows the user how many matching parts were found.
+
+```typescript
+import { requestContext } from '@threedy/webvis';
+import { notifyInfo } from '@threedy/webvis-ui';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+});
+
+const rootId = await context.add('urn:my-org:assembly:hydraulic-manifold-v5');
+
+context.addEventListener('LOADING_FINISHED', async () => {
+
+  await context.viewer.setCameraToFitAll();
+
+  // --- Material search ---
+  const targetMaterial = 'Stainless Steel 316L';
+  const matchingNodes = await context.context.searchByMetadata({
+    MATERIAL: targetMaterial,
+  });
+
+  if (matchingNodes.length === 0) {
+    notifyInfo(context, `No parts found with material: ${targetMaterial}`);
+    return;
+  }
+
+  // Dim all geometry first
+  await context.setProperty(rootId, 'OPACITY', 0.15);
+
+  // Highlight and fully opaque the matching parts
+  for (const nodeId of matchingNodes) {
+    await context.setProperty(nodeId, 'OPACITY', 1.0);
+    await context.setProperty(nodeId, 'HIGHLIGHT_COLOR', '#f03e3e');
+
+    // Read additional metadata to show in the console
+    const meta = await context.context.getMetadata(nodeId);
+    console.log(`Part: ${meta.PART_NUMBER} | Rev: ${meta.REVISION} | Owner: ${meta.OWNER}`);
+  }
+
+  notifyInfo(
+    context,
+    `Highlighted ${matchingNodes.length} part(s) with material "${targetMaterial}".`
+  );
+});
+```
+
+---
+
+## Handling Missing or Null Attributes
+
+Not every node will have every attribute populated. Always guard against `undefined` before using metadata values in your UI or calculations:
+
+```typescript
+const meta = await context.context.getMetadata(nodeId);
+
+const partNumber = meta.PART_NUMBER ?? 'Unknown';
+const weight = typeof meta.WEIGHT_KG === 'number' ? meta.WEIGHT_KG.toFixed(2) : 'N/A';
+
+document.getElementById('part-info').textContent = `${partNumber} — ${weight} kg`;
+```
+
+<Note>
+  Metadata is read-only through the ContextAPI. To update PLM attributes, you must write changes back through your PLM system directly; instant3Dhub re-ingests updated metadata the next time the resource is resolved or refreshed via the Data Gateway.
+</Note>

@@ -1,0 +1,114 @@
+---
+title: "instant3Dhub Architecture and Core Concepts"
+sidebarTitle: "Overview"
+description: "Understand instant3Dhub's core building blocks: InstanceGraph, 3DSpaces, Data Gateway, Hub Mesh, and spatial caching — and how they fit together."
+---
+
+instant3Dhub is built on a small set of composable concepts that work together to deliver web-scale 3D visualization. Understanding these building blocks will help you get more from the platform — whether you are configuring a deployment, building a custom application with webvisAPI, or designing an integration with your PLM/PDM infrastructure. This page explains each concept clearly and shows how they connect.
+
+<Note>
+  **Architecture at a glance.** Think of instant3Dhub as a layered system: the **Data Gateway** connects to your raw 3D data sources; the **InstanceGraph** organizes that data into an addressable, web-native structure; **3DSpaces** expose the InstanceGraph as persistent, collaborative web resources; and **Hub Mesh** scales that system horizontally across multiple instances. **Spatial caching** operates across all layers to accelerate every load.
+</Note>
+
+## Core Concepts
+
+<Accordion title="InstanceGraph — The Foundation Data Structure">
+  The InstanceGraph is the central data structure that powers all visualization, collaboration, and API interactions in instant3Dhub. It is a linked graph of resources — nodes representing 3D geometry, assemblies, metadata, and relationships — that is addressable as a web resource via HTTP.
+
+  Unlike a traditional scene graph that lives in memory on a single machine, the InstanceGraph is:
+
+  - **Web-native.** Every node and subgraph has a stable HTTP address. You can link to, embed, or compose parts of the graph just as you would any web resource.
+  - **Lazily evaluated.** Nodes are resolved on demand. Only the parts of the graph that a client actually needs are fetched and streamed.
+  - **Composable.** Multiple InstanceGraphs — sourced from different PLM systems or file repositories — can be linked together to form a unified virtual assembly.
+
+  The webvisAPI gives developers direct programmatic access to the InstanceGraph: adding resources, traversing the hierarchy, querying metadata, and reacting to selection or visibility changes.
+</Accordion>
+
+<Accordion title="3DSpaces — Persistent Collaborative Sessions">
+  A 3DSpace is a persistent web resource built on top of the InstanceGraph. Every scene you create or load in instant3Dhub lives inside a 3DSpace, and every 3DSpace has its own stable URL that you can bookmark, share, or embed.
+
+  3DSpaces manage two distinct categories of data:
+
+  | Data Type | Description | Mutability |
+  |---|---|---|
+  | **Resource Data** | The 3D geometry and assembly structure, linked from external sources via HTTP | Immutable — changes at the source propagate automatically |
+  | **3DSpace Data** | Annotations, measurements, clip planes, camera bookmarks, and member lists | Mutable — updated in real time as collaborators interact |
+
+  Because Resource Data is linked rather than copied, your 3DSpace always reflects the current state of the upstream PLM or PDM system. When an engineer publishes a new revision in Teamcenter, everyone who opens the 3DSpace immediately sees the updated geometry — there is no republishing or re-export step.
+
+  Multiple users can join the same 3DSpace simultaneously. Annotations and measurements they create become part of the 3DSpace Data and are visible to all members in real time.
+</Accordion>
+
+<Accordion title="Data Gateway — Connecting External 3D Sources">
+  The Data Gateway is the HTTP(S) interface through which instant3Dhub connects to external 3D data repositories. Any system that can serve files or metadata over HTTP can act as a Data Gateway — from an enterprise PLM system like Siemens Teamcenter or PTC Windchill to an Azure Blob Store, SharePoint library, or a simple file server.
+
+  The Data Gateway handles:
+
+  - **Authentication and authorization** — bridging enterprise identity systems to instant3Dhub's resource model
+  - **Format discovery** — exposing available 3D files and their metadata as addressable resources
+  - **On-demand retrieval** — supplying raw geometry to the instant3Dhub processing pipeline only when requested
+
+  Because the Data Gateway is a standard HTTP interface, integrators can implement custom gateways for any proprietary or in-house data source. Threedy provides pre-built gateway connectors for the most common PLM/PDM platforms.
+
+  <Tip>
+    You do not need to migrate or copy data out of your PLM system. The Data Gateway keeps instant3Dhub pointing at the original source of truth, so there is never a stale copy to manage.
+  </Tip>
+</Accordion>
+
+<Accordion title="Hub Mesh — Scaling Across Multiple Instances">
+  Hub Mesh lets you connect two or more instant3Dhub instances into a single logical mesh. This is useful for organizations that need to:
+
+  - **Distribute load** across geographic regions, keeping streaming latency low for globally distributed teams
+  - **Isolate sensitive data** in separate instances while still making it composable with data from other instances
+  - **Achieve high availability** by routing requests to healthy nodes when one instance is under maintenance
+
+  From a user's perspective, a Hub Mesh deployment is transparent. Resources from any node in the mesh are addressable and composable in a single 3DSpace, regardless of which instance physically stores or processes them. The InstanceGraph's web-native addressing model makes cross-instance linking a natural consequence of the architecture rather than a special case.
+</Accordion>
+
+<Accordion title="Spatial Caching — Fast Loading at Any Scale">
+  Spatial caching is instant3Dhub's approach to making large assembly loads fast — not just the first time, but every time after that. Think of it as Google Maps tiles, but for 3D geometry.
+
+  When instant3Dhub processes a large assembly for the first time, it partitions the geometry into spatial fragments based on bounding volumes and level-of-detail. These fragments are cached server-side with stable addresses. On subsequent requests — from any user, in any session — cached fragments are served immediately without reprocessing the source data.
+
+  Key properties of the spatial cache:
+
+  - **Cross-session reuse.** A fragment cached during one user's session is immediately available to the next user who views the same region of the assembly.
+  - **Partial invalidation.** When a component changes in the PLM system, only the affected spatial fragments are invalidated and recomputed. The rest of the cache remains valid.
+  - **Scale-independent loading.** Because streaming cost is proportional to the visible viewport rather than total assembly size, a one-terabyte assembly loads no slower than a one-gigabyte assembly when zoomed to a single component.
+</Accordion>
+
+## How the Concepts Fit Together
+
+A typical instant3Dhub workflow connects all five concepts in sequence:
+
+<Steps>
+  <Step title="Data Gateway retrieves source geometry">
+    A user opens a 3DSpace URL or a developer calls `context.add()` via webvisAPI. instant3Dhub contacts the appropriate Data Gateway to retrieve the raw 3D data from the PLM/PDM system.
+  </Step>
+  <Step title="InstanceGraph is built and cached">
+    The platform parses the geometry, constructs an InstanceGraph, and partitions it into spatial fragments for caching. Fragments that already exist in the spatial cache are skipped.
+  </Step>
+  <Step title="3DSpace serves the session">
+    The InstanceGraph is surfaced as a 3DSpace. The client browser connects and begins receiving the viewport-relevant fragments over the streaming channel. Collaborative overlays (annotations, measurements) from the 3DSpace Data layer are applied on top.
+  </Step>
+  <Step title="Hub Mesh routes requests transparently">
+    If the deployment spans multiple instances, Hub Mesh routes fragment requests to the instance that holds the cached data, minimizing latency and reprocessing.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="How 3D Streaming Works" icon="wifi" href="/concepts/3d-streaming">
+    Dive deeper into the streaming pipeline, spatial caching mechanics, and supported formats.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    See these concepts in action by loading your first 3D model in the browser.
+  </Card>
+  <Card title="Data Gateway Integration" icon="database" href="/integration/data-gateway">
+    Connect instant3Dhub to your PLM or PDM system using the Data Gateway interface.
+  </Card>
+  <Card title="webvisAPI Reference" icon="book" href="/api/webvis-api">
+    Explore the JavaScript API for interacting with the InstanceGraph and 3DSpaces programmatically.
+  </Card>
+</CardGroup>

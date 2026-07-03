@@ -1,29 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "instant3Dhub",
+  "projectType": "saas",
+  "projectName": "instant3Dhub",
+  "projectDescription": "A web-scale 3D data visualization and streaming platform that enables engineering teams to view, share, and interact with massive CAD assemblies on any device in real time — no conversions, no exports, no client installs.",
   "theme": "sequoia",
-  "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
-  },
-  "favicon": "/favicon.svg",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Get a Demo",
-      "href": "https://www.threedy.io/contact"
-    }
-  },
-  "footer": {
-    "socials": {
-      "linkedin": "https://www.linkedin.com/company/threedy-io"
-    }
-  },
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
   "navigation": {
     "tabs": [
       {
@@ -106,5 +88,28 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Real-time 3D streaming of massive CAD assemblies with up to 99% faster initial load",
+    "Zero client footprint — works in any browser on any device with no installs",
+    "Direct PLM/PDM integration as single source of truth (no exports or conversions)",
+    "3DSpaces for persistent, real-time collaborative sessions with annotations, measurements, and clip planes",
+    "webvisAPI JavaScript library for building custom 3D applications",
+    "Unreal Engine plugin for immersive VR/AR experiences",
+    "Data Gateway for connecting external 3D data sources via standard HTTP",
+    "Hub Mesh for distributing 3D data across multiple instant3Dhub instances",
+    "Support for CATIA V5, STEP, IFC, GLTF, VRML, and more",
+    "AI platform (MCP Server) for connecting AI assistants to 3D engineering data"
+  ],
+  "publicApiSurface": [
+    "webvisAPI — JavaScript client library (requestContext, getContext, getContexts, removeContext)",
+    "AnimationAPI, AnnotationAPI, ClipPlaneAPI, MeasurementAPI, SnapshotProperties, SpaceAPI, TopologyAPI, ViewerAPI",
+    "webvisUI API — setSetting, getSetting, addContextMenuEntries, notifyInfo/Warning/Error, translate",
+    "Resource API — REST interface for 3D resource access and management",
+    "Data Gateway API — HTTP REST interface for connecting external 3D data backends",
+    "3DSpaces API — OpenAPI-based experimental REST interface for service-to-service communication",
+    "License Server API — REST interface for license management",
+    "Unreal Plugin API — ConnectToHub(), Disconnect(), IsConnectedToHub(), Blueprint Actions",
+    "MCP Server — Model Context Protocol integration for AI assistants"
+  ]
 }

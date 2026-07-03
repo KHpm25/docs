@@ -1,0 +1,364 @@
+---
+title: "Resource API: Manage 3D Resources via REST"
+sidebarTitle: "Resource API"
+description: "REST API reference for managing instant3Dhub 3D resources — list, register, check status, and remove resources from your hub."
+---
+
+The Resource API is a REST interface that lets you programmatically manage the 3D resources registered with your instant3Dhub instance. A **resource** in this context is a reference that the hub uses to locate, fetch, and process a 3D model or assembly file. You can list available resources, register new references, poll their processing status, and remove resources that are no longer needed — all over plain HTTPS.
+
+## Base URL
+
+```
+https://your-hub.example.com/api/v1
+```
+
+Replace `your-hub.example.com` with the hostname of your hub instance.
+
+## Authentication
+
+All Resource API endpoints require a valid bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer <token>
+```
+
+Tokens are issued by your identity provider and scoped to your hub. If you receive a `401 Unauthorized` response, verify that your token has not expired and that it carries the required `resource:read` or `resource:write` scope for the operation you are attempting.
+
+---
+
+## Endpoints
+
+### `GET /resources`
+
+Returns a paginated list of all resources registered with the hub.
+
+**Request**
+
+```http
+GET /api/v1/resources HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+Optional query parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `page` | integer | Page number (1-based). Defaults to `1`. |
+| `pageSize` | integer | Results per page. Defaults to `20`, maximum `100`. |
+| `status` | string | Filter by status: `PENDING`, `PROCESSING`, `READY`, `ERROR`. |
+
+**Response `200 OK`**
+
+```json
+{
+  "items": [
+    {
+      "id": "res_9f3c2b1a",
+      "url": "https://cdn.example.com/models/engine-v3.jt",
+      "urnPrefix": "urn:my-org:model:engine-v3",
+      "status": "READY",
+      "createdAt": "2024-03-15T10:22:00Z",
+      "updatedAt": "2024-03-15T10:24:38Z"
+    }
+  ],
+  "total": 142,
+  "page": 1,
+  "pageSize": 20
+}
+```
+
+<ResponseField name="items" type="array">
+  Array of resource objects.
+</ResponseField>
+
+<ResponseField name="items[].id" type="string">
+  Unique resource identifier. Use this in subsequent `GET`, `DELETE`, and status requests.
+</ResponseField>
+
+<ResponseField name="items[].url" type="string">
+  The original source URL or URN that was registered.
+</ResponseField>
+
+<ResponseField name="items[].urnPrefix" type="string">
+  The URN prefix under which this resource is addressable inside the hub.
+</ResponseField>
+
+<ResponseField name="items[].status" type="string">
+  Current processing state: `PENDING`, `PROCESSING`, `READY`, or `ERROR`.
+</ResponseField>
+
+<ResponseField name="items[].createdAt" type="string">
+  ISO 8601 timestamp of registration.
+</ResponseField>
+
+<ResponseField name="items[].updatedAt" type="string">
+  ISO 8601 timestamp of the last status change.
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of resources across all pages.
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  Current page number.
+</ResponseField>
+
+<ResponseField name="pageSize" type="integer">
+  Number of items in this response.
+</ResponseField>
+
+---
+
+### `GET /resources/{resourceId}`
+
+Returns the full metadata record for a single resource.
+
+**Request**
+
+```http
+GET /api/v1/resources/res_9f3c2b1a HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Path Parameters**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `resourceId` | string | The resource ID returned by the list or create endpoints. |
+
+**Response `200 OK`**
+
+```json
+{
+  "id": "res_9f3c2b1a",
+  "url": "https://cdn.example.com/models/engine-v3.jt",
+  "urnPrefix": "urn:my-org:model:engine-v3",
+  "status": "READY",
+  "processingDurationMs": 158421,
+  "nodeCount": 4382,
+  "boundingBox": {
+    "min": { "x": -120.5, "y": 0.0, "z": -85.2 },
+    "max": { "x": 120.5, "y": 340.0, "z": 85.2 }
+  },
+  "createdAt": "2024-03-15T10:22:00Z",
+  "updatedAt": "2024-03-15T10:24:38Z"
+}
+```
+
+<ResponseField name="id" type="string">
+  Unique resource identifier.
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  The registered source URL.
+</ResponseField>
+
+<ResponseField name="urnPrefix" type="string">
+  The hub-internal URN prefix for addressing this resource.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  `PENDING` | `PROCESSING` | `READY` | `ERROR`
+</ResponseField>
+
+<ResponseField name="processingDurationMs" type="integer">
+  Total time in milliseconds the hub took to process and optimize the resource for streaming. Only present when `status` is `READY`.
+</ResponseField>
+
+<ResponseField name="nodeCount" type="integer">
+  Number of nodes in the processed scene graph. Only present when `status` is `READY`.
+</ResponseField>
+
+<ResponseField name="boundingBox" type="object">
+  World-space axis-aligned bounding box of the resource. Only present when `status` is `READY`.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  ISO 8601 registration timestamp.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  ISO 8601 timestamp of the last status change.
+</ResponseField>
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `404 Not Found` | No resource with the given ID exists. |
+
+---
+
+### `POST /resources`
+
+Registers a new resource reference with the hub. The hub will asynchronously fetch the file from the provided URL and process it for streaming.
+
+**Request**
+
+```http
+POST /api/v1/resources HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "url": "https://cdn.example.com/models/gearbox-v2.step",
+  "urnPrefix": "urn:my-org:model:gearbox-v2"
+}
+```
+
+<ParamField body="url" type="string" required>
+  The fully qualified URL from which the hub should fetch the 3D file. The hub must be able to reach this URL from its network. If the file is private, use a pre-signed URL.
+</ParamField>
+
+<ParamField body="urnPrefix" type="string" required>
+  The URN prefix under which this resource will be addressable in the hub's scene graph. Must be unique within the hub. Using a reverse-domain or path-based scheme (e.g. `urn:your-org:product:model-id`) is recommended.
+</ParamField>
+
+**Response `201 Created`**
+
+```json
+{
+  "id": "res_7d1e9022",
+  "url": "https://cdn.example.com/models/gearbox-v2.step",
+  "urnPrefix": "urn:my-org:model:gearbox-v2",
+  "status": "PENDING",
+  "createdAt": "2024-06-01T08:00:00Z",
+  "updatedAt": "2024-06-01T08:00:00Z"
+}
+```
+
+The resource begins in `PENDING` status. Poll `GET /resources/{id}/status` to track progress.
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `400 Bad Request` | Missing required fields or malformed URL. |
+| `409 Conflict` | A resource with the same `urnPrefix` already exists. |
+
+---
+
+### `DELETE /resources/{resourceId}`
+
+Removes a resource registration from the hub and schedules its processed data for deletion. This operation cannot be undone.
+
+**Request**
+
+```http
+DELETE /api/v1/resources/res_7d1e9022 HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Path Parameters**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `resourceId` | string | The ID of the resource to delete. |
+
+**Response `204 No Content`**
+
+An empty body is returned on success.
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `404 Not Found` | No resource with the given ID exists. |
+| `409 Conflict` | The resource is currently in use by one or more active sessions. |
+
+---
+
+### `GET /resources/{resourceId}/status`
+
+Returns the current processing status of a resource. Poll this endpoint after registering a resource to determine when it is ready for use in the viewer.
+
+**Request**
+
+```http
+GET /api/v1/resources/res_7d1e9022/status HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "id": "res_7d1e9022",
+  "status": "PROCESSING",
+  "progress": 62,
+  "stage": "GEOMETRY_OPTIMIZATION",
+  "estimatedCompletionAt": "2024-06-01T08:03:45Z"
+}
+```
+
+<ResponseField name="id" type="string">
+  The resource ID.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current state: `PENDING`, `PROCESSING`, `READY`, or `ERROR`.
+</ResponseField>
+
+<ResponseField name="progress" type="integer">
+  Estimated completion percentage (0–100). Only meaningful when `status` is `PROCESSING`.
+</ResponseField>
+
+<ResponseField name="stage" type="string">
+  Current processing stage. Possible values: `FETCH`, `CONVERSION`, `GEOMETRY_OPTIMIZATION`, `METADATA_EXTRACTION`, `INDEXING`. Only present when `status` is `PROCESSING`.
+</ResponseField>
+
+<ResponseField name="estimatedCompletionAt" type="string">
+  ISO 8601 timestamp of estimated completion. Only present when `status` is `PROCESSING`.
+</ResponseField>
+
+<ResponseField name="errorCode" type="string">
+  Machine-readable error code. Only present when `status` is `ERROR`. Common values: `FETCH_FAILED`, `UNSUPPORTED_FORMAT`, `CONVERSION_ERROR`.
+</ResponseField>
+
+<ResponseField name="errorMessage" type="string">
+  Human-readable error detail. Only present when `status` is `ERROR`.
+</ResponseField>
+
+---
+
+## Usage Example
+
+The following shell script registers a resource and polls until it becomes ready:
+
+```bash
+HUB="https://your-hub.example.com"
+TOKEN="eyJhbGciOiJSUzI1NiJ9..."
+
+# 1. Register the resource
+RESPONSE=$(curl -s -X POST "$HUB/api/v1/resources" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://cdn.example.com/models/bracket.jt",
+    "urnPrefix": "urn:my-org:model:bracket-v1"
+  }')
+
+RESOURCE_ID=$(echo "$RESPONSE" | jq -r '.id')
+echo "Registered: $RESOURCE_ID"
+
+# 2. Poll until READY
+while true; do
+  STATUS=$(curl -s "$HUB/api/v1/resources/$RESOURCE_ID/status" \
+    -H "Authorization: Bearer $TOKEN" | jq -r '.status')
+  echo "Status: $STATUS"
+  [ "$STATUS" = "READY" ] && break
+  [ "$STATUS" = "ERROR" ] && echo "Processing failed" && exit 1
+  sleep 5
+done
+
+echo "Resource is ready for use in the viewer."
+```
+
+<Note>
+  Processing time varies with file size, format complexity, and current hub load. Typical small-to-medium assemblies (under 500 MB STEP) complete in under two minutes. Very large multi-gigabyte assemblies may take considerably longer. We recommend implementing an exponential back-off strategy when polling the status endpoint in production.
+</Note>

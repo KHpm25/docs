@@ -1,0 +1,204 @@
+---
+title: "Connect PLM Systems: Teamcenter, Windchill, and More"
+sidebarTitle: "PLM Backends"
+description: "How to connect instant3Dhub to Siemens Teamcenter, PTC Windchill, Azure Blob Store, and SharePoint as 3D data sources."
+---
+
+instant3Dhub connects to your existing PLM, PDM, and cloud storage systems through the Data Gateway without requiring any agent software on the backend side. Threedy provides reference implementations — pre-built gateway configurations and lightweight adapter services — for the most common enterprise backends. This page describes the connection pattern and key configuration points for each supported system.
+
+<Note>
+  Reference implementation packages and detailed deployment guides for each backend are available through the Threedy support portal at [support.threedy.io](https://support.threedy.io). Contact [support@threedy.io](mailto:support@threedy.io) to request access.
+</Note>
+
+<Tabs>
+  <Tab title="Siemens Teamcenter">
+    ## Siemens Teamcenter
+
+    The Teamcenter reference implementation connects instant3Dhub to Teamcenter's REST API (Teamcenter Services REST Interface, TCCS REST). The Data Gateway calls the Teamcenter REST API to look up item revisions and retrieve associated JT or PLMXML data.
+
+    ### Authentication
+
+    instant3Dhub supports two authentication modes for Teamcenter:
+
+    - **User credential pass-through** — the end user's Teamcenter session token is forwarded to the Data Gateway, ensuring that data access respects Teamcenter's own access control rules.
+    - **Service account** — a dedicated Teamcenter service account authenticates on behalf of all users. Use this mode when you want to centralize access control at the instant3Dhub layer.
+
+    Configure the service account credentials as environment variables and reference them in your gateway configuration:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:tc:item:"
+          baseUrl: "https://teamcenter.example.com/tc/api/3d/"
+          headers:
+            Authorization: "Bearer {{ env.TC_SERVICE_TOKEN }}"
+    ```
+
+    ### URN Mapping Pattern
+
+    Teamcenter items map naturally to URNs using the item ID and revision:
+
+    ```
+    urn:tc:item:<ItemID>/<RevisionID>
+    ```
+
+    For example, `urn:tc:item:000123/A` resolves to the JT geometry for item 000123 revision A.
+
+    ### Reference Implementation
+
+    The Threedy Teamcenter adapter is a lightweight Node.js service that sits between the Data Gateway and Teamcenter, handling session management, format negotiation, and JT streaming. Request the deployment package from [support.threedy.io](https://support.threedy.io).
+  </Tab>
+
+  <Tab title="PTC Windchill">
+    ## PTC Windchill
+
+    The Windchill reference implementation connects instant3Dhub to Windchill's HTTP interface, exposing CAD documents stored in Windchill part and document structures.
+
+    ### Authentication
+
+    Windchill uses Basic Authentication or OAuth 2.0 (Windchill+ and later). Configure header injection in the Data Gateway:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:wc:part:"
+          baseUrl: "https://windchill.example.com/Windchill/servlet/3d/"
+          headers:
+            Authorization: "Basic {{ env.WC_BASIC_CREDENTIALS }}"
+    ```
+
+    For OAuth 2.0, use the token endpoint URL and client credentials:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:wc:part:"
+          baseUrl: "https://windchill.example.com/Windchill/servlet/3d/"
+          oauth2:
+            tokenUrl: "https://windchill.example.com/oauth/token"
+            clientId: "{{ env.WC_CLIENT_ID }}"
+            clientSecret: "{{ env.WC_CLIENT_SECRET }}"
+    ```
+
+    ### URN Mapping for Windchill OIDs
+
+    Windchill identifies CAD documents by Object Identifier (OID). Map them to URNs:
+
+    ```
+    urn:wc:part:<OID>
+    ```
+
+    For example, `urn:wc:part:OR:wt.part.WTPart:2048431` maps to the 3D representation of that Windchill part.
+
+    ### CAD Document Access
+
+    The Windchill adapter retrieves the latest checked-in representation for a given OID. You can configure the adapter to prefer specific format representations (e.g., PVS, STEP, JT) by adjusting the format priority list in the adapter configuration.
+
+    Request the Windchill reference implementation package from [support.threedy.io](https://support.threedy.io).
+  </Tab>
+
+  <Tab title="Azure Blob Store">
+    ## Azure Blob Store
+
+    Connect instant3Dhub directly to an Azure Blob Storage container. This is the simplest backend integration: your 3D files live in a container, and the Data Gateway maps URNs to blob paths.
+
+    ### Authentication
+
+    Two authentication methods are supported:
+
+    **SAS Token** — generate a Shared Access Signature token with read permissions on the container and inject it as a query parameter:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:azure:models:"
+          baseUrl: "https://youraccount.blob.core.windows.net/3dmodels/"
+          queryParams:
+            sv: "{{ env.AZURE_SAS_TOKEN }}"
+    ```
+
+    **Service Principal** — authenticate via Azure AD using a service principal. The Data Gateway obtains a bearer token from the Azure token endpoint and attaches it to each blob request:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:azure:models:"
+          baseUrl: "https://youraccount.blob.core.windows.net/3dmodels/"
+          oauth2:
+            tokenUrl: "https://login.microsoftonline.com/{{ env.AZURE_TENANT_ID }}/oauth2/v2.0/token"
+            clientId: "{{ env.AZURE_CLIENT_ID }}"
+            clientSecret: "{{ env.AZURE_CLIENT_SECRET }}"
+            scope: "https://storage.azure.com/.default"
+    ```
+
+    ### Container Structure and Naming
+
+    Organize your blob container so that blob paths map cleanly to URN suffixes. A flat structure works well for small libraries:
+
+    ```
+    3dmodels/
+      assembly-4711.jt
+      assembly-4712.jt
+      part-001.jt
+    ```
+
+    With the mapping above, `urn:azure:models:assembly-4711.jt` resolves to `https://youraccount.blob.core.windows.net/3dmodels/assembly-4711.jt`.
+
+    <Tip>
+      Use Azure Blob Storage lifecycle management policies to automatically tier infrequently accessed files to cool or archive storage, reducing costs for large model libraries.
+    </Tip>
+  </Tab>
+
+  <Tab title="Microsoft SharePoint">
+    ## Microsoft SharePoint
+
+    Use a SharePoint document library as a 3D data source. instant3Dhub accesses SharePoint files through the Microsoft Graph API, so no on-premises gateway software is required.
+
+    ### Authentication via Microsoft Graph API
+
+    Register an Azure AD application with the following Microsoft Graph API permissions:
+
+    - `Sites.Read.All` — read access to SharePoint sites
+    - `Files.Read.All` — read access to files in document libraries
+
+    Configure the Data Gateway to obtain tokens from the Azure AD token endpoint:
+
+    ```yaml
+    urnMapper:
+      mappings:
+        - urnPrefix: "urn:sp:models:"
+          baseUrl: "https://graph.microsoft.com/v1.0/sites/{{ env.SP_SITE_ID }}/drives/{{ env.SP_DRIVE_ID }}/root:/"
+          oauth2:
+            tokenUrl: "https://login.microsoftonline.com/{{ env.AZURE_TENANT_ID }}/oauth2/v2.0/token"
+            clientId: "{{ env.SP_CLIENT_ID }}"
+            clientSecret: "{{ env.SP_CLIENT_SECRET }}"
+            scope: "https://graph.microsoft.com/.default"
+    ```
+
+    ### Folder Structure Mapping
+
+    Map URN suffixes to SharePoint folder paths within the document library. For example, if your models live in a `3D Models` folder:
+
+    ```
+    urn:sp:models:Assemblies/Engine/v3.jt
+              ↓
+    https://graph.microsoft.com/v1.0/sites/{siteId}/drives/{driveId}/root:/3D Models/Assemblies/Engine/v3.jt:/content
+    ```
+
+    Configure the adapter to append `:/content` to the resolved path to trigger the Graph API's download redirect.
+
+    <Note>
+      SharePoint applies its own permission model. The Azure AD application you register must be granted access to the relevant SharePoint site by a SharePoint administrator before the Data Gateway can retrieve files.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Requesting Reference Implementations
+
+Threedy maintains actively supported reference implementation packages for each of the backends above. Each package includes:
+
+- A pre-configured adapter service (Docker image + Helm chart)
+- Example `values.yaml` and URN Mapper snippets
+- Troubleshooting guide for common connectivity issues
+
+To request a package, visit [support.threedy.io](https://support.threedy.io) or email [support@threedy.io](mailto:support@threedy.io) with your backend type and instant3Dhub version.

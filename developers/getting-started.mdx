@@ -1,0 +1,201 @@
+---
+title: "Build 3D Applications with the webvis API"
+sidebarTitle: "Getting Started"
+description: "Learn how to build custom 3D applications with the webvisAPI — from installing the package to loading models and handling user interactions."
+---
+
+The webvisAPI is the core JavaScript library for building custom 3D visualization applications on top of instant3Dhub. It connects your front-end code to a live hub instance, streams geometry on demand, and exposes a rich API for controlling the scene, querying node data, and reacting to user interactions. It works with any modern framework — React, Angular, Vue.js — or plain JavaScript.
+
+## Prerequisites
+
+Before you write your first line of code, make sure you have the following in place:
+
+- **An instant3Dhub instance** — a running hub with a reachable URL (e.g. `https://your-hub.example.com`). Contact your Threedy account team if you need a trial environment.
+- **A modern browser** — Chrome 90+, Firefox 88+, Edge 90+, or Safari 15+. WebGL 2.0 support is required.
+- **Node.js 16+ and npm or yarn** — for package-based projects. If you're using a CDN, Node.js is not required.
+
+## Installation
+
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install @threedy/webvis
+    ```
+  </Tab>
+  <Tab title="yarn">
+    ```bash
+    yarn add @threedy/webvis
+    ```
+  </Tab>
+  <Tab title="CDN">
+    ```html
+    <script type="module">
+      import { requestContext } from 'https://cdn.jsdelivr.net/npm/@threedy/webvis/dist/webvis.esm.js';
+      // your code here
+    </script>
+    ```
+    <Note>
+      The CDN build is convenient for quick prototypes. For production applications, install the package via npm or yarn so you can pin a specific version and run it through your build pipeline.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Your First 3D Application
+
+The example below is a complete, working application. It initialises a context bound to your hub, loads a 3D model, and logs the node ID of anything the user clicks.
+
+```javascript
+import { requestContext } from '@threedy/webvis';
+
+async function init() {
+  // 1. Create a context and attach it to a DOM container
+  const context = await requestContext({
+    hubURL: 'https://your-hub.example.com',
+    container: document.getElementById('viewer')
+  });
+
+  // 2. Load a 3D model — returns the root node ID of the loaded asset
+  const nodeId = await context.add('https://your-hub.example.com/resources/engine.stp');
+
+  // 3. React to selection events
+  context.addEventListener('SelectionChangedEvent', (event) => {
+    console.log('Selected node:', event.nodeIds);
+  });
+}
+
+init();
+```
+
+```html
+<!-- Make sure the container has an explicit size -->
+<div id="viewer" style="width: 100%; height: 600px;"></div>
+```
+
+<Warning>
+  The viewer container **must** exist in the DOM and have an explicit `width` and `height` before you call `requestContext`. If the container has zero dimensions, the renderer cannot initialise correctly.
+</Warning>
+
+<Steps>
+  <Step title="Create the context">
+    `requestContext` is the entry point to the webvisAPI. Pass your hub URL and the DOM element you want to render into. The call is asynchronous — it establishes a connection to the hub and returns a fully initialised context object.
+  </Step>
+  <Step title="Load a model">
+    Call `context.add(url)` with the URL of any hub-accessible resource. The method resolves with the integer node ID of the root node that was added to the InstanceGraph.
+  </Step>
+  <Step title="Subscribe to events">
+    Use `context.addEventListener(eventType, handler)` to react to anything happening in the scene. `SelectionChangedEvent` fires whenever the user clicks on a part.
+  </Step>
+</Steps>
+
+## Framework Integration
+
+<Tabs>
+  <Tab title="React">
+    Wrap context creation in a `useEffect` so the context is tied to the component lifecycle. Always destroy the context in the cleanup function to prevent memory leaks.
+
+    ```tsx
+    import { useEffect, useRef } from 'react';
+    import { requestContext, removeContext } from '@threedy/webvis';
+
+    export function Viewer3D({ hubURL, modelURL }) {
+      const containerRef = useRef(null);
+
+      useEffect(() => {
+        let contextId;
+
+        requestContext({ hubURL, container: containerRef.current })
+          .then(async (context) => {
+            contextId = context.id;
+            await context.add(modelURL);
+
+            context.addEventListener('SelectionChangedEvent', (event) => {
+              console.log('Selected:', event.nodeIds);
+            });
+          });
+
+        // Clean up when the component unmounts
+        return () => {
+          if (contextId) removeContext(contextId);
+        };
+      }, [hubURL, modelURL]);
+
+      return <div ref={containerRef} style={{ width: '100%', height: '600px' }} />;
+    }
+    ```
+
+    <Tip>
+      If you use React 18 Strict Mode, `useEffect` runs twice in development. Guard against double-initialisation by checking whether a context already exists with `getContext(contextId)` before calling `requestContext`.
+    </Tip>
+  </Tab>
+  <Tab title="Angular">
+    Encapsulate the context in an injectable service so it can be shared across components and destroyed cleanly with the service lifecycle.
+
+    ```typescript
+    import { Injectable, OnDestroy } from '@angular/core';
+    import { requestContext, removeContext } from '@threedy/webvis';
+
+    @Injectable({ providedIn: 'root' })
+    export class WebvisService implements OnDestroy {
+      private contextId: string | null = null;
+
+      async init(hubURL: string, container: HTMLElement) {
+        const context = await requestContext({ hubURL, container });
+        this.contextId = context.id;
+        return context;
+      }
+
+      ngOnDestroy() {
+        if (this.contextId) removeContext(this.contextId);
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Vue.js">
+    Use `onMounted` and `onUnmounted` lifecycle hooks to manage the context alongside the component.
+
+    ```vue
+    <template>
+      <div ref="container" style="width: 100%; height: 600px;" />
+    </template>
+
+    <script setup>
+    import { ref, onMounted, onUnmounted } from 'vue';
+    import { requestContext, removeContext } from '@threedy/webvis';
+
+    const props = defineProps(['hubURL', 'modelURL']);
+    const container = ref(null);
+    let contextId = null;
+
+    onMounted(async () => {
+      const context = await requestContext({
+        hubURL: props.hubURL,
+        container: container.value
+      });
+      contextId = context.id;
+      await context.add(props.modelURL);
+    });
+
+    onUnmounted(() => {
+      if (contextId) removeContext(contextId);
+    });
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Initialization" icon="gear" href="/developers/initialization">
+    Explore every option available in `requestContext`, manage multiple contexts, and handle auth tokens.
+  </Card>
+  <Card title="Nodes & Properties" icon="diagram-project" href="/developers/nodes-and-properties">
+    Learn how to traverse the InstanceGraph, show and hide parts, and change colors and opacity.
+  </Card>
+  <Card title="Events" icon="bolt" href="/developers/events">
+    Handle user selections, node changes, and space lifecycle events with the event system.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/developers/configuration">
+    Tune viewer appearance, streaming quality, and interaction behaviour.
+  </Card>
+</CardGroup>

@@ -1,0 +1,108 @@
+---
+title: "Mouse, Keyboard, and Touch Controls in instant3Dhub"
+sidebarTitle: "Navigation"
+description: "Reference for mouse controls, keyboard shortcuts, and touch gestures for navigating 3D models in instant3Dhub on desktop and mobile."
+---
+
+instant3Dhub's navigation model is designed to feel natural whether you are on a desktop with a mouse, a laptop with a trackpad, or a mobile device using touch. All navigation happens directly in the 3D viewport — no mode-switching required. This page is a complete reference for every control available across all input methods.
+
+## Mouse Controls
+
+Use the following mouse interactions to orient yourself around the model in the viewport.
+
+| Action | Mouse Gesture | Description |
+|---|---|---|
+| **Orbit** | Left-click + drag | Rotates the camera around the current focus point |
+| **Zoom** | Scroll wheel | Zooms in toward (scroll up) or out from (scroll down) the cursor position |
+| **Pan** | Middle-click + drag | Translates the camera horizontally and vertically |
+| **Pan (alternate)** | Shift + left-click drag | Same as middle-click pan; useful on mice without a middle button |
+| **Select** | Left-click on geometry | Selects the clicked part and highlights it; populates the Metadata panel |
+| **Deselect** | Left-click on empty space | Clears the current selection |
+| **Context menu** | Right-click | Opens a contextual action menu for the clicked part or tree node |
+| **Focus on selection** | Double-click on geometry | Re-centers and fits the camera to the clicked part |
+| **Multi-select** | Ctrl + left-click | Adds or removes individual parts from the current selection |
+| **Box select** | Ctrl + left-drag in empty space | Draws a selection rectangle; selects all parts within the box |
+
+<Tip>
+  Orbiting always rotates around the **focus point**, which defaults to the center of the scene. To shift the focus point to a specific part, double-click it. Subsequent orbits will rotate around that part.
+</Tip>
+
+## Keyboard Shortcuts
+
+| Key / Combination | Action |
+|---|---|
+| **F** | Fit entire model to view (fit all) |
+| **Shift + F** | Fit selected parts to view |
+| **H** | Hide selected parts |
+| **Shift + H** | Show all hidden parts |
+| **I** | Isolate selected parts (hides everything else) |
+| **Escape** | Exit current tool mode; deselect all |
+| **Ctrl + Z** | Undo last action (visibility, measurement, etc.) |
+| **Ctrl + Shift + Z** | Redo |
+| **Ctrl + A** | Select all visible parts |
+| **Ctrl + O** | Open the Load dialog |
+| **Delete** | Remove the selected measurement or annotation |
+| **Spacebar** | Toggle rotation around the selected part vs. scene center |
+| **1 / 2 / 3** | Switch between front, side, and top orthographic views |
+| **0** | Return to the default perspective camera view |
+| **?** | Open the keyboard shortcut reference overlay |
+
+<Note>
+  On macOS, substitute **Cmd** wherever **Ctrl** is listed above.
+</Note>
+
+## Touch Gestures (Mobile & Tablet)
+
+When accessing instant3Dhub from a mobile device or tablet, all navigation is handled through touch gestures on the viewport.
+
+| Action | Touch Gesture | Description |
+|---|---|---|
+| **Orbit** | One-finger drag | Rotates the camera around the focus point |
+| **Zoom** | Pinch (two fingers apart / together) | Zooms in or out centered on the pinch midpoint |
+| **Pan** | Two-finger drag | Translates the camera without rotating |
+| **Select** | Single tap on geometry | Selects the tapped part |
+| **Context menu** | Long press on geometry | Opens the contextual action menu |
+| **Focus on part** | Double-tap on geometry | Centers and fits camera to the tapped part |
+| **Reset view** | Double-tap on empty space | Fits the entire model back into view |
+
+<Tip>
+  On tablets, connecting a Bluetooth mouse gives you the full desktop navigation experience. The mobile touch controls remain active in parallel, so you can use whichever is more convenient.
+</Tip>
+
+## Navigation Modes
+
+instant3Dhub supports two camera navigation modes, selectable from the Settings panel.
+
+<Accordion title="Standard Mode (default)">
+  Standard mode uses an orbit-pan-zoom model anchored to a focus point. This is the default and is best suited for inspecting mechanical assemblies and detailed components. The camera always orbits around the selected focus point, preventing you from navigating "inside" the model accidentally.
+</Accordion>
+
+<Accordion title="Fly-Through Mode">
+  Fly-through mode gives you a first-person-style camera that moves freely in 3D space. This is useful for large environments such as factories, buildings (IFC models), or point clouds where an orbit anchor is impractical.
+
+  **Controls in fly-through mode:**
+
+  | Key | Action |
+  |---|---|
+  | **W / ↑** | Move forward |
+  | **S / ↓** | Move backward |
+  | **A / ←** | Strafe left |
+  | **D / →** | Strafe right |
+  | **Q** | Move up |
+  | **E** | Move down |
+  | Mouse drag | Look around (yaw / pitch) |
+  | Scroll wheel | Adjust movement speed |
+
+  To switch to fly-through mode, open **Settings → Navigation Mode → Fly-Through**.
+</Accordion>
+
+## Trackpad Navigation
+
+On laptops with precision trackpads (macOS, Windows):
+
+| Action | Trackpad Gesture |
+|---|---|
+| **Orbit** | One-finger drag (click and drag) |
+| **Zoom** | Two-finger vertical scroll |
+| **Pan** | Two-finger drag (without clicking) |
+| **Select** | Single tap or click |

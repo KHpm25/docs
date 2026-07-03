@@ -1,0 +1,69 @@
+---
+title: "Deploy and Integrate instant3Dhub in Your Infrastructure"
+sidebarTitle: "Overview"
+description: "Overview of instant3Dhub deployment options including Kubernetes, single-node, data gateway configuration, and PLM integration."
+---
+
+instant3Dhub is a containerized 3D data visualization and streaming platform that fits into your existing infrastructure with minimal friction. Whether you need a production-grade cluster deployment or a quick single-node setup for development, this section walks you through every deployment path, data connectivity option, and integration pattern available.
+
+## Deployment Paths
+
+instant3Dhub ships as a set of container images orchestrated by a Helm chart. You choose how much infrastructure you bring:
+
+- **Kubernetes (recommended for production)** — deploy to any existing Kubernetes cluster using the official Helm chart from `repo.threedy.io`. Kubernetes gives you high availability, horizontal scaling, and rolling updates out of the box.
+- **Single Node (quick start)** — spin up instant3Dhub on a single Linux machine using microk8s, or follow the Windows single-node guide. Ideal for proof-of-concept work, development environments, and small teams.
+
+## High-Level Architecture
+
+At its core, instant3Dhub sits between your users' browsers and your 3D data sources. The **Data Gateway** is the HTTP-based bridge that connects instant3Dhub to wherever your 3D files actually live — PLM systems, PDM repositories, cloud blob stores, or plain file servers.
+
+```
+Browser / Client App
+        │
+        ▼
+  instant3Dhub Core
+        │
+        ▼
+   Data Gateway  ──►  PLM / PDM / File Store
+```
+
+instant3Dhub resolves 3D resources by URN. The Data Gateway translates those URNs into HTTP URLs and fetches the data on behalf of the hub. Any HTTP server can act as a Data Gateway without additional software — you only need the URN Mapper configuration to tell instant3Dhub where each URN prefix lives.
+
+## Licensing
+
+instant3Dhub requires a valid license to run. The License Server manages concurrent user sessions and must be reachable by the hub at startup.
+
+<Note>
+  Contact [support@threedy.io](mailto:support@threedy.io) to obtain your license key before beginning installation. You will need the License Server URL when configuring the Helm chart or single-node manifest.
+</Note>
+
+When deploying with Helm, set the `licenseServer.url` value to point at your License Server instance. Without a valid license, the hub will start but refuse client connections.
+
+## What's in This Section
+
+<CardGroup cols={2}>
+  <Card title="Kubernetes" icon="dharmachakra" href="/integration/kubernetes">
+    Deploy instant3Dhub to a production Kubernetes cluster using the official Helm chart. Covers prerequisites, `values.yaml` configuration, GPU support, and verification.
+  </Card>
+  <Card title="Single Node" icon="server" href="/integration/single-node">
+    Run instant3Dhub on a single Linux machine with microk8s for development or proof-of-concept use. Includes hardware requirements and step-by-step setup.
+  </Card>
+  <Card title="Data Gateway" icon="plug" href="/integration/data-gateway">
+    Connect instant3Dhub to your 3D data sources over HTTP. Covers URN mapping, authentication, signed input configuration, and caching.
+  </Card>
+  <Card title="PLM Backends" icon="cubes" href="/integration/plm-backends">
+    Reference implementations for Siemens Teamcenter, PTC Windchill, Azure Blob Store, and Microsoft SharePoint as 3D data sources.
+  </Card>
+  <Card title="Hub Mesh" icon="network-wired" href="/integration/hub-mesh">
+    Federate multiple instant3Dhub instances across regions or departments so global teams access all 3D data through a single logical hub.
+  </Card>
+</CardGroup>
+
+## Getting Support
+
+If you run into issues during deployment or integration, the Threedy support portal is your first stop.
+
+- **Support portal**: [support.threedy.io](https://support.threedy.io)
+- **Email**: [support@threedy.io](mailto:support@threedy.io)
+
+The portal hosts reference implementation packages, known-issue advisories, and deployment guides for specific infrastructure environments that go beyond the scope of this documentation.

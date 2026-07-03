@@ -1,0 +1,279 @@
+---
+title: "Handle Events and User Interactions in webvisAPI"
+sidebarTitle: "Events"
+description: "Subscribe to and handle webvisAPI events for selection changes, node updates, and space lifecycle — including cleanup patterns to prevent memory leaks."
+---
+
+The webvisAPI communicates everything that happens in a scene — user clicks, model loads, property changes, errors — through a unified event system. You subscribe to named event types with a handler function, and the API calls your handler whenever that event fires. This decoupled model means your application code never needs to poll for state changes.
+
+## Subscribing and Unsubscribing
+
+```javascript
+// Subscribe
+const handler = (event) => {
+  console.log('Event received:', event);
+};
+context.addEventListener('SelectionChangedEvent', handler);
+
+// Unsubscribe — pass the exact same function reference
+context.removeEventListener('SelectionChangedEvent', handler);
+```
+
+<Warning>
+  Always store a reference to your handler function and call `removeEventListener` when you no longer need the subscription — for example, when a component unmounts or a view is closed. Handlers that outlive their owner cause memory leaks and may produce errors when they try to access deallocated resources.
+</Warning>
+
+## Event Reference
+
+### SelectionChangedEvent
+
+Fires whenever the selection in the scene changes — either because the user clicked on a part or because your code called `setProperty(nodeId, 'selected', ...)`.
+
+**Payload:**
+
+<ResponseField name="nodeIds" type="number[]">
+  The node IDs that are now selected.
+</ResponseField>
+<ResponseField name="previousNodeIds" type="number[]">
+  The node IDs that were selected before this change.
+</ResponseField>
+
+```javascript
+context.addEventListener('SelectionChangedEvent', (event) => {
+  const { nodeIds, previousNodeIds } = event;
+  console.log('Now selected:', nodeIds);
+  console.log('Previously selected:', previousNodeIds);
+});
+```
+
+---
+
+### NodeChangedEvent
+
+Fires whenever a property on any node is updated — whether by user interaction or programmatic `setProperty` calls.
+
+**Payload:**
+
+<ResponseField name="nodeId" type="number">
+  The ID of the node whose property changed.
+</ResponseField>
+<ResponseField name="property" type="string">
+  The name of the property that changed (e.g. `'visible'`, `'color'`).
+</ResponseField>
+<ResponseField name="newValue" type="any">
+  The value the property was changed to.
+</ResponseField>
+<ResponseField name="oldValue" type="any">
+  The value the property held before the change.
+</ResponseField>
+
+```javascript
+context.addEventListener('NodeChangedEvent', (event) => {
+  const { nodeId, property, newValue, oldValue } = event;
+  console.log(`Node ${nodeId}: ${property} changed from ${oldValue} to ${newValue}`);
+});
+```
+
+---
+
+### NodeAddedEvent
+
+Fires when a new node is added to the InstanceGraph — typically when a model finishes loading.
+
+**Payload:**
+
+<ResponseField name="nodeId" type="number">
+  The ID of the newly added node.
+</ResponseField>
+<ResponseField name="parentId" type="number">
+  The ID of the parent node the new node was attached to.
+</ResponseField>
+
+```javascript
+context.addEventListener('NodeAddedEvent', (event) => {
+  console.log(`Node ${event.nodeId} added under parent ${event.parentId}`);
+});
+```
+
+---
+
+### NodeRemovedEvent
+
+Fires when a node is removed from the InstanceGraph.
+
+**Payload:**
+
+<ResponseField name="nodeId" type="number">
+  The ID of the node that was removed.
+</ResponseField>
+
+---
+
+### SpaceOpenedEvent
+
+Fires when a 3DSpace has been opened successfully and is ready to use.
+
+**Payload:**
+
+<ResponseField name="spaceId" type="string">
+  The ID of the space that was opened.
+</ResponseField>
+<ResponseField name="url" type="string">
+  The URL the space was loaded from.
+</ResponseField>
+
+```javascript
+context.addEventListener('SpaceOpenedEvent', (event) => {
+  console.log(`Space ${event.spaceId} is ready`);
+});
+```
+
+---
+
+### AnnotationCreatedEvent
+
+Fires when an annotation is successfully created on a geometry node.
+
+**Payload:**
+
+<ResponseField name="annotationId" type="string">
+  The unique identifier of the new annotation.
+</ResponseField>
+<ResponseField name="nodeId" type="number">
+  The node the annotation is attached to.
+</ResponseField>
+
+---
+
+### MeasurementCreatedEvent
+
+Fires when a point-to-point or angle measurement is created.
+
+**Payload:**
+
+<ResponseField name="measurementId" type="string">
+  The unique identifier of the new measurement.
+</ResponseField>
+
+---
+
+### ClipPlaneChangedEvent
+
+Fires when a clip plane is created, moved, or deleted.
+
+**Payload:**
+
+<ResponseField name="clipPlaneId" type="string">
+  The ID of the clip plane that changed.
+</ResponseField>
+
+---
+
+### SnapshotCreatedEvent
+
+Fires when a viewpoint snapshot is created.
+
+**Payload:**
+
+<ResponseField name="snapshotId" type="string">
+  The unique identifier of the snapshot.
+</ResponseField>
+<ResponseField name="name" type="string">
+  The human-readable name given to the snapshot.
+</ResponseField>
+
+---
+
+### ErrorEvent
+
+Fires when the webvisAPI encounters a recoverable error — for example, a failed resource load or a hub communication error. Listen to this event to surface errors to your users without relying on try/catch at every call site.
+
+**Payload:**
+
+<ResponseField name="code" type="string">
+  A machine-readable error code (e.g. `'RESOURCE_NOT_FOUND'`, `'HUB_UNREACHABLE'`).
+</ResponseField>
+<ResponseField name="message" type="string">
+  A human-readable description of the error.
+</ResponseField>
+
+```javascript
+context.addEventListener('ErrorEvent', (event) => {
+  console.error(`[${event.code}] ${event.message}`);
+  // Show a toast notification, log to your error tracker, etc.
+});
+```
+
+## Async Event Handlers
+
+Event handlers can be `async` functions. The webvisAPI fires-and-forgets — it does not await your handler — so errors thrown inside an async handler must be caught explicitly:
+
+```javascript
+context.addEventListener('SelectionChangedEvent', async (event) => {
+  try {
+    if (event.nodeIds.length === 0) return;
+
+    const nodeId = event.nodeIds[0];
+
+    // Fetch metadata for the selected node
+    const label = await context.getProperty(nodeId, 'label');
+    console.log('Selected part:', label);
+
+    // You can make multiple async calls safely inside the handler
+    await context.setProperty(nodeId, 'color', '#ef7025');
+  } catch (err) {
+    console.error('Handler error:', err);
+  }
+});
+```
+
+<Warning>
+  Do not `await` an async handler and expect the result to propagate back to the event system. If your handler throws an unhandled promise rejection, it will be reported as an unhandled rejection at the top level, not as a webvisAPI error.
+</Warning>
+
+## Event Filtering
+
+The webvisAPI delivers every event of the subscribed type to your handler. If you only care about a subset — for example, only `visible` property changes, or only events for a specific node — filter inside the handler:
+
+```javascript
+// Only react to visibility changes
+context.addEventListener('NodeChangedEvent', (event) => {
+  if (event.property !== 'visible') return;
+  console.log(`Node ${event.nodeId} is now ${event.newValue ? 'shown' : 'hidden'}`);
+});
+
+// Only react to changes on a specific node
+const targetNodeId = 42;
+context.addEventListener('NodeChangedEvent', (event) => {
+  if (event.nodeId !== targetNodeId) return;
+  console.log(`Target node property "${event.property}" changed to:`, event.newValue);
+});
+```
+
+## Cleaning Up All Handlers
+
+When tearing down a context (for example, in a framework unmount hook), remove every handler you registered:
+
+```javascript
+const handlers = {
+  selection: (e) => handleSelection(e),
+  nodeChanged: (e) => handleNodeChanged(e),
+  error: (e) => handleError(e)
+};
+
+// Register
+context.addEventListener('SelectionChangedEvent', handlers.selection);
+context.addEventListener('NodeChangedEvent', handlers.nodeChanged);
+context.addEventListener('ErrorEvent', handlers.error);
+
+// Deregister on teardown
+function cleanup() {
+  context.removeEventListener('SelectionChangedEvent', handlers.selection);
+  context.removeEventListener('NodeChangedEvent', handlers.nodeChanged);
+  context.removeEventListener('ErrorEvent', handlers.error);
+}
+```
+
+<Tip>
+  Organise your handlers in an object or array so that cleanup is a single loop rather than a list of individual `removeEventListener` calls. This pattern also makes it easier to add or remove subscriptions without missing a cleanup step.
+</Tip>

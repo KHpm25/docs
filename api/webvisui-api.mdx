@@ -1,0 +1,446 @@
+---
+title: "webvisUI API: Customize the instant3Dhub Interface"
+sidebarTitle: "webvisUI API"
+description: "Reference for the webvisUI JavaScript API — configure settings, add context menu entries, show notifications, and extend the built-in UI."
+---
+
+The webvisUI API lets you tailor the instant3Dhub built-in interface to match your application's look, language, and workflow. Use it to adjust UI settings at runtime, inject custom right-click menu items, display toast notifications, manage translations, and open modal dialogs — all without forking or rebuilding the default UI bundle.
+
+## Installation
+
+```bash
+npm install @threedy/webvis-ui
+```
+
+## Importing
+
+```typescript
+import {
+  setSetting,
+  getSetting,
+  addContextMenuEntries,
+  removeContextMenuEntries,
+  restoreContextMenuEntries,
+  setContextMenuEntries,
+  notifyInfo,
+  notifyWarning,
+  notifyError,
+  translate,
+  addEventListener as addUIEventListener,
+  removeEventListener as removeUIEventListener,
+  setLogLevel,
+  addTranslation,
+  exportUserSettings,
+  getStaticUIElement,
+  requestDialog,
+} from '@threedy/webvis-ui';
+```
+
+---
+
+## Settings
+
+### `setSetting(context, setting, value)`
+
+Applies a UI setting for the given context at runtime. Settings take effect immediately without requiring a page reload.
+
+```typescript
+import { setSetting, UISetting } from '@threedy/webvis-ui';
+
+// Switch the UI to German
+setSetting(context, UISetting.LANGUAGE, 'de');
+
+// Change the measurement unit display
+setSetting(context, UISetting.UNIT, 'mm');
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context whose UI should be updated. Each context has its own independent UI setting state.
+</ParamField>
+
+<ParamField body="setting" type="UISetting" required>
+  The setting to change. Use values from the `UISetting` enum (see table below).
+</ParamField>
+
+<ParamField body="value" type="any" required>
+  The new value. Accepted types depend on the specific setting — strings for `LANGUAGE` and `UNIT`, numbers for `LOG_LEVEL`, and enum strings for `HOVER_LABEL_MODE`.
+</ParamField>
+
+---
+
+### `getSetting(context, setting)`
+
+Returns the current value of a UI setting.
+
+```typescript
+const currentLang = getSetting(context, UISetting.LANGUAGE);
+console.log('Active language:', currentLang); // e.g. 'en'
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context to read from.
+</ParamField>
+
+<ParamField body="setting" type="UISetting" required>
+  The setting to read.
+</ParamField>
+
+**Returns:** `any` — the current value of the setting.
+
+---
+
+### UISetting Enum
+
+| Enum Value | Type | Description |
+|---|---|---|
+| `UISetting.LANGUAGE` | `string` | BCP 47 language tag for UI localization, e.g. `'en'`, `'de'`, `'fr'`. |
+| `UISetting.UNIT` | `string` | Display unit for measurements: `'mm'`, `'cm'`, `'m'`, `'in'`, `'ft'`. |
+| `UISetting.LOG_LEVEL` | `number` | Verbosity level for UI-layer log output. Mirrors numeric log level constants. |
+| `UISetting.HOVER_LABEL_MODE` | `string` | Controls what label appears on cursor hover: `'NONE'`, `'NAME'`, `'METADATA'`. |
+| `UISetting.PRINT_LAYOUT` | `string` | Page layout used when printing: `'PORTRAIT'` or `'LANDSCAPE'`. |
+| `UISetting.PRINT_QUALITY` | `string` | Print render quality: `'DRAFT'`, `'STANDARD'`, or `'HIGH'`. |
+
+---
+
+## Context Menu
+
+### `addContextMenuEntries(context, entries)`
+
+Injects custom items into the viewer's right-click context menu. Entries are appended after the default items unless you specify a position.
+
+```typescript
+addContextMenuEntries(context, [
+  {
+    id: 'open-in-plm',
+    label: 'Open in PLM System',
+    icon: 'link',
+    action: (nodeIds) => {
+      const id = nodeIds[0];
+      window.open(`https://plm.example.com/parts/${id}`, '_blank');
+    },
+  },
+  {
+    id: 'copy-part-number',
+    label: 'Copy Part Number',
+    action: async (nodeIds) => {
+      const meta = await context.context.getMetadata(nodeIds[0]);
+      navigator.clipboard.writeText(meta.PART_NUMBER);
+    },
+  },
+]);
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context whose context menu should be extended.
+</ParamField>
+
+<ParamField body="entries" type="ContextMenuEntry[]" required>
+  An array of entry descriptors. Each entry must have an `id` (string), `label` (string), and `action` (function receiving the array of currently selected node IDs). Optional fields: `icon` (string), `disabled` (boolean), `separator` (boolean).
+</ParamField>
+
+---
+
+### `removeContextMenuEntries(context, entryIds)`
+
+Removes specific custom entries from the context menu by their IDs.
+
+```typescript
+removeContextMenuEntries(context, ['open-in-plm', 'copy-part-number']);
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The target context.
+</ParamField>
+
+<ParamField body="entryIds" type="string[]" required>
+  Array of entry `id` strings to remove.
+</ParamField>
+
+---
+
+### `setContextMenuEntries(context, entries)`
+
+Replaces the entire custom context menu entry list with the provided entries. All previously added custom entries are discarded.
+
+```typescript
+setContextMenuEntries(context, [newEntry]);
+```
+
+---
+
+### `restoreContextMenuEntries(context)`
+
+Removes all custom entries and restores the context menu to its default built-in state.
+
+```typescript
+restoreContextMenuEntries(context);
+```
+
+---
+
+## Notifications
+
+Display non-blocking toast messages to the user. Toasts appear in the viewer overlay and auto-dismiss after a few seconds.
+
+### `notifyInfo(context, message)`
+
+Show an informational toast.
+
+```typescript
+notifyInfo(context, 'Model loaded successfully.');
+```
+
+### `notifyWarning(context, message)`
+
+Show a warning toast with a yellow indicator.
+
+```typescript
+notifyWarning(context, 'Large assembly — rendering may be slower than usual.');
+```
+
+### `notifyError(context, message)`
+
+Show an error toast with a red indicator.
+
+```typescript
+notifyError(context, 'Failed to connect to the collaboration server.');
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context in whose viewer overlay the notification appears.
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  The human-readable message text. Keep messages concise — one to two sentences.
+</ParamField>
+
+---
+
+## Translations
+
+### `translate(context, key)`
+
+Returns the translated string for a UI key in the context's active language.
+
+```typescript
+const label = translate(context, 'toolbar.fit_all');
+console.log(label); // e.g. 'Fit All' (en) or 'Alles einpassen' (de)
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context (determines the active language).
+</ParamField>
+
+<ParamField body="key" type="string" required>
+  The translation key. Keys follow dot-notation namespacing, e.g. `'toolbar.fit_all'`, `'dialog.confirm'`.
+</ParamField>
+
+**Returns:** `string`
+
+---
+
+### `addTranslation(context, languageTag, translations)`
+
+Register custom translation keys for your own UI extensions. Keys you define here can then be retrieved with `translate()`.
+
+```typescript
+addTranslation(context, 'en', {
+  'myapp.open_in_plm': 'Open in PLM System',
+  'myapp.copy_pn': 'Copy Part Number',
+});
+
+addTranslation(context, 'de', {
+  'myapp.open_in_plm': 'Im PLM-System öffnen',
+  'myapp.copy_pn': 'Teilenummer kopieren',
+});
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context to register translations in.
+</ParamField>
+
+<ParamField body="languageTag" type="string" required>
+  BCP 47 language tag, e.g. `'en'`, `'de'`, `'fr'`.
+</ParamField>
+
+<ParamField body="translations" type="Record<string, string>" required>
+  A flat key/value map of translation strings.
+</ParamField>
+
+---
+
+## Log Level
+
+### `setLogLevel(context, level)`
+
+Controls the verbosity of console output from the webvisUI layer. Lower values produce less output; higher values enable verbose debug logging.
+
+```typescript
+import { setLogLevel, LogLevel } from '@threedy/webvis-ui';
+
+setLogLevel(context, LogLevel.WARN); // suppress info and debug messages
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The target context.
+</ParamField>
+
+<ParamField body="level" type="number | LogLevel" required>
+  The log level. Use the `LogLevel` enum or a numeric value: `0` = SILENT, `1` = ERROR, `2` = WARN, `3` = INFO, `4` = DEBUG.
+</ParamField>
+
+---
+
+## UI Events
+
+Listen for UI-layer events such as panel open/close or toolbar button clicks.
+
+### `addUIEventListener(context, eventType, handler)`
+
+```typescript
+addUIEventListener(context, 'PANEL_OPENED', (event) => {
+  console.log('Panel opened:', event.panelId);
+});
+```
+
+### `removeUIEventListener(context, eventType, handler)`
+
+```typescript
+removeUIEventListener(context, 'PANEL_OPENED', myHandler);
+```
+
+---
+
+## Dialogs
+
+### `requestDialog(context, options)`
+
+Opens a modal dialog in the viewer overlay and returns a Promise that resolves with the user's response.
+
+```typescript
+const result = await requestDialog(context, {
+  title: 'Confirm Reset',
+  message: 'This will clear all annotations and measurements. Continue?',
+  confirmLabel: 'Reset',
+  cancelLabel: 'Cancel',
+  type: 'CONFIRM',
+});
+
+if (result.confirmed) {
+  // proceed with reset
+}
+```
+
+<ParamField body="context" type="WebvisContext" required>
+  The context in whose overlay the dialog is shown.
+</ParamField>
+
+<ParamField body="options" type="object" required>
+  Dialog configuration object.
+</ParamField>
+
+<ParamField body="options.title" type="string" required>
+  The dialog heading.
+</ParamField>
+
+<ParamField body="options.message" type="string">
+  The body text shown below the heading.
+</ParamField>
+
+<ParamField body="options.type" type="string">
+  Dialog type: `'CONFIRM'`, `'ALERT'`, or `'PROMPT'`. Defaults to `'ALERT'`.
+</ParamField>
+
+<ParamField body="options.confirmLabel" type="string">
+  Label for the primary (confirm) button. Defaults to `'OK'`.
+</ParamField>
+
+<ParamField body="options.cancelLabel" type="string">
+  Label for the secondary (cancel) button. Only shown for `'CONFIRM'` type. Defaults to `'Cancel'`.
+</ParamField>
+
+**Returns:** `Promise<{ confirmed: boolean; value?: string }>` — `value` is populated for `'PROMPT'` dialogs.
+
+---
+
+## Utilities
+
+### `exportUserSettings(context)`
+
+Serializes the current user's UI settings to a JSON object, suitable for persistence in localStorage or a backend profile store.
+
+```typescript
+const settings = exportUserSettings(context);
+localStorage.setItem('hubUISettings', JSON.stringify(settings));
+```
+
+**Returns:** `object`
+
+---
+
+### `getStaticUIElement(id)`
+
+Returns a reference to a static DOM element in the instant3Dhub UI shell by its well-known ID. Use this for integration with external tooltip libraries or accessibility tooling.
+
+```typescript
+const toolbar = getStaticUIElement('webvis-toolbar');
+```
+
+<ParamField body="id" type="string" required>
+  The element identifier. Contact Threedy support for a list of stable element IDs.
+</ParamField>
+
+**Returns:** `HTMLElement | null`
+
+---
+
+## Complete Example
+
+The following snippet bootstraps a context, customizes the UI language and units, registers a PLM deep-link in the context menu, and adds bilingual translations for the custom entry.
+
+```typescript
+import { requestContext } from '@threedy/webvis';
+import {
+  setSetting,
+  UISetting,
+  addContextMenuEntries,
+  addTranslation,
+  notifyInfo,
+  notifyError,
+} from '@threedy/webvis-ui';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+});
+
+// Localize the UI
+setSetting(context, UISetting.LANGUAGE, navigator.language.slice(0, 2));
+setSetting(context, UISetting.UNIT, 'mm');
+setSetting(context, UISetting.HOVER_LABEL_MODE, 'NAME');
+
+// Register translation strings
+addTranslation(context, 'en', { 'app.open_plm': 'Open in PLM' });
+addTranslation(context, 'de', { 'app.open_plm': 'Im PLM öffnen' });
+
+// Inject a custom context menu item
+addContextMenuEntries(context, [
+  {
+    id: 'open-in-plm',
+    label: translate(context, 'app.open_plm'),
+    action: async (nodeIds) => {
+      try {
+        const meta = await context.context.getMetadata(nodeIds[0]);
+        window.open(`https://plm.example.com/parts/${meta.PART_NUMBER}`, '_blank');
+        notifyInfo(context, 'Opening part in PLM system…');
+      } catch {
+        notifyError(context, 'Could not fetch part metadata.');
+      }
+    },
+  },
+]);
+```
+
+<Note>
+  UI settings are per-context and are not automatically persisted between sessions. Use `exportUserSettings` to save them and re-apply on the next `requestContext` call via the `config` option.
+</Note>
