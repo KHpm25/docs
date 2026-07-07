@@ -30,36 +30,36 @@
         "version": "3.14",
         "tabs": [
           {
-            "tab": "Documentation",
+            "tab": "instant3Dhub",
             "pages": [
               "v3.14/welcome",
               "v3.14/introduction",
               "v3.14/ai-search",
               "v3.14/feedback",
+              "v3.14/links/our-concepts",
+              "v3.14/links/for-app-developers",
+              "v3.14/links/for-integrators",
+              "v3.14/links/user-guides"
+            ]
+          },
+          {
+            "tab": "Our Concepts",
+            "pages": [
+              "v3.14/quickstart",
+              "v3.14/concepts/overview",
+              "v3.14/concepts/3d-streaming",
+              "v3.14/concepts/3dspaces",
+              "v3.14/integration/hub-mesh",
+              "v3.14/sdks/mcp-server"
+            ]
+          },
+          {
+            "tab": "For App Developers",
+            "pages": [
+              "v3.14/developers/getting-started",
               {
-                "group": "Our Concepts",
+                "group": "Tutorials",
                 "pages": [
-                  "v3.14/quickstart",
-                  "v3.14/concepts/overview",
-                  "v3.14/concepts/3d-streaming",
-                  "v3.14/concepts/3dspaces"
-                ]
-              },
-              {
-                "group": "User Guide",
-                "pages": [
-                  "v3.14/user-guide/ui-overview",
-                  "v3.14/user-guide/adding-data",
-                  "v3.14/user-guide/navigation",
-                  "v3.14/user-guide/tools",
-                  "v3.14/user-guide/collaboration",
-                  "v3.14/user-guide/ar"
-                ]
-              },
-              {
-                "group": "For App Developers",
-                "pages": [
-                  "v3.14/developers/getting-started",
                   "v3.14/developers/introduction",
                   "v3.14/developers/initialization",
                   "v3.14/developers/nodes-and-properties",
@@ -69,24 +69,43 @@
                 ]
               },
               {
-                "group": "Integrations & Deployment",
+                "group": "SDKs",
                 "pages": [
-                  "v3.14/integration/overview",
+                  "v3.14/sdks/jxvis",
+                  "v3.14/sdks/unreal-plugin"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "For Integrators",
+            "pages": [
+              "v3.14/integration/overview",
+              {
+                "group": "Installation",
+                "pages": [
                   "v3.14/integration/kubernetes",
-                  "v3.14/integration/single-node",
-                  "v3.14/integration/data-gateway",
-                  "v3.14/integration/plm-backends",
-                  "v3.14/integration/hub-mesh"
+                  "v3.14/integration/single-node"
                 ]
               },
               {
-                "group": "SDKs & Plugins",
+                "group": "Data Pool Configuration",
                 "pages": [
-                  "v3.14/sdks/unreal-plugin",
-                  "v3.14/sdks/jxvis",
-                  "v3.14/sdks/mcp-server"
+                  "v3.14/integration/data-gateway",
+                  "v3.14/integration/plm-backends"
                 ]
               }
+            ]
+          },
+          {
+            "tab": "User Guides",
+            "pages": [
+              "v3.14/user-guide/ui-overview",
+              "v3.14/user-guide/adding-data",
+              "v3.14/user-guide/navigation",
+              "v3.14/user-guide/tools",
+              "v3.14/user-guide/collaboration",
+              "v3.14/user-guide/ar"
             ]
           },
           {
@@ -347,36 +366,36 @@
         "version": "3.13",
         "tabs": [
           {
-            "tab": "Documentation",
+            "tab": "instant3Dhub",
             "pages": [
               "welcome",
               "introduction",
               "ai-search",
               "feedback",
+              "links/our-concepts",
+              "links/for-app-developers",
+              "links/for-integrators",
+              "links/user-guides"
+            ]
+          },
+          {
+            "tab": "Our Concepts",
+            "pages": [
+              "quickstart",
+              "concepts/overview",
+              "concepts/3d-streaming",
+              "concepts/3dspaces",
+              "integration/hub-mesh",
+              "sdks/mcp-server"
+            ]
+          },
+          {
+            "tab": "For App Developers",
+            "pages": [
+              "developers/getting-started",
               {
-                "group": "Our Concepts",
+                "group": "Tutorials",
                 "pages": [
-                  "quickstart",
-                  "concepts/overview",
-                  "concepts/3d-streaming",
-                  "concepts/3dspaces"
-                ]
-              },
-              {
-                "group": "User Guide",
-                "pages": [
-                  "user-guide/ui-overview",
-                  "user-guide/adding-data",
-                  "user-guide/navigation",
-                  "user-guide/tools",
-                  "user-guide/collaboration",
-                  "user-guide/ar"
-                ]
-              },
-              {
-                "group": "For App Developers",
-                "pages": [
-                  "developers/getting-started",
                   "developers/introduction",
                   "developers/initialization",
                   "developers/nodes-and-properties",
@@ -386,24 +405,43 @@
                 ]
               },
               {
-                "group": "Integrations & Deployment",
+                "group": "SDKs",
                 "pages": [
-                  "integration/overview",
+                  "sdks/jxvis",
+                  "sdks/unreal-plugin"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "For Integrators",
+            "pages": [
+              "integration/overview",
+              {
+                "group": "Installation",
+                "pages": [
                   "integration/kubernetes",
-                  "integration/single-node",
-                  "integration/data-gateway",
-                  "integration/plm-backends",
-                  "integration/hub-mesh"
+                  "integration/single-node"
                 ]
               },
               {
-                "group": "SDKs & Plugins",
+                "group": "Data Pool Configuration",
                 "pages": [
-                  "sdks/unreal-plugin",
-                  "sdks/jxvis",
-                  "sdks/mcp-server"
+                  "integration/data-gateway",
+                  "integration/plm-backends"
                 ]
               }
+            ]
+          },
+          {
+            "tab": "User Guides",
+            "pages": [
+              "user-guide/ui-overview",
+              "user-guide/adding-data",
+              "user-guide/navigation",
+              "user-guide/tools",
+              "user-guide/collaboration",
+              "user-guide/ar"
             ]
           },
           {
