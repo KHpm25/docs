@@ -28,7 +28,8 @@
     "tabs": [
       {
         "tab": "Documentation",
-        "groups": [
+        "pages": [
+          "welcome",
           {
             "group": "Get Started",
             "pages": [
