@@ -1,0 +1,47 @@
+---
+title: "3D Data Resources"
+sidebarTitle: "3D Data"
+description: "What a 3D Data Resource is in instant3Dhub and how structure, geometry, PMI, metadata, and layers are organized."
+---
+
+A 3D Data Resource represents a file or internet service containing information about a 3D model that instant3Dhub references for displaying and interacting with 3D content. These resources typically encompass structure, geometry, manufacturing information, metadata, and layer organization.
+
+## Structure
+
+Structure organizes 3D data into hierarchical levels:
+
+- **Assemblies**: Top-level containers that hold sub-assemblies or parts with transformation data
+- **Parts**: Reusable components containing their own geometry
+- **Bodies**: Geometric building blocks composed of surfaces and solids, with parts potentially containing multiple bodies
+- **Leaf Nodes**: Individual geometry elements with dedicated metadata and visibility controls
+
+instant3Dhub preserves this hierarchy to enable navigation, transformation, and selective display.
+
+## Geometry
+
+Geometry defines shape and appearance through four basic entity types:
+
+- **Points**: Zero-dimensional coordinate positions
+- **Edges**: One-dimensional connections between points
+- **Faces**: Two-dimensional surfaces bounded by edges
+- **Shapes**: Three-dimensional objects composed of multiple faces
+
+3D geometry is represented in two formats:
+
+- **Tessellated Data**: Polygonal mesh approximations of vertices, edges, and faces
+- **Boundary Representation (B-Rep)**: Precise boundary definitions using 3D geometry objects and curves
+
+## Product Manufacturing Information & Model Views
+
+These support manufacturing specifications and scene interpretation:
+
+- **PMI**: Non-geometric annotations specifying manufacturing details like tolerances
+- **Model Views**: Predefined camera positions, visibility states, and section cuts
+
+## Metadata
+
+Non-geometric information describing the model's content and context, including part names, materials, authorship, versioning, permissions, and other descriptive attributes.
+
+## Layer
+
+Layers group geometrical elements to reduce visual clutter. Common layer types include Default geometry, Model Solids, construction geometry, and complete geometry sets. The [LayerFilterAPI](/v3.14/api/webvis/interfaces/layerfilterapi) enables programmatic layer manipulation.

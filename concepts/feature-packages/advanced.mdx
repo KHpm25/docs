@@ -1,0 +1,74 @@
+---
+title: "Advanced Feature Package"
+sidebarTitle: "Advanced"
+description: "APIs for markups and digital mock-up operations — annotating, drawing, measuring, and clipping to support advanced engineering workflows."
+---
+
+Build **advanced engineering workflows** on top of instant3Dhub's 3DSpaces. The Advanced Feature Package covers APIs for **markups and digital mock-up** operations — from annotating and drawing in 3D to inspecting detailed topological structures, making it the next step beyond basic visualization.
+
+With the Advanced Feature Package, you can:
+
+- Communicate intent with **markups, drawings, and polylines**
+- Guide users to relevant locations using **points of interest**
+- Perform **precise, multi-entity measurements** to support engineering decisions
+- Inspect inner details using **clipping planes, clipping rooms, and capping**
+
+<Note>
+Features marked with Experimental are not yet generally available (GA) and may still change.
+</Note>
+
+## Markups
+
+### Drawing
+
+Use the [DrawingAPI](/api/webvis/interfaces/drawingapi) and [DrawingPlaneAPI](/api/webvis/interfaces/drawingplaneapi) to **add freehand markups and sketches** onto drawing planes in the 3DSpace:
+
+- Sketch directly on configurable drawing planes
+- Communicate review notes and ideas visually
+- Combine drawings with annotations for richer context
+
+### Polylines
+
+Use the [ViewerPolylineAPI](/api/webvis/interfaces/viewerpolylineapi) to **draw polylines** as markups or measurement aids along geometry:
+
+- Trace paths and contours on the model
+- Use polylines as visual guides or measurement references
+
+### Points of Interest
+
+Use the [PointOfInterestAPI](/api/webvis/interfaces/pointofinterestapi) interface to **define and navigate to marked viewpoints and hotspots** in the model:
+
+- Mark relevant locations within the 3DSpace
+- Guide users along a sequence of points of interest
+- Support guided reviews and inspection workflows
+
+## Digital Mock-Up
+
+### Advanced Measurements
+
+Use the [MeasurementAPI](/api/webvis/interfaces/measurementapi) to perform **complex measurements across multiple entities** and **analyze and validate geometric properties and relationships** within your 3DSpace:
+
+- Evaluate dimensions, distances, and angles across multiple entities
+- Analyze relationships between faces, edges, and points
+- Support engineering workflows such as inspection and validation
+
+### Clipping
+
+Use the [ClipPlaneAPI](/api/webvis/interfaces/clipplaneapi) to **inspect inner details** of complex 3D data by **selectively cutting through geometry** using clipping planes and volumes:
+
+- Define clipping planes by position and orientation directly in the 3DSpace
+- Derive clipping planes from geometry features such as surfaces, normals, or edges
+- Combine multiple planes into clipping rooms to isolate volumes of interest
+- Interactively generate clipping volumes from nodes within the InstanceGraph
+
+### Capping
+
+**Experimental**
+
+Use the [ClipPlaneAPI](/api/webvis/interfaces/clipplaneapi) to **maintain visual continuity and clarity** when inspecting clipped geometry by **closing open surfaces** created by clipping planes:
+
+- Automatically generate capping geometry from clipped surfaces
+- Associate capping surfaces directly with the originating assembly nodes
+- Preserve spatial orientation and context while inspecting internal structures
+
+Capping geometries are derived from clipping planes and remain tightly coupled to the corresponding nodes in the assembly structure.

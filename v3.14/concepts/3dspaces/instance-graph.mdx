@@ -1,0 +1,32 @@
+---
+title: "InstanceGraph"
+sidebarTitle: "InstanceGraph"
+description: "The InstanceGraph is a hierarchical tree structure that organizes and structures 3D data linked to a 3DSpace."
+---
+
+The **InstanceGraph** is a hierarchical tree structure that organizes and structures 3D data linked to a 3DSpace. It combines logical representation (how geometry is organized and rendered in a scene graph) with semantic structure (preserving assemblies, BOMs, and part relationships from the source CAD system).
+
+## Structure of the InstanceGraph
+
+The InstanceGraph contains three types of nodes:
+
+1. **Root Node**: The single root of the hierarchy with no parent. Cannot hold links or transformations.
+
+2. **Inner Node**: A node with children. May define transformations but does not reference geometries or resources directly.
+
+3. **Leaf Node**: A node without children that can define a transformation, store geometry instances, and link to a single resource (if not the root node).
+
+Nodes also belong to functional types (Part, Resource, Runtime) that determine which operations can be applied. See [Node Types & Operations](/v3.14/concepts/3dspaces/node-types) for details.
+
+## Node Contents
+
+Each node contains information including:
+
+- Geometry
+- Product Manufacturing Information (PMI)
+- Metadata
+- Layers
+
+## Purpose
+
+The InstanceGraph enables the linking of 3D data resources for geometry visualization, allowing synchronized content across connected viewers. This facilitates communication between users, applications, and clients while preserving the structural relationships from the original CAD system.

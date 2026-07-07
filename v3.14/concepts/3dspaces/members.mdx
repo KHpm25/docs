@@ -1,0 +1,37 @@
+---
+title: "Members"
+sidebarTitle: "Members"
+description: "Members represent participants in a 3DSpace and form the basis for presence, interaction, and collaboration."
+---
+
+Members represent participants in a 3DSpace. They describe who is connected to a space and form the basis for presence, interaction, and collaboration.
+
+Members can be queried, updated, and acted upon by applications within the 3DSpace.
+
+## Member Identity
+
+Every member has a **unique ID** within the 3DSpace. The local member (current client) always has ID 0, and other members are assigned IDs sequentially as they join the space. A record for each member tracks their state within the 3DSpace and can be managed by using the MemberProfile object.
+
+## Member Data
+
+Members have **application-specific data** that describes their state within the 3DSpace. This data can enhance collaboration scenarios, such as representing participant states or contextual information. Member data is shared within the space.
+
+## Member Roles and Permissions
+
+Members can be **assigned roles** that define their **type of participation** within a 3DSpace. As of version 3.12, roles provide semantic information but do not include permissions or access management. The roles currently supported are:
+
+- **Owner**: Typically the creator and host of the 3DSpace
+- **Editor**: Participants with active participation such as creating markups or measurements
+- **Viewer**: Participants who passively observe or spectate
+
+Permission management is planned for future releases. Please refer to the Public Roadmap for upcoming capabilities and planned developments.
+
+## Member Actions
+
+Members support **predefined actions** that define the interactions and operations that can be performed on or with them within the 3DSpace.
+
+## Related
+
+- [MemberAPI Reference](/v3.14/api/webvis/interfaces/memberapi)
+- [MemberProfile Reference](/v3.14/api/webvis/interfaces/memberprofile)
+- Live Collaboration Feature

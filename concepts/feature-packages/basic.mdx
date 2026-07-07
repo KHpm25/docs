@@ -1,0 +1,209 @@
+---
+title: "Basic Feature Package"
+sidebarTitle: "Basic"
+description: "Essential APIs to create, structure, and interact with 3DSpaces — the starting point for applications built with instant3Dhub."
+---
+
+The Basic Feature Package contains all essential APIs required to **create, structure, and interact with 3DSpaces**, making it the natural starting point for applications built with instant3Dhub. The SpaceAPI and the 3DSpaces API provide methods to interact and manage 3DSpaces.
+
+With the Basic Feature Package, you can:
+
+- Compose and structure 3D scenes by **organizing data** and building scene hierarchies
+- **Interact with objects** in the 3DSpace through transformation, selection, and filtering
+- Add context to 3D data by accessing metadata and **linking business information**
+- **Control appearance** and state to support focused, intuitive user experiences
+
+## Setup & Composition
+
+### Dynamic Composition
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **structure your data**, combine multiple sources, and define visibility:
+
+- Use pre-defined data sets as a starting point
+- Build complex structures dynamically at runtime
+- Add and remove nodes as your 3DSpace evolves
+
+### Settings
+
+Use the [SettingsAPI](/api/webvis/interfaces/settingsapi) to **configure viewer and session behavior** at runtime:
+
+- Adjust rendering, interaction, and quality settings
+- Read and update settings programmatically
+- Establish consistent defaults across your application
+
+## Selection & Viewing
+
+### Navigation
+
+Use the [ViewerAPI](/api/webvis/interfaces/viewerapi) to **control how users move through the scene** by switching between navigation modes:
+
+- Choose between turntable, fly, and webvis navigation modes
+- Adapt camera behavior to the use case
+
+### Selection
+
+Use the [SelectionAPI](/api/webvis/interfaces/selectionapi) to **select & highlight nodes**, allowing inspection and connection with underlying data:
+
+- Select individual nodes or groups of elements
+- Use selection as a basis for interaction and workflows
+
+### Show / Hide
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **control the visibility of individual nodes**:
+
+- Show or hide nodes on demand
+- Reduce visual complexity during inspection
+- Drive visibility from selection, filtering, or application logic
+
+### Transform
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **control how nodes are positioned**, oriented, and scaled within the scene:
+
+- Visualize step-by-step working instructions
+- Dynamically transform your 3D data using APIs or built-in gizmos
+
+### Appearance
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) and [MaterialAPI](/api/webvis/interfaces/materialapi) to **adjust how your 3D data is presented**:
+
+- **Appearance & Transparency**: Highlight or de-emphasize parts by changing color and transparency
+- **Render Modes**: Switch rendering styles to reveal structure or relationships
+- **Shading**: Adapt lighting and shading to support different viewing situations
+- **Material**: Assign and adjust materials for realistic or schematic presentation
+- **Outline & Ghosting**: Emphasize relevant parts while keeping surrounding context visible
+
+### Highlighting
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **visually emphasize nodes** and draw attention to relevant parts:
+
+- Highlight nodes during inspection or guided workflows
+- Combine highlighting with selection and metadata-driven logic
+- Guide users to the parts that matter
+
+### Magnifier
+
+Use the [ViewerMagnifierAPI](/api/webvis/interfaces/viewermagnifierapi) to **provide a magnified view** of a region of interest within the viewport:
+
+- Inspect fine details without changing the camera
+- Support precise interaction in dense scenes
+
+### Animations
+
+**Experimental**
+
+Use the [AnimationAPI](/api/webvis/interfaces/animationapi) to **animate nodes over time** and illustrate motion, sequences, or assembly steps:
+
+- Drive node transformations through animations
+- Communicate processes and dynamic behavior
+
+### Explosions
+
+**Experimental**
+
+Use the [ExplosionAPI](/api/webvis/interfaces/explosionapi) to **reveal internal structures** by separating geometry based on spatial relationships:
+
+- Use explosion states to explain structure or assembly order
+- Support step-by-step understanding of complex products
+
+## Data & Inspection
+
+### Properties & Meta Data
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **add context** to your 3DSpace by accessing and using existing properties and metadata:
+
+- Read and interpret metadata already present in your models
+- Link business data and identifiers to 3D structures
+- Use metadata to drive filtering, logic, and interaction
+
+### Search & Filter
+
+Use the [QueryAPI](/api/webvis/interfaces/queryapi) and the [LayerFilterAPI](/api/webvis/interfaces/layerfilterapi) to **find and isolate relevant content** within your 3DSpace:
+
+- Query nodes by properties, metadata, or structure
+- Filter enabled nodes using orthogonal layer information
+- Use existing layer definitions from the source data
+- Isolate relevant parts of a model and reduce visual complexity
+
+### PMI & Modelviews
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) and [VariantsAPI](/api/webvis/interfaces/variantsapi) to **display Product Manufacturing Information (PMI)** and switch between **model views and variants**:
+
+- Display PMI such as tolerances, annotations, and dimensions
+- Switch between predefined model views and variants
+- Communicate engineering intent directly in the 3DSpace
+
+### Topology
+
+Use the [TopologyAPI](/api/webvis/interfaces/topologyapi) to **access B-Rep topology** such as faces, edges, and points:
+
+- Inspect the topological structure of your geometry
+- Provide the foundation for precise selection, measurement, and clipping
+
+### Single Measurement
+
+Use the [MeasurementAPI](/api/webvis/interfaces/measurementapi) to perform **single, precise measurements** on faces, edges, and points directly in the 3DSpace:
+
+- Measure distances, dimensions, and angles on geometry
+- Support quick inspection without leaving the viewer
+
+### Color Comparison
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to **highlight differences between states or versions by color** for quick visual comparison:
+
+- Compare versions or configurations at a glance
+- Use color coding to surface changes
+
+## 3DSpaces
+
+### Live Collaboration
+
+Use the SpaceAPI to **share a 3DSpace across users and devices** and enable synchronized, collaborative review:
+
+- Share a 3DSpace with multiple participants
+- Keep views and state synchronized across sessions
+- Collaborate in real time across devices
+
+### Snapshots
+
+Use the [SessionStorageAPI](/api/webvis/interfaces/sessionstorageapi) to **capture and restore states** of your 3DSpace to support workflows and reuse:
+
+- Revisit specific viewpoints or states at any time
+- Compare or cycle through different configurations as part of a process
+
+### Annotation
+
+Use the [AnnotationAPI](/api/webvis/interfaces/annotationapi) to **add contextual information** directly to your 3DSpace to **support collaboration** and communication:
+
+- Attach notes, images, or rich HTML content to 3D elements
+- Provide additional context without modifying the underlying data
+- Link 3D data to external systems such as ticketing or documentation tools
+
+## Utility
+
+### Attachments
+
+Use the [AttachmentAPI](/api/webvis/interfaces/attachmentapi) to **associate additional data with nodes** in your 3DSpace:
+
+- Attach auxiliary data to nodes
+- Retrieve attachments to drive application logic
+
+### Collections
+
+Use the [CollectionAPI](/api/webvis/interfaces/collectionapi) to **group nodes into collections** for efficient batch operations:
+
+- Define collections based on queries or explicit selections
+- Apply operations to many nodes at once
+
+### Events
+
+Use the [EventAPI](/api/webvis/interfaces/eventapi) to **react to changes in the 3DSpace** and build interactive applications:
+
+- Subscribe to events such as selection, visibility, or structure changes
+- Keep your application state in sync with the 3DSpace
+
+### Coordinate Systems
+
+Use the [CoordinateSystemAPI](/api/webvis/interfaces/coordinatesystemapi) to **work with coordinate systems** within your 3DSpace:
+
+- Convert between local and world coordinates
+- Align data from different sources consistently

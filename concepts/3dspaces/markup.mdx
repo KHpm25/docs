@@ -1,0 +1,36 @@
+---
+title: "Markup"
+sidebarTitle: "Markup"
+description: "Markups are visual and informational context layers overlaid on 3D data within a 3DSpace, including annotations and drawings."
+---
+
+## Overview
+
+Markups are **visual and informational context layers** overlaid on 3D data within a 3DSpace. They function as authored, runtime-generated 2D elements that persist with the 3DSpace without modifying the underlying 3D geometry, enabling enriched collaboration and review workflows.
+
+## Markup Types
+
+### Annotations
+
+Annotations serve as explanatory elements during collaborative reviews. Key characteristics include:
+
+- **Rich content support**: Can embed HTML, images, videos, and external system links (ticketing, issue-tracking)
+- **Node-linked**: Connected to specific InstanceGraph nodes, establishing explicit relationships to underlying data
+- **Configurable properties**: Support position, normal, distance, and transform settings
+- **Independent management**: Each annotation exists as a standalone, individually-manageable element
+
+### Drawings
+
+Drawings provide lightweight, freeform visual markup for emphasis and quick communication:
+
+- **Creation modes**: Freehand drawing plus basic geometric shapes (lines, rectangles, ellipses)
+- **Editing flexibility**: Supports movement, scaling, rotation, and erasure post-creation
+- **Styling options**: Customizable color and line thickness for visual differentiation
+- **Deployment**: Available through both default webvis UI and programmatic Drawing API
+
+## Related Resources
+
+- [AnnotationAPI Reference](/api/webvis/interfaces/annotationapi): Programmatic annotation creation and management
+- [AnnotationProperties Reference](/api/webvis/interfaces/annotationproperties): Property definitions for annotations
+- [DrawingAPI Reference](/api/webvis/interfaces/drawingapi): Programmatic drawing creation and management
+- Feature Package Integration: Available in Basic package tier

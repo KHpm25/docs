@@ -1,0 +1,55 @@
+---
+title: "Measurement"
+sidebarTitle: "Measurement"
+description: "Learn how measurements provide distances, dimensions, angles, and other quantitative geometry information in a 3DSpace."
+---
+
+Measurements provide **quantitative information about geometry** within a 3DSpace. They are used to determine dimensions, distances, angles, and other geometric properties **without modifying the underlying 3D data**. Measurements are evaluated based on referenced geometry and selected targets within the 3DSpace.
+
+## Measurement Types
+
+Measurements are defined by a measurement type and **one or more targets**. Depending on the selected type and the complexity of the input geometry, a measurement may require additional computation before results are available.
+
+<Tabs>
+  <Tab title="Single Measurement">
+    Single measurements evaluate properties of a **single topological entity**. They are typically used to retrieve intrinsic characteristics such as length, area, or volume.
+
+    Examples include surface area measurements or volume calculations for a part.
+
+    <Frame caption="Single measurement — area of a planar face">
+      <img src="/images/measurements/single_measurement.png" alt="Single Measurement Example" />
+    </Frame>
+  </Tab>
+  <Tab title="Double Measurement">
+    Double measurements evaluate the relationship **between two or more topological entities**. They are commonly used to determine distances, angles, or offsets between selected elements.
+
+    The interpretation of the result depends on the selected measurement type and the combination of input entities.
+
+    <Frame caption="Double measurement — point-to-point distance">
+      <img src="/images/measurements/double_measurement.png" alt="Double Measurement Example" />
+    </Frame>
+  </Tab>
+  <Tab title="Arc Measurement">
+    Arc measurements are **defined by three points in 3D space**, typically derived from geometric surfaces. They provide information about circular properties such as center, radius, diameter, circumference, angle, and axis.
+
+    Arc measurements are often used to analyze curved geometry or rotational features.
+
+    <Frame caption="Arc measurement — circular arc with angle, diameter, and axis">
+      <img src="/images/measurements/arc_measurement.png" alt="Arc Measurement Example" />
+    </Frame>
+  </Tab>
+</Tabs>
+
+## Related
+
+<Columns cols={3}>
+  <Card title="MeasurementAPI" icon="code" href="/v3.14/api/webvis/interfaces/measurementapi">
+    Create and evaluate measurements programmatically
+  </Card>
+  <Card title="Using measurements in webvis UI" icon="ruler" href="/v3.14/user-guide/tools">
+    User guide
+  </Card>
+  <Card title="Measurements as a Feature" icon="boxes-stacked" href="/v3.14/concepts/feature-packages/overview">
+    Single and advanced measurements in the Feature Packages
+  </Card>
+</Columns>

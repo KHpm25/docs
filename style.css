@@ -1,0 +1,99 @@
+/* Threedy brandbook styling
+   White #ffffff  — dominant background
+   Deep Tech Blue #0d1732 — headings, structural elements
+   Mint Teal #18ffbf — highlights, buttons, interactive accents (sparingly)
+   Light Gray #ebecef — panels, tables, separators */
+
+:root {
+  --threedy-blue: #0d1732;
+  --threedy-teal: #18ffbf;
+  --threedy-gray: #ebecef;
+}
+
+/* --- Light mode: white dominant, blue structure --- */
+
+html:not(.dark) body,
+html:not(.dark) #content-area {
+  background: #ffffff;
+}
+
+/* Headings in Deep Tech Blue */
+html:not(.dark) #content-area h1,
+html:not(.dark) #content-area h2,
+html:not(.dark) #content-area h3,
+html:not(.dark) #content-area h4 {
+  color: var(--threedy-blue);
+}
+
+/* Teal is unreadable as text on white: links and active nav entries get
+   Deep Tech Blue text, teal appears as underline/background accent. */
+html:not(.dark) #content-area a:not(.card) {
+  color: var(--threedy-blue);
+  text-decoration-color: var(--threedy-teal);
+  text-decoration-thickness: 2px;
+}
+html:not(.dark) #content-area a:not(.card):hover {
+  background: rgba(24, 255, 191, 0.18);
+  border-radius: 3px;
+}
+
+/* Sidebar: hover + active with teal accent bar and soft teal wash */
+html:not(.dark) #sidebar a:hover {
+  background: rgba(24, 255, 191, 0.12);
+  border-radius: 8px;
+}
+html:not(.dark) #sidebar a[aria-current="page"],
+html:not(.dark) #sidebar .link[data-active="true"] {
+  color: var(--threedy-blue) !important;
+  background: rgba(24, 255, 191, 0.16);
+  border-radius: 8px;
+  box-shadow: inset 3px 0 0 var(--threedy-teal);
+}
+
+/* Top navbar CTA button: teal with dark text (brand: buttons = teal) */
+html:not(.dark) #navbar .link[href*="threedy.io/contact"],
+html:not(.dark) #navbar button[class*="primary"] {
+  background: var(--threedy-teal) !important;
+  color: var(--threedy-blue) !important;
+  border: none;
+}
+
+/* Cards: gray structure, teal on hover */
+html:not(.dark) .card {
+  border-color: var(--threedy-gray);
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+html:not(.dark) .card:hover {
+  border-color: var(--threedy-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(13, 23, 50, 0.08);
+}
+
+/* Tables and separators in light gray */
+html:not(.dark) #content-area table th {
+  background: var(--threedy-gray);
+  color: var(--threedy-blue);
+}
+html:not(.dark) #content-area table td,
+html:not(.dark) #content-area table th {
+  border-color: var(--threedy-gray);
+}
+html:not(.dark) hr {
+  border-color: var(--threedy-gray);
+}
+
+/* Divider in the Home sidebar between the entry pages and the section links:
+   drawn above the first section link ("Our Concepts"). */
+#sidebar li[data-title="Our Concepts"] {
+  border-top: 1px solid var(--threedy-gray);
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+/* Tab bar: active tab underline in teal, label in blue */
+html:not(.dark) .nav-tabs-item[data-active="true"] {
+  color: var(--threedy-blue) !important;
+}
+html:not(.dark) .nav-tabs-item[data-active="true"] > div {
+  background: var(--threedy-teal) !important;
+}

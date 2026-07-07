@@ -1,0 +1,32 @@
+---
+title: "Node Types & Operations"
+sidebarTitle: "Node Types"
+description: "Functional node types in the InstanceGraph and the operations that can be applied to each of them."
+---
+
+Beyond their position in the tree (Root / Inner / Leaf), nodes belong to one or more **functional types** that determine which operations can be applied to them.
+
+## Node Types
+
+- **Part Nodes**: Contain only the geometry itself.
+
+- **Resource Nodes**: Build a bridge between geometry and the overall structure of a model. They contain no actual geometry.
+
+- **Runtime Nodes**: Added dynamically during runtime through the API. Structures loaded implicitly through another resource are not runtime nodes.
+
+<Note>
+A node can belong to multiple types. For example, a node that is loaded at runtime and contains a link to other resources is both a runtime node and a resource node.
+</Note>
+
+## Operations
+
+Not all operations can be applied to every node type:
+
+| Operation | Part Node | Resource Node | Runtime Node |
+|-----------|-----------|---------------|--------------|
+| color / transparency | ✔ | ✔ | ✔ |
+| transformation | ✖ | ✔ | ✔ |
+| enable / disable | ✔ | ✔ | ✔ |
+| pickable | ✔ | ✔ | ✔ |
+| remove | ✖ | ✔ | ✔ |
+| add | ✖ | ✖ | ✔ |

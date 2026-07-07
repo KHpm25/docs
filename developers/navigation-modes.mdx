@@ -1,0 +1,90 @@
+---
+title: "Navigation Modes"
+sidebarTitle: "Navigation Modes"
+description: "Different ways to navigate the 3D scene — orbit, CAD-style, turntable, fly, and AR navigation."
+---
+
+instant3Dhub's webvis provides several navigation modes to support different workflows and user backgrounds. Each mode defines how the camera behaves, how users interact with the scene, and which movement constraints apply. All navigation modes operate by manipulating the camera around the model, using functions such as `setViewMatrix`, `setProjectionMatrix`, and `setCenterOfRotation` provided by the [ViewerAPI](/api/webvis/interfaces/viewerapi).
+
+<Note>
+  The controls below use the following abbreviations:
+
+  - `LMB` = Left Mouse Button
+  - `RMB` = Right Mouse Button
+  - `MMB` = Middle Mouse Button (scroll wheel click).
+</Note>
+
+## WEBVIS
+
+This is the default navigation mode in webvis, designed for general 3D exploration and model inspection.
+
+- Orbit around a Center of Rotation
+- Rotate, pan, and zoom using pointer input
+- Zoom direction follows the cursor position
+- Smooth dolly movement along the viewing direction
+
+**Controls**
+
+- **Rotation**: Hold `LMB` + drag
+- **Translation (Pan)**: Hold `MMB` + drag
+- **Zoom (continuous)**: Hold `RMB` + drag vertically
+- **Zoom (incremental)**: Scroll wheel
+- **Set pivot**: Double-click `LMB` on a surface to set a new Center of Rotation
+- **Rotation Center**: Defaults to model center; updated on double-click
+
+## D_CAD
+
+This is a Catia-style navigation mode for users familiar with Catia applications.
+
+- CAD-style orbit, pan, and zoom
+- Familiar interaction patterns for engineers
+
+**Controls**
+
+- **Translation (Pan)**: Hold `MMB` + drag
+- **Zoom**: Hold `MMB`, then single-click `LMB` or `RMB` + drag vertically
+- **Rotation**: Hold `MMB` + hold `LMB` or `RMB` + drag
+- **Set pivot**: Set manually via context menu
+- **Rotation Center**: Set explicitly via context menu; not updated automatically
+
+## TURNTABLE
+
+This navigation mode enables orbit navigation with clamped movement of the camera in the vertical direction.
+
+- Rotation around a fixed up-axis
+- Vertical tilt is limited but full 360° horizontal rotation
+- Limits configurable via the [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings)
+
+**Controls**
+
+Largely identical to WEBVIS, with rotation constrained to keep the model's vertical axis aligned with the world up-axis.
+
+- **Rotation**: Hold `LMB` + drag — vertical axis stays fixed
+- **Translation (Pan)**: Hold `MMB` + drag
+- **Zoom (continuous)**: Hold `RMB` + drag vertically
+- **Zoom (incremental)**: Scroll wheel
+- **Set pivot**: Double-click `LMB` on a surface to set a new Center of Rotation
+- **Rotation Center**: Defaults to model center; re-defined via double-click. Vertical tilt is clamped (configurable via [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings)).
+
+## FLY
+
+This navigation mode allows free camera navigation through the scene.
+
+- Controlled by keyboard input and mouse movement
+- Similar to first-person navigation
+- Explore large scenes or position your camera freely
+
+**Controls**
+
+- **Movement**: `W` `A` `S` `D` keys — first-person style
+- **Speed boost**: Hold `Shift` while moving
+- **Default speed**: Configurable via [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings)
+
+## XR_TURNTABLE
+
+This navigation mode is optimized for Augmented Reality and is only available when running on an AR capable device.
+
+- Scene aligned with real-world gravity
+- Horizontal gesture: rotate scene
+- Vertical gesture: zoom
+- Rotation center based on scene volume

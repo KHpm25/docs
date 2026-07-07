@@ -1,0 +1,27 @@
+---
+title: "Clipplane"
+sidebarTitle: "Clipplane"
+description: "Clipplanes visually cut through 3D models within a 3DSpace to enable inspection of internal structures without modifying the underlying data."
+---
+
+Clipplanes are used to visually cut through 3D models within a 3DSpace by hiding geometry on one side of a defined plane. This enables inspection of internal structures without modifying the underlying 3D data, and multiple clipplanes can operate simultaneously.
+
+## Key Capabilities
+
+The feature supports:
+
+- **Interactive positioning**: Defining plane position and orientation in 3D space
+- **Dynamic clipping**: Attaching a clipplane relative to the camera for interactive exploration
+- **Capping geometry**: Generating surfaces at cut areas to distinguish solid and hollow regions
+- **Selective application**: Controlling which nodes in the InstanceGraph are affected
+- **Configurable properties**: Adjusting position, normal, distance, transform, and visibility parameters
+
+## Clipping Rooms
+
+A clipping room (clipping volume) consists of six orthogonal planes forming a box. Geometry outside this volume becomes hidden, allowing focused inspection of defined spatial regions. Users can derive clipping rooms interactively from the bounding volume of selected nodes.
+
+## Related Resources
+
+- [ClipPlaneAPI Reference](/v3.14/api/webvis/interfaces/clipplaneapi): For programmatic clipplane creation and management
+- Clipplanes User Guide: Instructions for using clipplanes in the webvis UI
+- Clipping Feature: Information on clipping and capping within Feature Packages

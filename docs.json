@@ -1,11 +1,14 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "instant3Dhub",
-  "theme": "sequoia",
+  "theme": "aspen",
   "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
+    "primary": "#18ffbf",
+    "light": "#18ffbf",
+    "dark": "#0d1732"
+  },
+  "appearance": {
+    "default": "light"
   },
   "favicon": "/favicon.svg",
   "logo": {
@@ -30,7 +33,7 @@
         "version": "3.14",
         "tabs": [
           {
-            "tab": "instant3Dhub",
+            "tab": "Home",
             "pages": [
               "v3.14/welcome",
               "v3.14/introduction",
@@ -45,10 +48,38 @@
           {
             "tab": "Our Concepts",
             "pages": [
-              "v3.14/quickstart",
-              "v3.14/concepts/overview",
+              "v3.14/concepts/getting-started",
+              "v3.14/concepts/format-support",
+              {
+                "group": "Feature Packages",
+                "pages": [
+                  "v3.14/concepts/feature-packages/basic",
+                  "v3.14/concepts/feature-packages/advanced",
+                  "v3.14/concepts/feature-packages/expert"
+                ],
+                "root": "v3.14/concepts/feature-packages/overview"
+              },
+              {
+                "group": "3DSpaces",
+                "pages": [
+                  {
+                    "group": "InstanceGraph",
+                    "pages": [
+                      "v3.14/concepts/3dspaces/graph-composition",
+                      "v3.14/concepts/3dspaces/node-types"
+                    ],
+                    "root": "v3.14/concepts/3dspaces/instance-graph"
+                  },
+                  "v3.14/concepts/3dspaces/snapshot",
+                  "v3.14/concepts/3dspaces/markup",
+                  "v3.14/concepts/3dspaces/measurement",
+                  "v3.14/concepts/3dspaces/clipplane",
+                  "v3.14/concepts/3dspaces/members"
+                ],
+                "root": "v3.14/concepts/3dspaces"
+              },
               "v3.14/concepts/3d-streaming",
-              "v3.14/concepts/3dspaces",
+              "v3.14/concepts/3d-data",
               "v3.14/integration/hub-mesh",
               "v3.14/sdks/mcp-server"
             ]
@@ -64,7 +95,9 @@
                   "v3.14/developers/initialization",
                   "v3.14/developers/nodes-and-properties",
                   "v3.14/developers/events",
+                  "v3.14/developers/node-selection",
                   "v3.14/developers/configuration",
+                  "v3.14/developers/navigation-modes",
                   "v3.14/developers/troubleshooting"
                 ]
               },
@@ -126,7 +159,6 @@
                   {
                     "group": "Interfaces",
                     "pages": [
-                      "v3.14/api/webvis/interfaces/overview",
                       "v3.14/api/webvis/interfaces/activeiteminfo",
                       "v3.14/api/webvis/interfaces/addnodeoptions",
                       "v3.14/api/webvis/interfaces/animationapi",
@@ -269,12 +301,12 @@
                       "v3.14/api/webvis/interfaces/xrplaybackstate",
                       "v3.14/api/webvis/interfaces/xrscanshot",
                       "v3.14/api/webvis/interfaces/xrstate"
-                    ]
+                    ],
+                    "root": "v3.14/api/webvis/interfaces/overview"
                   },
                   {
                     "group": "Enums",
                     "pages": [
-                      "v3.14/api/webvis/enums/overview",
                       "v3.14/api/webvis/enums/activeitemtype",
                       "v3.14/api/webvis/enums/animationplaystate",
                       "v3.14/api/webvis/enums/animationproperty",
@@ -345,7 +377,8 @@
                       "v3.14/api/webvis/enums/xrmodeltrackingphase",
                       "v3.14/api/webvis/enums/xrmodeltrackingstate",
                       "v3.14/api/webvis/enums/xrworldmappingstatus"
-                    ]
+                    ],
+                    "root": "v3.14/api/webvis/enums/overview"
                   }
                 ]
               },
@@ -366,7 +399,7 @@
         "version": "3.13",
         "tabs": [
           {
-            "tab": "instant3Dhub",
+            "tab": "Home",
             "pages": [
               "welcome",
               "introduction",
@@ -381,10 +414,38 @@
           {
             "tab": "Our Concepts",
             "pages": [
-              "quickstart",
-              "concepts/overview",
+              "concepts/getting-started",
+              "concepts/format-support",
+              {
+                "group": "Feature Packages",
+                "pages": [
+                  "concepts/feature-packages/basic",
+                  "concepts/feature-packages/advanced",
+                  "concepts/feature-packages/expert"
+                ],
+                "root": "concepts/feature-packages/overview"
+              },
+              {
+                "group": "3DSpaces",
+                "pages": [
+                  {
+                    "group": "InstanceGraph",
+                    "pages": [
+                      "concepts/3dspaces/graph-composition",
+                      "concepts/3dspaces/node-types"
+                    ],
+                    "root": "concepts/3dspaces/instance-graph"
+                  },
+                  "concepts/3dspaces/snapshot",
+                  "concepts/3dspaces/markup",
+                  "concepts/3dspaces/measurement",
+                  "concepts/3dspaces/clipplane",
+                  "concepts/3dspaces/members"
+                ],
+                "root": "concepts/3dspaces"
+              },
               "concepts/3d-streaming",
-              "concepts/3dspaces",
+              "concepts/3d-data",
               "integration/hub-mesh",
               "sdks/mcp-server"
             ]
@@ -400,7 +461,9 @@
                   "developers/initialization",
                   "developers/nodes-and-properties",
                   "developers/events",
+                  "developers/node-selection",
                   "developers/configuration",
+                  "developers/navigation-modes",
                   "developers/troubleshooting"
                 ]
               },
@@ -462,7 +525,6 @@
                   {
                     "group": "Interfaces",
                     "pages": [
-                      "api/webvis/interfaces/overview",
                       "api/webvis/interfaces/activeiteminfo",
                       "api/webvis/interfaces/addnodeoptions",
                       "api/webvis/interfaces/animationapi",
@@ -605,12 +667,12 @@
                       "api/webvis/interfaces/xrplaybackstate",
                       "api/webvis/interfaces/xrscanshot",
                       "api/webvis/interfaces/xrstate"
-                    ]
+                    ],
+                    "root": "api/webvis/interfaces/overview"
                   },
                   {
                     "group": "Enums",
                     "pages": [
-                      "api/webvis/enums/overview",
                       "api/webvis/enums/activeitemtype",
                       "api/webvis/enums/animationplaystate",
                       "api/webvis/enums/animationproperty",
@@ -681,7 +743,8 @@
                       "api/webvis/enums/xrmodeltrackingphase",
                       "api/webvis/enums/xrmodeltrackingstate",
                       "api/webvis/enums/xrworldmappingstatus"
-                    ]
+                    ],
+                    "root": "api/webvis/enums/overview"
                   }
                 ]
               },

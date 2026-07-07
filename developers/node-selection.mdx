@@ -1,0 +1,114 @@
+---
+title: "Selecting Nodes in the InstanceGraph"
+sidebarTitle: "Selecting Nodes"
+description: "Query and filter nodes by labels, metadata, and more with the Query API."
+---
+
+The [QueryAPI](/api/webvis/interfaces/queryapi) allows you to select a wide range of data attributes attached to a 3D model and filter them based on criteria you specify. Say you want to get information about all parts made of metal or select every car part whose name contains "DOOR_HANDLE"? This is where the Query API comes in handy.
+
+## Structure
+
+The function call itself is quite simple, as there are only two arguments, the latter being optional:
+
+```javascript
+await webvis.myContext.query(queryObject, nodeID);
+```
+
+When you include a nodeID, the query is performed only on the given subtree of that node.
+
+The queryObject consists of a select block, a conditions block, and an optional linkDepth parameter.
+
+The **select** block lets you specify what data you want to return and how it should be formatted.
+
+```javascript
+select: ['nodeId', 'label'],
+```
+
+The **conditions** block is used to define selection criteria. You need to specify at least one condition for the query API to return data.
+
+```javascript
+conditions: {nodeType: 'aux'}
+```
+
+**linkDepth** specifies how many levels you want to traverse down the InstanceGraph. It defaults to 2 when it is not specified.
+
+When you run a query, the API returns a [QueryResult](/api/webvis/interfaces/queryresult) JSON object. This contains both the queried data and potential errors, should there be any. The data array it returns is formatted as you specified in the query selection, which means
+
+```javascript
+["nodeId","label"]
+```
+
+returns:
+
+```javascript
+[
+   [15, "box1"],
+   [18, "box2"]
+   [24, "sphere1"]
+   ...
+]
+```
+
+## Query Examples
+
+With this knowledge, let us now look at a couple examples.
+
+The most basic query you can write is the following, which returns the ID and label of every structure node:
+
+```javascript
+const apiResult = await ctx.query({
+    select: ['nodeId', 'label'],
+    conditions: [
+        { nodeType: 'structure' },
+        { metadata: 'label'},
+    ],
+    linkDepth: 4
+});
+```
+
+### Conditions
+
+This query selects the **nodeId** and **AUX properties** of **every AUX node** with a **diameter greater than 5.5**:
+
+```javascript
+const apiResult = await ctx.query({
+    select: ['nodeId', 'metadata.auxProperties.*'],
+    conditions: [
+      { nodeType: 'aux' },
+      { metadata: 'auxProperties.pmiType', equals: 'Dimension' },
+      { metadata: 'auxProperties.type', equals: 'Diameter' },
+      { metadata: 'auxProperties.value', greaterThan: 5.5 },
+    ],
+    linkDepth: 5
+  });
+```
+
+### Boolean Operators
+
+You can use **logical operators** (**and**, **or**, **not**) to further specify your selection.
+
+This query returns the nodeId and metadata of every object that is **not** the floor.
+
+```javascript
+const apiResult = await ctx.query({
+    select: ['nodeId', 'metadata.*'],
+    conditions: [
+        { nodeType: 'structure' },
+        {
+            not: [
+                {metadata:'structMetaData.PredefinedType', equals: "FLOOR" }
+            ],
+        },
+    ],
+});
+```
+
+Try changing the selection and condition parameter in the following query to see it in action.
+
+#### Querying AUX data
+
+The QueryAPI supports filtering based on data that your PMI system embeds into your models. This example shows how to select parts based on their material type, which in this case is specified in PMI data.
+
+### Limitations
+
+The QueryAPI only has access to the data contained within the original resources stored in the hub. This means that nodes added during runtime will not show up in query results. Since `webvis.myContext.add()` returns the ID of nodes created during runtime, it is best to keep track of these within the application itself.

@@ -1,0 +1,94 @@
+---
+title: "Expert Feature Package"
+sidebarTitle: "Expert"
+description: "High-end analysis and XR capabilities — should-is comparison, heatmaps, anchoring, SLAM and model tracking, and scanshots for immersive AR/VR use cases."
+---
+
+Build **immersive and advanced visualization experiences** using instant3Dhub's Expert Feature Package. This package focuses on high-end use cases such as **analysis**, **Augmented Reality (AR)**, **Virtual Reality (VR)**, and spatially aware visualization scenarios that extend beyond traditional 3D viewing and engineering workflows.
+
+The Expert Feature Package builds on the capabilities of the basic and advanced packages and can be combined freely to support your custom applications.
+
+With the Expert Feature Package, you can:
+
+- Analyze deviations and results using **comparison and heatmaps**
+- Place and visualize 3D content **directly in the real world**
+- Create immersive AR and VR experiences
+- Connect digital 3D data with physical objects and environments
+- Support advanced use cases such as remote assistance, inspection, and digital twins
+
+<Note>
+Features marked with Experimental are not yet generally available (GA) and may still change.
+</Note>
+
+## Analysis
+
+### Should-Is Comparison
+
+Use the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi) to perform **as-designed vs. as-built comparison**, revealing geometric deviations between versions through edge-based comparison:
+
+- Compare target and actual geometry
+- Reveal deviations down to edge level
+- Support inspection, quality assurance, and validation
+
+For color-only comparison, see [Color Comparison](/concepts/feature-packages/basic#color-comparison).
+
+### Heatmap
+
+**Experimental**
+
+Use the [ViewerHeatmapAPI](/api/webvis/interfaces/viewerheatmapapi) to **visualize scalar values as a color-coded heatmap** on geometry:
+
+- Map simulation results or deviation data onto the model
+- Communicate analysis results visually
+- Identify critical regions at a glance
+
+## XR
+
+### Anchoring & Scale
+
+Use the [RealityAPI](/api/webvis/interfaces/realityapi) to **anchor 3D content in the real world and scale it correctly** relative to the physical environment:
+
+- Place 3D content at real-world positions
+- Scale digital data to match physical objects
+- Establish a stable spatial reference for AR scenarios
+
+### SLAM Tracking
+
+Position and visualize 3D content **relative to the real world** using device-integrated SLAM (Simultaneous Localization and Mapping) tracking:
+
+- Anchor 3D data spatially **using camera and sensor input**
+- Share pose and video information for collaborative scenarios
+- Support **remote assistance**, inspection, and live guidance workflows
+
+### Model Tracking
+
+With instant3Dhub, benefit from the **only technology providing fully automated Augmented-Reality-as-a-Service** for arbitrary 3D data sets.
+
+With instant3Dhub, this capability is delivered as **Augmented-Reality-as-a-Service** and represents a **best-in-class solution** for arbitrary 3D data sets — without manual preprocessing. Model tracking combines device sensor data with robust server-side processing to support reliable, real-world alignment:
+
+- Track arbitrary 3D data sets automatically
+- Maintain stable alignment between physical objects and digital representations
+- Enable spatially accurate AR experiences at industrial scale
+
+This best-in-class capability forms the foundation for advanced, real-world AR scenarios involving complex geometry and dynamic environments.
+
+#### VisionLib by Visometry
+
+instant3Dhub integrates [VisionLib by Visometry](https://visometry.com/products/visionlib/), an industry-leading computer vision tracking engine, at the service level to deliver **robust and high-fidelity tracking** for immersive AR scenarios.
+
+By combining VisionLib's tracking technology with instant3Dhub's platform capabilities, complex AR applications can be realized for scenarios such as maintenance, inspection, digital twins, and advanced visualization.
+
+### Scanshots
+
+Use the [ViewerPointCloudAPI](/api/webvis/interfaces/viewerpointcloudapi) to **capture and inspect point-cloud scanshots** of physical environments, bringing real-world geometry into the 3DSpace:
+
+- Capture point-cloud snapshots from scanning devices
+- Bring real-world geometry into the 3DSpace
+- Combine scanned data with existing 3D models for reality-capture workflows
+
+## Related APIs and Concepts
+
+- **[InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi)** — Compare geometry and reveal deviations between versions.
+- **[ViewerHeatmapAPI](/api/webvis/interfaces/viewerheatmapapi)** — Visualize scalar values as color-coded heatmaps on geometry.
+- **[RealityAPI](/api/webvis/interfaces/realityapi)** — Anchor, scale, and track 3D content in the real world for AR/VR scenarios.
+- **[ViewerPointCloudAPI](/api/webvis/interfaces/viewerpointcloudapi)** — Capture and inspect point-cloud scanshots of physical environments.

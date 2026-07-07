@@ -1,0 +1,28 @@
+---
+title: "Graph Composition"
+sidebarTitle: "Graph Composition"
+description: "How the InstanceGraph combines assembly and sub-assembly structures from referenced CAD parts into a unified tree."
+---
+
+The InstanceGraph combines **assembly structures** with **sub-assembly structures** from referenced CAD parts into a unified tree.
+
+## Example: Keyboard Key Assembly
+
+A keyboard key assembly (`urn:x-i3d:shape:key`) references two parts:
+
+- `urn:x-i3d:shape:cap` (keycap with geometry)
+- `urn:x-i3d:shape:switch` (switch mechanism with geometry)
+
+These form a hierarchical structure where the assembly acts as a container linking the individual parts.
+
+## Scene Graph Aspect
+
+All nodes appear in a **tree structure** where operations propagate downward. Disabling a parent node also disables all child nodes below it in the hierarchy.
+
+## CAD Aspect
+
+Constructions consist of multiple parts, typically corresponding to single CAD resources. An **assembly structure** (defined in files like PLMXML, STEP242, or X3D) references these parts and arranges them. Individual parts may contain their own **sub-assembly** structures.
+
+## Resulting InstanceGraph
+
+The InstanceGraph merges all assembly and sub-assembly structures into one comprehensive tree. Nodes representing parts serve as "transition points" to their corresponding 3D resources. webvis generates a node for every element in this composition, creating the final hierarchical structure that developers and users interact with.

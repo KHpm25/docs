@@ -1,0 +1,121 @@
+---
+title: "Format Support"
+sidebarTitle: "Format Support"
+description: "Overview of the more than 30 industry-standard 3D formats supported by instant3Dhub, including their extensions and service negotiation keys."
+---
+
+instant3Dhub supports over 30 industry-standard 3D formats — including CAD, BIM, and more — allowing handling of complex structures, precise geometry, and essential metadata. This versatility enables reliable visualization, collaboration, and data integration across the various domains, while delivering the compatibility and performance needed for your specific use case.
+
+Our format support is categorized into the five key aspects
+
+- **Structure**,
+- **Geometry**,
+- **PMI & Model Views**,
+- **Metadata** and
+- **Layers**.
+
+as defined in [3D Data Resources](/concepts/3d-data).
+
+## List of supported formats
+
+The following lists all formats supported by instant3Dhub. To explore in-depth information about the format's structure, geometry, PMI, metadata, and how it is supported by instant3Dhub, click on the format name.
+
+| Format | Extensions | Structure | Geometry | PMI & Model Views | Metadata |
+|--------|-----------|-----------|----------|-------------------|----------|
+| JT | .jt | Yes | Yes | Yes | Yes |
+| CatiaV4 | .model, .exp, .session | Yes | Yes | Not supported by format | Yes |
+| CatiaV5 | .CATPart, .CATProduct, .cgr | Yes | Yes | Yes | Yes |
+| CatiaV6 | .3DXML | Yes | Yes | Yes | Yes |
+| STEP | .stp, .step, .stpx | Yes | Yes | Yes | Yes |
+| NX | .prt | Yes | Yes | Yes | Yes |
+| IFC | .ifc | Yes | Yes | Not supported by format | Yes |
+| PLM XML | .plmxml | Yes | Not supported by format | Not supported by format | Yes |
+| STL | .stl | Not supported by format | Yes | Not supported by format | Not supported by format |
+| Inventor | .ipt, .iam, .ipn, .dwg, .idw | TBD | TBD | TBD | TBD |
+| VRML | .vrml, .wrl, .wrz | Yes | Yes | Not supported by format | TBD |
+| X3D (VRML, binary, XML) | .x3dv, .x3b, .x3db, .x3d, .x3dz, .x3z | Yes | TBD | Not supported by format | Yes |
+| GLTF (binary, JSON) | .glb, .gltf | Yes | Yes | Not supported by format | Yes |
+| 3MF | .3mf | Yes | Yes | Not supported by format | TBD |
+| OBJ | .obj | Yes | Yes | Not supported by format | Not supported by format |
+| Collada | .dae | Yes | Yes | Not supported by format | Yes |
+| OpenSG | .osb | Yes | Yes | Not supported by format | Not supported by format |
+| FBX | .fbx | Yes | Yes | Not supported by format | Yes |
+| 3DS | .3ds | Yes | Yes | Not supported by format | TBD |
+| PLY | .ply | Not supported by format | Yes | Not supported by format | Not supported by format |
+| OFF | .off | Not supported by format | Yes | Not supported by format | Not supported by format |
+| IGES | .igs, .iges | Yes | Yes | Not supported by format | TBD |
+| KBL | .kbl | Yes | Yes | Not supported by format | TBD |
+| RVM | .rvm | Yes | Yes | Not supported by format | TBD |
+| ACIS | .sat, .sab | TBD | TBD | TBD | TBD |
+| Microstation DGN | .dgn | Yes | Yes | TBD | TBD |
+| DWG / DXF 3D | .dwg, .dxf | Yes | Yes | TBD | TBD |
+| Parasolid | .x_t, .x_b | Yes | Yes | TBD | Yes |
+| Creo (former ProE) | .prt, .asm | Yes | Yes | Yes | Yes |
+| Revit | .rvt, .rfa | Yes | Yes | Yes | Yes |
+| Rhino | .3dm | Yes | Yes | Not supported by format | TBD |
+| Solid Edge | .par, .asm | Yes | Yes | Yes | Yes |
+| SOLIDWORKS | .sldprt, .sldasm | Yes | Yes | Yes | Yes |
+| USD (Experimental) | .usd, .usda, .usdc, .usdz | Yes | Yes | Not supported by format | Yes |
+
+<Note>
+**Not supported by format**
+
+This evaluation is based on the typical usage of a format and our current understanding of 3D data. While some formats may offer partial support for these concepts (as outlined in [3D Data Resources](/concepts/3d-data)), this support is generally insufficient for the typical usage scenarios in instant3Dhub.
+</Note>
+
+<Tip>
+**Missing a format?**
+
+Tell us more and share feedback with the Threedy team.
+</Tip>
+
+## Service Negotiation Keys
+
+Service Negotiation Keys based on Media Types (formerly MIME Types) identify the format of 3D data files during API-based processing. They ensure correct handling of structure, geometry, metadata, and PMI by explicitly declaring the format, independent of file extensions.
+
+Find the negotiation key for each format below:
+
+<Note>
+**Correct usage of the service negotiation keys**
+
+These keys are required to ensure that the Data Gateway API functions correctly, enabling automatic service-to-service negotiation of data format and handling logic. Use the appropriate key when registering sources, configuring pipelines, or integrating external storage systems.
+</Note>
+
+The list below maps supported formats to their corresponding Service Negotiation Keys:
+
+| Format | Service Negotiation Key |
+|--------|------------------------|
+| JT | model/JT |
+| CatiaV4 | model/vnd.dassault.catia.V4 |
+| CatiaV5 | model/vnd.dassault.catia.V5 |
+| CatiaV6 | model/vnd.dassault.catia.V6 |
+| STEP (ASCII, XML, compressed, XML compressed) | model/step, model/step+xml, model/step+zip, model/step-xml+zip |
+| NX | model/vnd.siemens.nx.prt |
+| IFC | model/vnd.ifc |
+| PLM XML | model/vnd.plmxml |
+| STL | model/stl |
+| Inventor | model/vnd.autodesk.inventor |
+| VRML | model/vrml |
+| X3D (VRML, binary, XML) | model/x3d-vrml, model/x3d+fastinfoset, model/x3d+xml |
+| GLTF (binary, JSON) | model/gltf-binary, model/gltf+json |
+| 3MF | model/3mf |
+| OBJ | model/obj |
+| Collada | model/vnd.collada+xml |
+| OpenSG | model/vnd.opensg |
+| FBX | model/vnd.fbx |
+| 3DS | model/vnd.3ds |
+| PLY | model/vnd.ply |
+| OFF | model/vnd.off |
+| IGES | model/iges |
+| KBL | model/vnd.kbl |
+| RVM | model/vnd.aveva.rvm |
+| ACIS | model/vnd.dassault.acis |
+| Microstation DGN | model/vnd.dgn |
+| DWG / DXF 3D | model/vnd.autodesk.dxf |
+| Parasolid | model/vnd.parasolid.transmit.binary |
+| Creo (former ProE) | model/vnd.ptc.pro-eng |
+| Revit | model/vnd.autodesk.revit |
+| Rhino | model/vnd.rhino.3dm |
+| Solid Edge | model/vnd.solidedge |
+| SOLIDWORKS | model/vnd.solidworks |
+| USD (Experimental) | model/vnd.usda, model/vnd.usdz+zip |
