@@ -1,0 +1,47 @@
+---
+title: "Interface MeasurementTypeToResultMap"
+sidebarTitle: "MeasurementTypeToResultMap"
+description: "Helper to mapMeasurementTypes to corresponding result types."
+---
+
+Helper to map [MeasurementType](/api/webvis/enums/measurementtype)s to corresponding result types.
+
+#### See
+
+* MeasurementProperties
+* [MeasurementType](/api/webvis/enums/measurementtype)
+
+## Properties
+
+### 0
+
+"0": [TopologyDescriptor](/api/webvis/types/topologydescriptor)
+
+Result type for [MeasurementType.SINGLE](/api/webvis/enums/measurementtype#single).
+
+### 1
+
+"1": BetweenMeasurementResult
+
+Result type for [MeasurementType.MULTIPLE](/api/webvis/enums/measurementtype#multiple).
+
+### 2
+
+"2": \{ descriptor: TopologyCircularArcDescriptor; type: [CIRCULAR\_ARC](/api/webvis/enums/topologysubtype#circular_arc) \}
+
+Result type for [MeasurementType.ARC](/api/webvis/enums/measurementtype#arc).
+
+#### Type Declaration
+
+* ##### descriptor: TopologyCircularArcDescriptor
+
+  The attributes of the topological entity.
+* ##### type: [CIRCULAR\_ARC](/api/webvis/enums/topologysubtype#circular_arc)
+
+  The subtype of the topological entity.
+
+### 3
+
+"3": ThicknessMeasurementResult
+
+Result type for [MeasurementType.THICKNESS](/api/webvis/enums/measurementtype#thickness).

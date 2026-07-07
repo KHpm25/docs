@@ -1,0 +1,110 @@
+---
+title: "Interface HeatmapPropertiesExperimental"
+sidebarTitle: "HeatmapProperties"
+description: "Experimental. May be changed in the future without notice."
+---
+
+*Experimental. May be changed in the future without notice.*
+
+Example curve for visualization of terms below:
+
+```ts
+         #####       ↑  
+       #########  
+      ###########    strength  
+     #############  
+   ################# ↓  
+            ← size →  
+           ↑  
+        position
+```
+
+## Properties
+
+### `Optional` `Experimental`enabled
+
+enabled?: boolean
+
+Whether this dataset should be included in the density calculation.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional` `Experimental`name
+
+name?: string
+
+Optional. Name of the heatmap.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Experimental`position
+
+position?: number[]
+
+Position of data points.
+Each set of three consecutive values is interpreted as x, y and z coordinates of a data point.
+
+### `Optional` `Experimental`size
+
+size?: number[]
+
+Optional. Per-point range modifier.
+Can be used to manipulate the reach of a data point, e.g. scaled by significance.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Experimental`strength
+
+strength?: number[]
+
+Optional. Per-point maximum density modifier.
+Can be used to manipulate the density at the center of a data point, e.g. scaled by significance.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Experimental`transform
+
+transform?:  
+    | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ]
+
+Model matrix, can be used to match geometry transformations.
+
+#### Default
+
+```ts
+[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+```

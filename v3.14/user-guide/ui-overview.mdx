@@ -1,0 +1,82 @@
+---
+title: "instant3Dhub User Interface: Panels and Layout Overview"
+sidebarTitle: "UI Overview"
+description: "A complete overview of the instant3Dhub browser UI: toolbar, tree view, metadata panel, settings, and status bar for working with 3D models."
+---
+
+instant3Dhub runs entirely in your browser — no plugins or installations required. When you open a model, the interface organizes all controls and information around a central 3D viewport, giving you quick access to the assembly structure, part metadata, and analysis tools from a single screen. This page walks you through each area of the UI so you can orient yourself before diving into your data.
+
+## UI Areas at a Glance
+
+<CardGroup cols={2}>
+  <Card title="Main Viewport" icon="cube">
+    The central canvas where your 3D model renders in real time. All navigation gestures and selection interactions happen here. The viewport adjusts dynamically as you show, hide, or isolate parts.
+  </Card>
+  <Card title="Toolbar" icon="wrench">
+    A set of primary action buttons positioned along the top or side of the viewport. The toolbar gives you one-click access to tools such as measurements, clipping planes, snapshots, AR mode, and collaboration.
+  </Card>
+  <Card title="Tree View" icon="list-tree">
+    A collapsible panel on the left side of the screen showing the full assembly hierarchy — from top-level assemblies down to individual parts and bodies. Click any node to select, hide, or isolate it in the viewport.
+  </Card>
+  <Card title="Data Info & Metadata Panel" icon="circle-info">
+    A panel on the right side that displays properties for whatever is currently selected — part name, material, mass, and any metadata pushed from your PLM or PDM system. Useful for quickly confirming part identity without leaving the viewer.
+  </Card>
+  <Card title="Context Menu" icon="ellipsis">
+    Right-click on any geometry in the viewport or on any node in the Tree View to open the context menu. Options include isolate, hide, show all, fit to selection, and more, depending on what you right-clicked.
+  </Card>
+  <Card title="Settings Panel" icon="gear">
+    User-configurable preferences for rendering quality, background color, edge display, ambient occlusion, and other visual options. Changes apply immediately and are stored per session.
+  </Card>
+</CardGroup>
+
+## Detailed Panel Reference
+
+| UI Area | Location | Primary Purpose |
+|---|---|---|
+| **Main Viewport** | Center | Renders and displays the 3D model; handles all navigation and selection input |
+| **Toolbar** | Top / side edge | Quick access to tools: measure, clip, snapshot, collaboration, AR |
+| **Tree View** | Left panel | Hierarchical browser for assemblies, sub-assemblies, parts, and bodies |
+| **Data Info & Metadata** | Right panel | Displays selected-part properties, PLM attributes, and material data |
+| **Context Menu** | On right-click | Contextual actions for selected geometry or tree nodes |
+| **Settings Panel** | Accessible via toolbar or menu | Rendering and display preferences |
+| **Status Bar / Session Info** | Bottom edge | Shows current session state, connected users, streaming progress, and model load status |
+
+## The Tree View in Depth
+
+The Tree View reflects the exact structure of your CAD assembly. Each level of the hierarchy is expandable:
+
+- **Assembly** — the root or sub-assembly grouping
+- **Part** — an individual component within an assembly
+- **Body** — a geometric body within a part (common in CATIA V5 and STEP data)
+
+Clicking a node in the tree simultaneously selects the corresponding geometry in the viewport and populates the Metadata panel on the right. You can multi-select nodes by holding **Ctrl** (Windows/Linux) or **Cmd** (macOS) while clicking.
+
+## The Status Bar and Session Info
+
+The status bar runs along the bottom of the screen and provides at-a-glance operational information:
+
+- **Streaming progress** — a loading indicator showing how much of the model has been streamed to your client
+- **Active users** — a count of other users currently in the same 3DSpace session
+- **Model name and version** — the identifier of the currently loaded dataset
+- **Coordinate display** — the 3D cursor position in model-space units when hovering over geometry
+
+<Tip>
+  Press **?** at any time while the viewport is focused to open the keyboard shortcut reference overlay. For the full shortcut list, see the [Navigation guide](/v3.14/user-guide/navigation).
+</Tip>
+
+## Settings Panel Options
+
+Open the Settings panel from the toolbar gear icon. The most frequently used options include:
+
+| Setting | What It Controls |
+|---|---|
+| **Background** | Solid color, gradient, or environment map behind the model |
+| **Edge Display** | Toggle wireframe edges on/off for clearer part boundaries |
+| **Ambient Occlusion** | Adds contact shadows for improved depth perception |
+| **Rendering Quality** | Balances visual fidelity against frame rate for your device |
+| **Units** | Switches displayed measurements between mm, cm, m, and inches |
+| **Theme** | Light or dark UI color scheme |
+
+<Note>
+  Settings are stored locally in your browser session. If you are using a shared or incognito window, your preferences will reset when the tab is closed.
+</Note>

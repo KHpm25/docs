@@ -1,0 +1,96 @@
+---
+title: "Interface ViewerDrawingProcessOptions"
+sidebarTitle: "ViewerDrawingProcessOptions"
+description: "Contains options for theViewerDrawingAPI.leaveDrawingModemethod. The options are used to configure the result of the processing."
+---
+
+Contains options for the ViewerDrawingAPI.leaveDrawingMode method.
+The options are used to configure the result of the processing.
+
+## Properties
+
+### `Optional`brushPrimitiveType
+
+brushPrimitiveType?: "triangleStrip"
+
+Specifies the output primitive type of the brush-drawings.
+
+#### Default
+
+```ts
+"triangleStrip"
+```
+
+### `Optional`penPrimitiveType
+
+penPrimitiveType?: "triangleStrip" | "lineStrip"
+
+Specifies the output primitive type of the pen-drawings.
+
+#### Default
+
+```ts
+"triangleStrip"
+```
+
+### `Optional`shapePrimitiveType
+
+shapePrimitiveType?: "triangleStrip" | "lineStrip"
+
+Specifies the output primitive type of the shape-drawings.
+
+#### Default
+
+```ts
+"triangleStrip"
+```
+
+### `Optional`subDivisions
+
+subDivisions?: number
+
+Specifies the number of points to render shapes with when using the "lineStrip" primitive type.
+
+#### Default
+
+```ts
+50
+```
+
+### `Optional`thumbnail
+
+thumbnail?: boolean
+
+Specifies if the result contains a thumbnail of the drawing.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`thumbnailHeight
+
+thumbnailHeight?: number
+
+Specifies the height of the thumbnail.
+If the thumbnail height or width is not set, the current viewer size is used.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`thumbnailWidth
+
+thumbnailWidth?: number
+
+Specifies the width of the thumbnail.
+If the thumbnail height or width is not set, the current viewer size is used.
+
+#### Default
+
+```ts
+undefined
+```

@@ -1,0 +1,115 @@
+---
+title: "Real-Time 3D Model Collaboration with instant3Dhub 3DSpaces"
+sidebarTitle: "Collaboration"
+description: "How to use instant3Dhub 3DSpaces for real-time multi-user collaboration with shared views, annotations, and persistent session management."
+---
+
+instant3Dhub's **3DSpaces** feature turns any model view into a persistent, URL-addressable collaboration room. Multiple users can join the same 3DSpace simultaneously and see each other's camera movements, selections, measurements, and clip planes in real time — no screen sharing software required. This page explains how to create a 3DSpace, invite colleagues, and work together effectively in a shared session.
+
+## What Is a 3DSpace?
+
+A 3DSpace is a persistent session linked to a specific model and set of saved state. Each 3DSpace has a unique URL that you can bookmark or share. When a user opens that URL, they join the space immediately and enter sync with everyone else already present. The space persists even when no one is connected — saved snapshots, annotations, and visibility settings are retained until explicitly cleared.
+
+Think of a 3DSpace as a virtual meeting room built around a specific CAD model: it is always there, always linked to the right data, and always ready for the next review session.
+
+## Creating a 3DSpace
+
+<Steps>
+  <Step title="Load your model">
+    Open the model you want to collaborate on using any of the methods described in [Adding Data](/v3.14/user-guide/adding-data). Wait for the geometry to stream fully before creating the space.
+  </Step>
+  <Step title="Open the Collaboration panel">
+    Click the **Collaborate** icon in the toolbar (shown as two overlapping person silhouettes). The Collaboration panel opens on the right side of the viewport.
+  </Step>
+  <Step title="Click Create 3DSpace">
+    Click **+ Create 3DSpace**. instant3Dhub generates a persistent URL for the space and displays it in the panel. The current camera position, visibility, and any active snapshots become the default state of the space.
+  </Step>
+  <Step title="Name the space">
+    Give the space a meaningful name — for example, "Powertrain Review – Rev B" — so collaborators can identify it easily. This name appears in the space list and in the browser tab.
+  </Step>
+</Steps>
+
+## Inviting Team Members
+
+Sharing access to a 3DSpace is as simple as sharing its URL.
+
+<Steps>
+  <Step title="Copy the 3DSpace URL">
+    In the Collaboration panel, click the **Copy Link** button next to the space name. The unique URL is now in your clipboard.
+  </Step>
+  <Step title="Send the link">
+    Paste the URL into an email, a chat message, a PLM change notice, or any other channel. Recipients click the link and are taken directly into the 3DSpace in their browser — no account setup required beyond your organization's existing access controls.
+  </Step>
+  <Step title="Verify participants in the member list">
+    As colleagues join, their names and avatar icons appear in the **Members** section of the Collaboration panel. Each active member is shown with a colored cursor indicator that is visible to all participants in the viewport.
+  </Step>
+</Steps>
+
+<Note>
+  Access to a 3DSpace is governed by your organization's SSO and role-based access controls configured by your instant3Dhub administrator. Users who do not have read access to the underlying model data will be unable to join the space even if they have the URL. Contact your administrator to adjust permissions.
+</Note>
+
+## Real-Time Synchronization
+
+When you are inside an active 3DSpace with other users, the following state is synchronized across all participants in real time:
+
+| Synchronized State | Description |
+|---|---|
+| **Camera** | Each user's viewport shows a live cursor/indicator of where other users are looking; you can optionally follow another user's camera |
+| **Selections** | When a participant clicks a part, it highlights for all other users, making it easy to direct attention during a review |
+| **Measurements** | Measurements created by any participant are immediately visible to the whole group |
+| **Clip planes** | Clipping planes added or moved during the session are reflected in every participant's viewport |
+| **Visibility** | Show/hide or isolate actions taken by any user update the shared scene for all participants |
+| **Annotations** | Text and drawing markup (see below) are visible to all and persist after the session ends |
+
+### Following a Collaborator
+
+Click a participant's name in the Members list and select **Follow**. Your camera locks to their viewpoint and moves in sync with theirs. This is useful when walking a remote stakeholder through specific areas of the model. Press **Escape** or click **Stop Following** to detach and navigate independently again.
+
+## Annotations
+
+Annotations let you attach persistent text notes and freehand drawing markup directly to 3D geometry.
+
+<Steps>
+  <Step title="Activate the Annotation tool">
+    Click the **Annotate** button in the toolbar (speech bubble icon) to enter annotation mode.
+  </Step>
+  <Step title="Click on the model to place a note">
+    Click any surface in the viewport. A text input appears pinned to that point on the geometry. Type your comment and press **Enter** to confirm.
+  </Step>
+  <Step title="Add freehand markup (optional)">
+    Switch to the **Draw** sub-tool to sketch arrows or circles directly onto the viewport. Drawing markup is anchored to the current camera angle and appears as a 2D overlay on the 3D scene.
+  </Step>
+  <Step title="Save the annotation">
+    Annotations are saved automatically to the 3DSpace. All current and future participants will see them when they open the space.
+  </Step>
+</Steps>
+
+To edit or delete an annotation, click it in the viewport and choose **Edit** or **Delete** from the context menu that appears.
+
+## Member Roles
+
+| Role | Capabilities |
+|---|---|
+| **Owner** | Full control: rename the space, delete it, manage member access, and all Editor actions |
+| **Editor** | Create/delete annotations, add measurements, change visibility, create snapshots |
+| **Viewer** | Navigate the model and see synchronized state, but cannot create annotations or change visibility for others |
+
+Role assignments are managed by the space Owner through the **Members** panel or by your instant3Dhub administrator through the admin console.
+
+## Session Persistence
+
+Understanding what is saved permanently and what is ephemeral helps you avoid losing work:
+
+<CardGroup cols={2}>
+  <Card title="Persisted Across Sessions" icon="floppy-disk">
+    Named snapshots, annotations, space name and URL, member access list, and the default camera position set when the space was created.
+  </Card>
+  <Card title="Reset When All Users Leave" icon="arrow-rotate-left">
+    Live camera positions, temporary (unsaved) selections, and any measurements or clip planes that were not saved as a snapshot before the last user disconnected.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Before ending a review session, save your current view as a named snapshot so you can pick up exactly where you left off. See the [Tools guide](/v3.14/user-guide/tools) for snapshot instructions.
+</Tip>

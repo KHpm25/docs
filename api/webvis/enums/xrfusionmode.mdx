@@ -1,0 +1,28 @@
+---
+title: "Enumeration XRFusionMode"
+sidebarTitle: "XRFusionMode"
+description: "The XRFusionMode specifies which inputs will be used for the final visualization. The available inputs are the SLAM-pose and the combination of SLAM- and Modeltracker-pose or neith"
+---
+
+The XRFusionMode specifies which inputs will be used for the final visualization.
+The available inputs are the SLAM-pose and the combination of SLAM- and Modeltracker-pose or neither.
+
+## Enumeration Members
+
+### NONE
+
+NONE: 0
+
+This will prevent any updates to the final camera matrix.
+
+### SLAM
+
+SLAM: 1
+
+This will include the positional updates of the SLAM-input in the calculation of the final camera matrix.
+
+### SLAM\_MODELTRACKER
+
+SLAM\_MODELTRACKER: 2
+
+This will combine the positional updates of the SLAM- and ModelTracker-inputs to produce the final camera matrix.

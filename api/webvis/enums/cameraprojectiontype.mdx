@@ -1,0 +1,33 @@
+---
+title: "Enumeration CameraProjectionType"
+sidebarTitle: "CameraProjectionType"
+description: "Specifies a list of available camera projection types."
+---
+
+Specifies a list of available camera projection types.
+
+#### See
+
+* ViewerSettingStrings.PROJECTION\_TYPE
+* [ViewerAPI.getCameraProjectionType](/api/webvis/interfaces/viewerapi#getcameraprojectiontype)
+
+## Enumeration Members
+
+### ORTHOGRAPHIC
+
+ORTHOGRAPHIC: 1
+
+Orthographic projection.
+
+The orthographic projection is a type of parallel projection where the view direction is orthogonal to the projection plane.
+This means that the size of an object does not depend on its distance from the camera. The orthographic projection is a
+parallel projection, which means that lines which are parallel in the 3D scene will remain parallel in the 2D projection.
+
+### PERSPECTIVE
+
+PERSPECTIVE: 0
+
+Perspective projection.
+
+The perspective projection is a type of projection where the view direction is not orthogonal to the projection plane.
+This means that the size of an object on the 2D plane depends on its distance from the camera.

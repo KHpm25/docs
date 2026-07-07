@@ -1,0 +1,30 @@
+---
+title: "Interface ContextStateAPI"
+sidebarTitle: "ContextStateAPI"
+description: "Register a callback to a specific state. The callback is executed once when the state is reached. If webVis is already in that state the callback is triggered immediately."
+---
+
+## Methods
+
+### waitFor
+
+* waitFor(state: [ContextState](/v3.14/api/webvis/types/contextstate)): Promise\<void>
+
+  Register a callback to a specific state. The callback is executed once when the state is reached.
+  If webVis is already in that state the callback is triggered immediately.
+
+  #### Parameters
+
+  + state: [ContextState](/v3.14/api/webvis/types/contextstate)
+
+    The state for which a callback is registered
+
+  #### Returns Promise\<void>
+
+  A promise which throws an error if the requested state is invalid
+
+  The following states are allowed as target
+  `init` - Is reached when webVis is fully configured and set up.  
+  `resourceStateUpdated` - Is reached when there is state information available for all resources (This information can also be "still transcoding").  
+  `resourceProcessed` - This is triggered when all resources are done transcoding.  
+  `renderingFinished` - This is triggered when webVis is done with rendering. So no more image changes are imminent.

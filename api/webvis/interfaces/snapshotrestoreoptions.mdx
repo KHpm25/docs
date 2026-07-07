@@ -1,0 +1,151 @@
+---
+title: "Interface SnapshotRestoreOptions"
+sidebarTitle: "SnapshotRestoreOptions"
+description: "Options used for restoring a snapshot."
+---
+
+Options used for restoring a snapshot.
+
+These options allow customization of the snapshot restoration process, enabling selective restoration of specific elements such as annotations, camera settings, or measurements.
+
+### Use Case
+
+Use this type to configure the snapshot restoration process. For example, you can choose to restore only the camera settings or specific elements of the session state.
+
+#### See
+
+SessionStorageAPI
+
+## Properties
+
+### `Optional`restoreAnnotations
+
+restoreAnnotations?: boolean
+
+Specifies whether annotations should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreBackground
+
+restoreBackground?: boolean
+
+Specifies whether the background should be restored when restoring camera settings.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreCamera
+
+restoreCamera?: boolean
+
+Specifies whether the camera settings should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreClipPlanes
+
+restoreClipPlanes?: boolean
+
+Specifies whether clip planes should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreClipRoom
+
+restoreClipRoom?: boolean
+
+Specifies whether the clip room should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreDrawingPlanes
+
+restoreDrawingPlanes?: boolean
+
+Specifies whether drawing planes should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreDrawings
+
+restoreDrawings?: boolean
+
+Specifies whether drawings should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreLayerFilter
+
+restoreLayerFilter?: boolean
+
+Specifies whether the layer filter should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreMeasurements
+
+restoreMeasurements?: boolean
+
+Specifies whether measurements should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreSelection
+
+restoreSelection?: boolean
+
+Specifies whether the selection state should be restored.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`restoreTree
+
+restoreTree?: boolean
+
+Specifies whether the tree structure should be restored.
+
+#### Default
+
+```ts
+true
+```

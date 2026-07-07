@@ -1,0 +1,67 @@
+---
+title: "Interface XRConfiguration"
+sidebarTitle: "XRConfiguration"
+description: "Configuration for the XR system. The configuration is used when connecting to the XR system."
+---
+
+Configuration for the XR system. The configuration is used when connecting to the XR system.
+
+#### See
+
+RealityAPI.connectXR
+
+## Properties
+
+### `Optional`autoShowBackgroundFeed
+
+autoShowBackgroundFeed?: boolean
+
+If true, the XR system will show the XR background feed automatically when it is available.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`deviceScreenshotsEnabled
+
+deviceScreenshotsEnabled?: boolean
+
+If true, the XR system will be able to use functionalities that require device screenshots.
+
+#### Default
+
+```ts
+false
+```
+
+### imageSourceConfig
+
+imageSourceConfig: [XRImageSourceConfig](/api/webvis/types/xrimagesourceconfig)
+
+Specifies the configuration of the source of the XR images.
+
+### `Optional`modelTrackingEnabled
+
+modelTrackingEnabled?: boolean
+
+If true, the XR system will be able to use functionalities that require model-based tracking.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`rayCastingEnabled
+
+rayCastingEnabled?: boolean
+
+If true, the XR system will be able to use functionalities that require ray casting.
+
+#### Default
+
+```ts
+false
+```

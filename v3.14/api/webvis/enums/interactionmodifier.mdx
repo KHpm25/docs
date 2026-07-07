@@ -1,0 +1,39 @@
+---
+title: "Enumeration InteractionModifier"
+sidebarTitle: "InteractionModifier"
+description: "The available interaction modifiers. They determine additional modifications of an interaction."
+---
+
+The available interaction modifiers. They determine additional modifications of an interaction.
+
+#### See
+
+* [InteractionData](/v3.14/api/webvis/interfaces/interactiondata)
+* [InteractionAPI](/v3.14/api/webvis/interfaces/interactionapi)
+
+## Enumeration Members
+
+### ADD
+
+ADD: 1
+
+Indicates that the current target node should be added to the current selection.
+
+### DEFAULT
+
+DEFAULT: 0
+
+The default modifier. The interaction has no additional modifications.
+
+### EXPAND
+
+EXPAND: 2
+
+Indicates that the parent of the selected node should be selected, too.
+Enable SettingStrings.PARENT\_SELECT\_ENABLED to set this modifier in interactions.
+
+### SECONDARY
+
+SECONDARY: 3
+
+Indicates that the secondary button of the pointer was used.

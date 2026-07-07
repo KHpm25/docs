@@ -1,0 +1,1719 @@
+---
+title: "Enumeration ViewerSettingStrings"
+sidebarTitle: "ViewerSettingStrings"
+description: "This enum contains all the setting keys that are used to read, change and reset thesettings of a specific viewer. For every setting key, its default value can be found here, as wel"
+---
+
+This enum contains all the setting keys that are used to read, change and reset the **settings of a specific viewer**.
+For every setting key, its default value can be found here, as well as the type of the value.
+
+Please note, that a list of general, webvis context related settings can be found in the SettingStrings enum.
+
+Furthermore, please notice the difference between context and viewer level settings, as described in the [ViewerAPI](/api/webvis/interfaces/viewerapi).
+
+**Example**
+
+```ts
+webvis.getContext().getViewer().changeSetting(webvis.ViewerSettingStrings.AA_SETTING_ENABLED, true);  
+webvis.getContext().getViewer().readSetting(webvis.ViewerSettingStrings.CAMERA_FIELD_OF_VIEW);  
+webvis.getContext().getViewer().resetSetting(webvis.ViewerSettingStrings.BACKGROUND_COLOR);
+```
+
+#### See
+
+* [ViewerAPI.changeSetting](/api/webvis/interfaces/viewerapi#changesetting)
+* [ViewerAPI.readSetting](/api/webvis/interfaces/viewerapi#readsetting)
+* [ViewerAPI.resetSetting](/api/webvis/interfaces/viewerapi#resetsetting)
+* [ViewerSettingChangedEvent](/api/webvis/classes/viewersettingchangedevent)
+
+## Enumeration Members
+
+### AA\_SETTING\_ENABLED
+
+AA\_SETTING\_ENABLED: "aaSetting"
+
+Defines whether the screen space anti-aliasing is enabled or not.
+Fast approximate anti-aliasing (FXAA) is used to smooth the edges of the rendered geometry.
+Compared to temporal anti-aliasing (TAA), FXAA has a lower quality but also a lower performance impact.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[TAA\_ENABLED](#taa_enabled) for temporal anti-aliasing (TAA).
+
+### BACKGROUND\_COLOR
+
+BACKGROUND\_COLOR: "backgroundColor"
+
+Defines the current background color.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:00000000
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### `Experimental`BUDGETING\_MODE
+
+BUDGETING\_MODE: "budgetingMode"
+
+* + Defines the budgeting mode used for rendering objects.
+
+#### See
+
+* BudgetingMode for available modes.
+  \*
+* BudgetingMode.FRAMERATE\_BASED uses [BUDGETING\_TARGET\_FRAMERATE](#budgeting_target_framerate) to set the target framerate.
+  \*
+
+#### Value Type
+
+BudgetingMode
+\*
+
+#### Default
+
+```ts
+BudgetingMode.STANDARD  
+   *
+```
+
+### `Experimental`BUDGETING\_TARGET\_FRAMERATE
+
+BUDGETING\_TARGET\_FRAMERATE: "budgetingTargetFramerate"
+
+Defines the budgeting target framerate used for rendering objects.
+The viewer adjusts the rendering load to hit the specified target framerate.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+20
+```
+
+### CAMERA\_FIELD\_OF\_VIEW
+
+CAMERA\_FIELD\_OF\_VIEW: "defaultFieldOfView"
+
+Defines the camera field of view in degrees.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+45
+```
+
+### CAPPING\_EFFECT\_EDGE\_COLOR
+
+CAPPING\_EFFECT\_EDGE\_COLOR: "cappingEffectEdgeColor"
+
+Defines the edge color of the capping effect.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:00000000
+```
+
+#### See
+
+* [CAPPING\_EFFECT\_ENABLED](#capping_effect_enabled)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### CAPPING\_EFFECT\_ENABLED
+
+CAPPING\_EFFECT\_ENABLED: "cappingEffectEnabled"
+
+Defines whether the capping effect is enabled or not.
+
+This effect highlights the geometry at the position of a clipplane.
+This helps distinguishing between solid parts and true hollow spaces.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[ClipPlaneAPI](/api/webvis/interfaces/clipplaneapi)
+
+### CAPPING\_EFFECT\_INNER\_COLOR
+
+CAPPING\_EFFECT\_INNER\_COLOR: "cappingEffectInnerColor"
+
+Defines the inner color of the capping effect.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:00000000
+```
+
+#### See
+
+* [CAPPING\_EFFECT\_ENABLED](#capping_effect_enabled)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### COLOR\_COMPARISON\_FIRST\_COLOR
+
+COLOR\_COMPARISON\_FIRST\_COLOR: "colorComparisonFirstColor"
+
+Defines the first color for the 3-color-comparison.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:aa0000
+```
+
+#### See
+
+* Property.COMPARISON\_GROUP
+* [ViewerAPI.enterColorCompareMode](/api/webvis/interfaces/viewerapi#entercolorcomparemode)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### COLOR\_COMPARISON\_MATCHING\_COLOR
+
+COLOR\_COMPARISON\_MATCHING\_COLOR: "colorComparisonMatchingColor"
+
+Defines the matching color for the 3-color-comparison.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:00aa00
+```
+
+#### See
+
+* Property.COMPARISON\_GROUP
+* [ViewerAPI.enterColorCompareMode](/api/webvis/interfaces/viewerapi#entercolorcomparemode)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### COLOR\_COMPARISON\_SECOND\_COLOR
+
+COLOR\_COMPARISON\_SECOND\_COLOR: "colorComparisonSecondColor"
+
+Defines the second color for the 3-color-comparison.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:0000aa
+```
+
+#### See
+
+* Property.COMPARISON\_GROUP
+* [ViewerAPI.enterColorCompareMode](/api/webvis/interfaces/viewerapi#entercolorcomparemode)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### COLORIZE\_EFFECT\_ENABLED
+
+COLORIZE\_EFFECT\_ENABLED: "colorizeEffect"
+
+Defines whether the random colorize effect is enabled or not.
+
+The random colorize effect applies a different color to every instance of resource.
+For monolithic models, you will only have one color. For models with linked parts,
+those linked parts will have different colors.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+Property.NODE\_REPRESENTATION
+
+### COORDINATE\_SYSTEM
+
+COORDINATE\_SYSTEM: "coordSys"
+
+Defines the front plane of the model for use with the UI elements.
+
+#### Deprecated
+
+Please use the SettingStrings.FRONT\_PLANE\_AXIS setting with the [SettingsAPI.changeSetting](/api/webvis/interfaces/settingsapi#changesetting) function of the ContextAPI instead.
+
+#### Value Type
+
+FrontPlaneAxis
+
+### DISABLE\_SPECULAR\_HIGHLIGHT
+
+DISABLE\_SPECULAR\_HIGHLIGHT: "disableSpecularHighlights"
+
+Defines whether a viewer shows specular highlighting or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### DOUBLE\_CLICK\_ANIMATION\_VOLUME\_SCALE
+
+DOUBLE\_CLICK\_ANIMATION\_VOLUME\_SCALE: "doubleClickAnimationVolumeScale"
+
+Defines the factor by which volumes are scaled with during double-click animations,
+affecting the zoom level and the area that the camera will focus on.
+
+This setting only has an effect if either [FOCUS\_ON\_DOUBLE\_CLICK](#focus_on_double_click)
+or [FLYTO\_ON\_DOUBLECLICK\_ENABLED](#flyto_on_doubleclick_enabled) is set to true.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1.6
+```
+
+### DOUBLE\_CLICK\_TIME\_WINDOW
+
+DOUBLE\_CLICK\_TIME\_WINDOW: "doubleClickTimeWindow"
+
+Defines the time window for a double-click in milliseconds.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+250
+```
+
+### DRAWING\_ARROWHEAD\_END
+
+DRAWING\_ARROWHEAD\_END: "drawingArrowheadEnd"
+
+Defines the arrow head at the end of a drawing.
+
+#### Value Type
+
+DrawingArrowhead
+
+#### Default
+
+```ts
+DrawingArrowhead.NONE
+```
+
+### DRAWING\_ARROWHEAD\_START
+
+DRAWING\_ARROWHEAD\_START: "drawingArrowheadStart"
+
+Defines the arrow head at the start of a drawing.
+
+#### Value Type
+
+DrawingArrowhead
+
+#### Default
+
+```ts
+DrawingArrowhead.NONE
+```
+
+### DRAWING\_COLOR
+
+DRAWING\_COLOR: "drawingColor"
+
+Defines the drawing color.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:00b0ff
+```
+
+#### See
+
+* [ViewerDrawingAPI](/api/webvis/interfaces/viewerdrawingapi)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### DRAWING\_MODE
+
+DRAWING\_MODE: "drawingMode"
+
+Defines the drawing mode.
+
+#### Value Type
+
+DrawingMode
+
+#### Default
+
+```ts
+DrawingMode.BRUSH
+```
+
+#### See
+
+[ViewerDrawingAPI](/api/webvis/interfaces/viewerdrawingapi)
+
+### DRAWING\_SIZE
+
+DRAWING\_SIZE: "drawingSize"
+
+Defines the drawing size in pixels.
+
+Please note that we always add 2 pixels to the drawing size.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+6
+```
+
+#### See
+
+[ViewerDrawingAPI](/api/webvis/interfaces/viewerdrawingapi)
+
+### DYNAMIC\_AUX\_CONTRAST\_ENABLED
+
+DYNAMIC\_AUX\_CONTRAST\_ENABLED: "dynamicAuxContrastEnabled"
+
+Defines whether the dynamic contrast for auxiliary geometries is enabled or not.
+If enabled, this will change the color of AUX nodes based on the contrast with the
+background for better legibility.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+NodeType.AUX
+
+### DYNAMIC\_CLIPPING\_DISTANCE
+
+DYNAMIC\_CLIPPING\_DISTANCE: "dynamicClippingDistance"
+
+Defines the dynamic clipping distance in meters.
+Every part that is closer to the camera then this value will be clipped.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+5
+```
+
+#### See
+
+[DYNAMIC\_CLIPPING\_ENABLED](#dynamic_clipping_enabled)
+
+### DYNAMIC\_CLIPPING\_ENABLED
+
+DYNAMIC\_CLIPPING\_ENABLED: "dynamicClippingEnabled"
+
+Defines whether dynamic clipping is enabled or not.
+Every part that is closer to the camera than the value defined in
+[DYNAMIC\_CLIPPING\_DISTANCE](#dynamic_clipping_distance) will be clipped.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[DYNAMIC\_CLIPPING\_DISTANCE](#dynamic_clipping_distance)
+
+### DYNAMIC\_COR\_ENABLED
+
+DYNAMIC\_COR\_ENABLED: "dynamicCOREnabled"
+
+Defines whether the dynamic center of rotation (COR) is enabled or not.
+If disabled, the center of rotation will always be the origin.
+If enabled, the center of rotation will be the point at which the user
+clicked when starting the rotation (only applies if the user clicked on
+the geometry).
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### EXPAND\_ON\_VIEWER\_SELECTION
+
+EXPAND\_ON\_VIEWER\_SELECTION: "expandOnViewerSelection"
+
+Defines whether or not a subtree should be expanded to the leaf
+when selected in the viewer.
+
+Usually, users can only select parts that are currently known to webvis. By
+expanding a node (that has linked parts associated to it), its child nodes
+will be downloaded and can be selected in the viewer.
+Changing this setting to `true` will automatically expand the
+parent nodes and select the leaf node that was clicked.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### FACE\_HIGHLIGHT\_COLOR
+
+FACE\_HIGHLIGHT\_COLOR: "faceHighlightColor"
+
+Defines the color to be used to indicate faces in the 3D view
+that are highlighted via the [ViewerHighlightAPI](/api/webvis/interfaces/viewerhighlightapi) (for
+instance during a measurement).
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:FFFF00A6
+```
+
+#### See
+
+* [ViewerHighlightAPI](/api/webvis/interfaces/viewerhighlightapi)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### FACE\_SELECTION\_COLOR
+
+FACE\_SELECTION\_COLOR: "faceSelectionColor"
+
+Defines the color to be used to indicate selected faces in the 3D view.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:FFFF00A6
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### FIT\_VIEW\_FACTOR
+
+FIT\_VIEW\_FACTOR: "fitViewFactor"
+
+Defines the factor for view fitting.
+The factor defines the percentage of the screen that should be
+covered at maximum by the geometry, per axis. The larger value of
+the two axes (x and y) will be used. A value of 0.6 for instance
+means that the geometry will cover at most 60% of the screen both
+horizontally and vertically.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.6
+```
+
+### FLY\_NAVIGATION\_SPEED
+
+FLY\_NAVIGATION\_SPEED: "flyNavigationSpeed"
+
+Defines the speed for the fly navigation mode.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+7
+```
+
+#### See
+
+NavigationMode.FLY
+
+### FLYTO\_ON\_DOUBLECLICK\_ENABLED
+
+FLYTO\_ON\_DOUBLECLICK\_ENABLED: "flyToOnDoubleClick"
+
+Defines whether or not to fit the camera to the clicked node on double-click.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### FOCUS\_ON\_DOUBLE\_CLICK
+
+FOCUS\_ON\_DOUBLE\_CLICK: "focusOnDoubleClick"
+
+Defines whether a viewer should focus on a part on double-click.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### FRUSTUM\_CULLING
+
+FRUSTUM\_CULLING: "frustumCulling"
+
+Defines whether camera frustum culling is enabled or not.
+If enabled, parts not visible by the camera will be excluded from
+rendering to improve performance.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### `Experimental`GHOSTED\_SCENE\_OPACITY
+
+GHOSTED\_SCENE\_OPACITY: "ghostedSceneOpacity"
+
+Defines the opacity of the ghosted scene for the geometry that is not
+occluded by the main scene.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.33
+```
+
+#### See
+
+Property.GHOSTED
+
+### GIZMO\_AXIS\_LABELS\_ENABLED
+
+GIZMO\_AXIS\_LABELS\_ENABLED: "gizmoAxisLabelsEnabled"
+
+Defines whether the axis labels of the gizmos are enabled or not.
+Axis labels are only available for translation and scaling gizmos yet.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### GIZMO\_SCALING\_FACTOR
+
+GIZMO\_SCALING\_FACTOR: "gizmoScalingFactor"
+
+Defines the scaling factor for the size of gizmo geometries.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1
+```
+
+### GIZMOS\_ENABLED
+
+GIZMOS\_ENABLED: "gizmosEnabled"
+
+Defines whether the gizmos for manipulating 3D entities
+in the viewer are enabled or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### GPU\_MEMORY\_RELEASE\_FACTOR
+
+GPU\_MEMORY\_RELEASE\_FACTOR: "gpuMemoryReleaseFactor"
+
+Defines the percentage of the GPU memory that is released
+when the memory limit is reached.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.1
+```
+
+### HOVER\_COLOR
+
+HOVER\_COLOR: "hoverColor"
+
+Defines the color to be displayed when hovering the mouse
+over geometry.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:262626
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### INIT\_VIEW
+
+INIT\_VIEW: "initView"
+
+Defines a view matrix to set on start.
+
+#### Value Type
+
+[number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number] | Float32Array | undefined
+
+#### Default
+
+```ts
+undefined
+```
+
+#### See
+
+[ViewerAPI.restoreInitView](/api/webvis/interfaces/viewerapi#restoreinitview) to restore this initial view.
+
+### INITIAL\_FIT
+
+INITIAL\_FIT: "initialFit"
+
+Defines whether or not to fit the view to all visible models when
+a node's ENABLED property changes. If active,
+it also refits when new 3D data is being streamed in.
+Please note that once the view is updated afterwards,
+for instance by moving the camera, and at any mouse down event, the
+initial fit will be disabled. To re-enable it, the setting has to be
+set again.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### INITIAL\_FIT\_DIRECTION
+
+INITIAL\_FIT\_DIRECTION: "initialFitDirection"
+
+Defines the direction which is used for the initial view fitting
+
+#### Value Type
+
+ViewDirection
+
+#### Default
+
+```ts
+ViewDirection.CURRENT
+```
+
+### INVERT\_ZOOM\_DIRECTION
+
+INVERT\_ZOOM\_DIRECTION: "mouseInvertZoomingDirection"
+
+Defines whether the mouse zoom direction is inverted or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### LIGHTING\_ENVIRONMENT
+
+LIGHTING\_ENVIRONMENT: "lightingEnvironment"
+
+Defines the viewer's lighting environment.
+
+#### Value Type
+
+ViewerLightingEnvironment
+
+#### Default
+
+```ts
+ViewerLightingEnvironment.HEADLIGHT
+```
+
+### LINE\_HIGHLIGHT\_COLOR
+
+LINE\_HIGHLIGHT\_COLOR: "lineHighlightColor"
+
+Defines the color to be used to indicate lines in the 3D view
+that are highlighted via the [ViewerHighlightAPI](/api/webvis/interfaces/viewerhighlightapi) (for
+instance during a measurement).
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:FFFF00BF
+```
+
+#### See
+
+* [ViewerHighlightAPI](/api/webvis/interfaces/viewerhighlightapi)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### LINE\_SELECTION\_COLOR
+
+LINE\_SELECTION\_COLOR: "lineSelectionColor"
+
+Defines the color to be used to indicate selected lines
+in the 3D view.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:FFFF00BF
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### MAX\_DYNAMIC\_CLIP\_DIST
+
+MAX\_DYNAMIC\_CLIP\_DIST: "maxDynamicClipDistance"
+
+Defines the maximum dynamic clipping distance.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+5
+```
+
+### MAX\_GPU\_MEMORY
+
+MAX\_GPU\_MEMORY: "maxGPUMemory"
+
+Defines the limit for the GPU memory in megabytes.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1024
+```
+
+### MAX\_SRC\_MEMORY
+
+MAX\_SRC\_MEMORY: "maxSRCCPUMemory"
+
+Defines the limit for the CPU-side memory (RAM) in megabytes.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+512
+```
+
+### NAVIGATION\_MODE
+
+NAVIGATION\_MODE: "navigationMode"
+
+Defines the current navigation mode.
+
+#### Value Type
+
+NavigationMode
+
+#### Default
+
+```ts
+NavigationMode.WEBVIS
+```
+
+### NAVIGATION\_SAMPLING
+
+NAVIGATION\_SAMPLING: "navigationSampling"
+
+Defines the sampling factor (viewport scale) during navigation.
+This setting is meant as an optional optimization that allows for
+rendering in a lower resolution during navigation.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1
+```
+
+### NAVIGATION\_SPEED\_FACTOR
+
+NAVIGATION\_SPEED\_FACTOR: "navigationSpeedFactor"
+
+Defines the navigation speed factor (sensitivity).
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1
+```
+
+### NAVIGATION\_SPEED\_THROTTLE\_FACTOR
+
+NAVIGATION\_SPEED\_THROTTLE\_FACTOR: "navigationSpeedThrottleFactor"
+
+Defines the factor to throttle the navigation speed when the
+modifier key is pressed (throttled sensitivity).
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.1
+```
+
+### `Experimental`OUTLINE\_COLOR
+
+OUTLINE\_COLOR: "outlineColor"
+
+Defines the color of the outline.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:ffff00
+```
+
+#### See
+
+* Property.OUTLINED
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### `Experimental`OUTLINE\_COLOR\_OCCLUDED
+
+OUTLINE\_COLOR\_OCCLUDED: "outlineColorOccluded"
+
+Defines the color of the outline for occluded parts.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:ff9900
+```
+
+#### See
+
+* Property.OUTLINED
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### `Experimental`OUTLINE\_INNER\_RADIUS
+
+OUTLINE\_INNER\_RADIUS: "outlineInnerRadius"
+
+Defines the inner outline radius in pixels
+(the offset between a part and its outline).
+
+```ts
+outlineWidth = outlineOuterRadius - outlineInnerRadius
+```
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0
+```
+
+#### See
+
+* Property.OUTLINED
+* [OUTLINE\_OUTER\_RADIUS](#outline_outer_radius)
+
+### `Experimental`OUTLINE\_OUTER\_RADIUS
+
+OUTLINE\_OUTER\_RADIUS: "outlineOuterRadius"
+
+Defines the outer outline radius in pixels:
+
+```ts
+outlineWidth = outlineOuterRadius - outlineInnerRadius
+```
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+8
+```
+
+#### See
+
+* Property.OUTLINED
+* [OUTLINE\_INNER\_RADIUS](#outline_inner_radius)
+
+### PRE\_SELECTION\_COLOR
+
+PRE\_SELECTION\_COLOR: "preSelectionColor"
+
+Defines the color to be used to indicate the parts the
+user is interacting with in the 3D scene. This color is
+used for highlighting parts once the user has clicked on
+them and before the selection is active.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:FFFF88
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### PROJECTION\_TYPE
+
+PROJECTION\_TYPE: "projectionType"
+
+Defines the type of camera projection.
+
+#### Value Type
+
+CameraProjectionType
+
+#### Default
+
+```ts
+CameraProjectionType.PERSPECTIVE
+```
+
+#### See
+
+[ViewerAPI.getCameraProjectionType](/api/webvis/interfaces/viewerapi#getcameraprojectiontype)
+
+### RENDER\_AUXILIARY\_ON\_TOP
+
+RENDER\_AUXILIARY\_ON\_TOP: "renderAuxOnTop"
+
+Defines whether a viewer renders auxiliaries on top or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### RENDER\_MODE
+
+RENDER\_MODE: "renderMode"
+
+Defines the render mode of the viewer.
+
+Please note, that if the Property.RENDER\_MODE is set on
+a specific node, this setting will be overridden.
+
+#### Value Type
+
+RenderMode
+
+#### Default
+
+```ts
+RenderMode.Faces
+```
+
+#### See
+
+[ViewerAPI.forceRenderMode](/api/webvis/interfaces/viewerapi#forcerendermode)
+
+### RENDER\_SETUP
+
+RENDER\_SETUP: "renderSetup"
+
+Defines the render setup.
+
+#### Value Type
+
+RenderSetup
+
+#### Default
+
+```ts
+RenderSetup.LOCAL
+```
+
+#### See
+
+[HubAPI.requestSupportedRenderSetups](/api/webvis/interfaces/hubapi#requestsupportedrendersetups)
+
+### SCENE\_OPACITY
+
+SCENE\_OPACITY: "sceneOpacity"
+
+Sets the overall opacity of the rendered scene.
+This setting is useful in XR applications to allow the user to see tracked
+real world objects behind the rendered scene.
+
+Possible values range from 0.0 to 1.0, where 1.0 means the scene is
+fully opaque and 0.0 means the scene is fully transparent.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1.0
+```
+
+### SCREEN\_SPACE\_COVERAGE\_CALCULATION\_METHOD
+
+SCREEN\_SPACE\_COVERAGE\_CALCULATION\_METHOD: "screenSpaceCoverageCalculationMethod"
+
+Defines how the screen space coverage of parts, which is used for the small
+feature culling, is calculated.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+"BBOX_WEIGHTED_AREA_COMPUTATION"
+```
+
+### SELECTION\_COLOR
+
+SELECTION\_COLOR: "selectionColor"
+
+Defines the color to be used to indicate selected parts in the 3D view.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:FFFF00
+```
+
+#### See
+
+Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### SHOW\_AUX\_ON\_NAVIGATION
+
+SHOW\_AUX\_ON\_NAVIGATION: "showAuxOnNavigation"
+
+Defines whether a viewer shows the auxiliary geometries during navigation or not
+
+#### Deprecated
+
+ViewerSettingStrings.SHOW\_AUX\_ON\_NAVIGATION is deprecated and will be removed in a future version.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+#### See
+
+NodeType.AUX
+
+### SILHOUETTE\_EFFECT\_COLOR
+
+SILHOUETTE\_EFFECT\_COLOR: "silhouetteEffectColor"
+
+Defines the color of the silhouette rendering effect.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgba:000000FF
+```
+
+#### See
+
+* [SILHOUETTE\_EFFECT\_ENABLED](#silhouette_effect_enabled)
+* [SILHOUETTE\_EFFECT\_EXCLUSIVE\_ENABLED](#silhouette_effect_exclusive_enabled)
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+
+### SILHOUETTE\_EFFECT\_ENABLED
+
+SILHOUETTE\_EFFECT\_ENABLED: "silhouetteEffect"
+
+Defines whether the silhouette rendering effect is enabled or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+* [SILHOUETTE\_EFFECT\_COLOR](#silhouette_effect_color)
+* [SILHOUETTE\_EFFECT\_EXCLUSIVE\_ENABLED](#silhouette_effect_exclusive_enabled)
+
+### SILHOUETTE\_EFFECT\_EXCLUSIVE\_ENABLED
+
+SILHOUETTE\_EFFECT\_EXCLUSIVE\_ENABLED: "silhouetteEffectExclusiveEnabled"
+
+Defines whether only the silhouettes should be rendered or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+* [SILHOUETTE\_EFFECT\_COLOR](#silhouette_effect_color)
+* [SILHOUETTE\_EFFECT\_ENABLED](#silhouette_effect_enabled)
+
+### SMALL\_FEATURE\_CULLING
+
+SMALL\_FEATURE\_CULLING: "smallFeatureCulling"
+
+Defines whether small feature culling is enabled or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[SMALL\_FEATURE\_PIXEL\_THRESHOLD](#small_feature_pixel_threshold)
+
+### SMALL\_FEATURE\_PIXEL\_THRESHOLD
+
+SMALL\_FEATURE\_PIXEL\_THRESHOLD: "smallFeaturePixelThreshold"
+
+Defines the threshold for small feature culling in pixels.
+Every part which would be rendered smaller than this threshold
+will be culled.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+4
+```
+
+#### See
+
+[SMALL\_FEATURE\_CULLING](#small_feature_culling)
+
+### SOFTWAR\_OCCLUSION\_CULLING
+
+SOFTWAR\_OCCLUSION\_CULLING: "soc"
+
+Defines whether software occlusion culling is enabled or not.
+Before downloading a resource, the viewer will check if the resource
+is occluded by other geometry which is already rendered. If this is
+the case, the resource will not be downloaded.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### SPACEMOUSE\_MULTIPLIER
+
+SPACEMOUSE\_MULTIPLIER: "spacemouseMultiplier"
+
+Defines the multiplier used to adjust the space mouse sensitivity.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+7
+```
+
+### SSAO\_ENABLED
+
+SSAO\_ENABLED: "ssaoEnabled"
+
+Defines whether screen space ambient occlusion (SSAO) is enabled or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### TAA\_ENABLED
+
+TAA\_ENABLED: "taaEnabled"
+
+Defines whether temporal anti-aliasing (TAA) is enabled or not.
+TAA is only available in static scenes. It is disabled in the following cases:
+
+* During camera movement, due to the camera not being static. This means TAA is not available in AR.
+* While downloads are active, the scene must be redrawn every time a new object is loaded.
+* If GPU memory/CPU time is exceeded, it is not possible to render the whole scene in a single frame. Applying TAA becomes too complex in this case.
+
+TAA will automatically be re-enabled once the scene is static again.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### TOPO\_GEOMETRY\_COLOR
+
+TOPO\_GEOMETRY\_COLOR: "topoGeometryColor"
+
+Defines the color for the topological geometry.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:00b0ff
+```
+
+#### See
+
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+* [ViewerSettingStrings.RENDER\_MODE](#render_mode)
+* RenderMode.Topology
+
+### TOPO\_GEOMETRY\_SECONDARY\_COLOR
+
+TOPO\_GEOMETRY\_SECONDARY\_COLOR: "topoGeometrySecondaryColor"
+
+Defines the secondary color for the topological geometry.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+urn:X-l3d:color:rgb:555555
+```
+
+#### See
+
+* Property.APPEARANCE\_URI for a definition of valid color strings.
+* [ViewerSettingStrings.RENDER\_MODE](#render_mode)
+* RenderMode.Topology
+
+### TOPO\_POINTS\_ENABLED
+
+TOPO\_POINTS\_ENABLED: "topoPointsEnabled"
+
+Defines whether topological points are rendered.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### TRANSPARENCY\_MODE
+
+TRANSPARENCY\_MODE: "transparencyMode"
+
+Defines the transparency mode
+
+#### Value Type
+
+TransparencyMode
+
+#### Default
+
+```ts
+PERFORMANCE
+```
+
+### TURNTABLE\_LOWER\_VERTICAL\_LIMIT
+
+TURNTABLE\_LOWER\_VERTICAL\_LIMIT: "turntableLowerVerticalLimit"
+
+Defines the lower vertical limit of the turntable navigation mode in degrees.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+-90
+```
+
+#### See
+
+* NavigationMode.TURNTABLE
+* [TURNTABLE\_UPPER\_VERTICAL\_LIMIT](#turntable_upper_vertical_limit)
+* [TURNTABLE\_VERTICAL\_LIMITS\_ENABLED](#turntable_vertical_limits_enabled)
+
+### TURNTABLE\_UPPER\_VERTICAL\_LIMIT
+
+TURNTABLE\_UPPER\_VERTICAL\_LIMIT: "turntableUpperVerticalLimit"
+
+Defines the upper vertical limit for the turntable navigation mode in degrees.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+90
+```
+
+#### See
+
+* NavigationMode.TURNTABLE
+* [TURNTABLE\_LOWER\_VERTICAL\_LIMIT](#turntable_lower_vertical_limit)
+* [TURNTABLE\_VERTICAL\_LIMITS\_ENABLED](#turntable_vertical_limits_enabled)
+
+### TURNTABLE\_VERTICAL\_LIMITS\_ENABLED
+
+TURNTABLE\_VERTICAL\_LIMITS\_ENABLED: "turntableVerticalLimitsEnabled"
+
+Defines whether the vertical limits for the turntable navigation mode are enabled or not.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+* NavigationMode.TURNTABLE
+* [TURNTABLE\_LOWER\_VERTICAL\_LIMIT](#turntable_lower_vertical_limit)
+* [TURNTABLE\_UPPER\_VERTICAL\_LIMIT](#turntable_upper_vertical_limit)
+
+### USE\_DEVICE\_PIXEL\_RATIO
+
+USE\_DEVICE\_PIXEL\_RATIO: "useDevicePixelRatio"
+
+Defines whether the canvas should be scaled by the `window.devicePixelRatio`
+or not. Enabling this setting is necessary to compensate for the DPI scaling
+of the system / monitor. Enabling this setting will improve the visual quality
+on high DPI monitors but can decrease performance.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### VERTEX\_COLORS\_ENABLED
+
+VERTEX\_COLORS\_ENABLED: "vertexColorsEnabled"
+
+Defines whether vertex colors are enabled or not.
+If enabled and the model contains vertex colors, the vertex colors will be used
+for rendering. Furthermore, the node's Property.APPEARANCE\_URI will be
+ignored. Thus, if the user wants to change the node's appearance in this case,
+this setting has to be disabled first.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### VIEW\_PERSPECTIVE
+
+VIEW\_PERSPECTIVE: "viewPerspective"
+
+Defines the view perspective.
+
+#### Value Type
+
+ViewPerspective
+
+#### Default
+
+```ts
+ViewPerspective.INSIDE
+```
+
+### WEBGL\_PRESERVE\_DRAWINGBUFFER
+
+WEBGL\_PRESERVE\_DRAWINGBUFFER: "webglPreserveDrawingbuffer"
+
+Defines whether or not to preserve the drawing buffer on the WebGL context.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+\<https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext#preservedrawingbuffer>

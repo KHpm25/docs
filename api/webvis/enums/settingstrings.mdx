@@ -1,0 +1,1061 @@
+---
+title: "Enumeration SettingStrings"
+sidebarTitle: "SettingStrings"
+description: "This enum contains all the setting keys that are used to read, change and reset thesettings of a WebVis context. For every setting key, its default value can be found here, as well"
+---
+
+This enum contains all the setting keys that are used to read, change and reset the **settings of a WebVis context**.
+For every setting key, its default value can be found here, as well as the type of the value.
+
+Please note, that a list of viewer-specific settings can be found in the ViewerSettingStrings enum.
+
+Furthermore, please notice the difference between context and viewer level settings, as described in the [ContextAPI](/api/webvis/interfaces/contextapi).
+
+**Example**
+
+```ts
+webvis.getContext().changeSetting(webvis.SettingStrings.LOG_LEVEL, webvis.LogLevel.DEBUG);  
+webvis.getContext().readSetting(webvis.SettingStrings.HUB_URL);  
+webvis.getContext().resetSetting(webvis.SettingStrings.BATCHED_QUERIES);
+```
+
+#### See
+
+* [ContextAPI.changeSetting](/api/webvis/interfaces/contextapi#changesetting)
+* [ContextAPI.readSetting](/api/webvis/interfaces/contextapi#readsetting)
+* [ContextAPI.resetSetting](/api/webvis/interfaces/contextapi#resetsetting)
+* [SettingChangedEvent](/api/webvis/classes/settingchangedevent)
+
+## Enumeration Members
+
+### ADDITIONAL\_COOKIES
+
+ADDITIONAL\_COOKIES: "additionalCookies"
+
+A list of cookies that are added to all requests.
+
+### ADDITIONAL\_REQUEST\_HEADERS
+
+ADDITIONAL\_REQUEST\_HEADERS: "additionalRequestHeaders"
+
+Specifies custom HTTP headers to be included with all requests to the instant3Dhub backend.
+
+These headers can be used for various purposes including authentication, client identification,
+or providing additional context for server-side processing. Unlike cookies, headers are
+applied to all types of requests including XHR, WebSocket initialization, and fetch calls.
+
+Example usage:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Add authentication and tracking headers  
+context.changeSetting(webvis.SettingStrings.ADDITIONAL_REQUEST_HEADERS, {  
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',  
+  'X-Client-Version': '3.5.2',  
+  'X-Request-Source': 'webvis-frontend'  
+});  
+  
+// Clear all custom headers  
+context.changeSetting(webvis.SettingStrings.ADDITIONAL_REQUEST_HEADERS, {});
+```
+
+Note that each change to this setting completely replaces all previously set headers.
+To preserve existing headers while adding new ones, you should read the current value,
+extend it with new headers, and then apply the combined set.
+
+#### Value Type
+
+#### Default
+
+```ts
+{}
+```
+
+### ADDITIONAL\_WS\_QUERY\_PARAMETERS
+
+ADDITIONAL\_WS\_QUERY\_PARAMETERS: "additionalWSQueryParameters"
+
+Specifies additional query parameters to be included in WebSocket connection URLs.
+
+These parameters are appended to the WebSocket URI during connection establishment
+and can be used for custom authentication, session identification, or feature flags.
+
+Example usage:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Add custom identification parameters  
+context.changeSetting(webvis.SettingStrings.ADDITIONAL_WS_QUERY_PARAMETERS, {  
+  'client': 'engineering-department',  
+  'version': '2.5.0',  
+  'feature_flags': 'extended_logs,beta_features'  
+});  
+  
+// Clear all custom parameters  
+context.changeSetting(webvis.SettingStrings.ADDITIONAL_WS_QUERY_PARAMETERS, {});
+```
+
+Note: Parameters are visible in the URL and cannot be modified after connection.
+Reserved names: "token", "memberId"
+
+#### Value Type
+
+#### Default
+
+```ts
+{}
+```
+
+#### See
+
+[SettingStrings.ADDITIONAL\_REQUEST\_HEADERS](#additional_request_headers) - For HTTP header-based configuration
+
+### APPLICATION\_IDENTIFIER
+
+APPLICATION\_IDENTIFIER: "applicationIdentifier"
+
+Specifies a custom identifier for your application included in pings and usage data.
+
+This identifier helps distinguish connections and track feature usage across different
+client applications. Set once at startup with a descriptive string.
+
+Note: Transmitted to server - avoid sensitive information.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+undefined
+```
+
+### AUX\_MODE\_RECURSIVE\_SEARCH
+
+AUX\_MODE\_RECURSIVE\_SEARCH: "auxModeRecursiveSearch"
+
+Controls the depth of topology highlighting when working with auxiliary (PMI) objects.
+
+In AUX interaction mode, when an auxiliary node is selected, WebVis highlights its related
+faces in the 3D model. When this setting is enabled, the system also performs the reverse
+operation - finding and selecting additional auxiliary nodes that relate to the highlighted
+faces.
+
+This creates a cascading effect where:
+
+1. Selecting an auxiliary node highlights its related faces
+2. Those faces trigger selection of other auxiliary nodes related to them
+3. Those new auxiliary nodes highlight additional faces
+
+This setting is particularly useful when exploring complex PMI relationships in manufacturing
+models, where multiple annotations may reference the same geometric features. When disabled,
+only the direct face-to-aux relationships for the explicitly selected node are shown.
+
+Note: Enabling this may lead to larger selections than expected in densely annotated models.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+InteractionMode.AUX - This setting only affects the AUX interaction mode
+
+### AUX\_MODE\_UNCOLOR\_FACES\_ON\_LEAVE
+
+AUX\_MODE\_UNCOLOR\_FACES\_ON\_LEAVE: "auxModeUncolorFacesOnLeave"
+
+Controls whether topology coloring is cleared when exiting AUX interaction mode.
+
+When enabled (default), all colored faces related to auxiliary (PMI)
+nodes will return to their original appearance when switching from AUX mode to another
+interaction mode. This provides a clean visual state when returning to normal model
+navigation or selection.
+
+When disabled, the colored topology elements (faces) retain their visual
+emphasis even after leaving AUX mode. This can be useful for preserving the context
+of important manufacturing features while working with the model in other interaction
+modes.
+
+This setting only affects the appearance of topology elements that were colored
+through AUX mode operations - it does not affect other selections or highlighting.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+#### See
+
+InteractionMode.AUX - This setting relates to exiting AUX interaction mode
+
+### BATCHED\_QUERIES
+
+BATCHED\_QUERIES: "batchedQueries"
+
+Controls whether queries that span multiple resources are sent as a single batched request
+or as individual requests.
+
+In WebVis, complex 3D models can be composed of multiple resources, each representing
+a portion of the complete model. When enabled, this setting combines queries that would
+normally be sent separately to each resource into a single network request, which can
+significantly improve performance by reducing network round-trips and connection overhead.
+
+This is particularly beneficial when:
+
+* Working with assemblies composed of multiple separate resources
+* Searching for components across the entire model
+* Querying linked data that spans multiple resources
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[QueryAPI.query](/api/webvis/interfaces/queryapi#query) - For executing queries against the model
+
+### BOOSTER\_URL
+
+BOOSTER\_URL: "boosterURL"
+
+#### Deprecated
+
+SettingStrings.BOOSTER\_URL is deprecated and will be removed in a future version.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+""
+```
+
+### CAPPING\_GEOMETRY\_COLOR
+
+CAPPING\_GEOMETRY\_COLOR: "cappingGeometryColor"
+
+Specifies the color of capping geometries generated when using clip planes.
+
+Capping geometries are surfaces that appear where a clip plane intersects with a 3D model,
+providing a visual representation of the model's interior. This setting controls the color
+of these surfaces using an RGBA hex color string.
+
+The default value "DDFFB6FF" represents a light green color with full opacity.
+
+Note: This setting only affects newly created capping geometries. To apply a color change
+to existing capping geometries, you'll need to remove and recreate them.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+"DDFFB6FF"
+```
+
+#### See
+
+* [ClipPlaneAPI.createCapping](/api/webvis/interfaces/clipplaneapi#createcapping) - For creating clipping geometries
+* [ClipPlaneAPI.removeCapping](/api/webvis/interfaces/clipplaneapi#removecapping) - For removing existing capping geometries
+
+### CONTEXT\_MENU\_FUNCTION
+
+CONTEXT\_MENU\_FUNCTION: "contextMenuFunction"
+
+#### Deprecated
+
+SettingStrings.CONTEXT\_MENU\_FUNCTION is deprecated, please use UISetting.CONTEXT\_MENU\_FUNCTION and the getSetting/setSetting functions on the webvisUI-Object"
+
+A function to modify the context menu's contents
+This function has as argument: the array with the entries by default of the context menu;
+and consequently it is expected as a return value, the entries that are wanted to be shown in the context menu:
+
+1. All default entries will be shown:
+   function(defaultEntries)\{return defaultEntries\}
+2. All default entries will be shown, but without the first entry:
+   function(defaultEntries)\{
+   firstEntryPosition = 1;
+   defaultEntries.splice(firstEntryPosition - 1, 1);
+   return defaultEntries;
+   \}
+3. Swapping the first and second entries:
+   function(defaultEntries)\{
+   firstEntryPosition = 1;
+   secondEntryPosition = 2;
+   firstEntry = defaultEntries.splice(firstEntryPosition - 1, 1)[0];
+   defaultEntries.splice(secondEntryPosition - 1, 0, firstEntry);
+   return defaultEntries;
+   \}
+4. Changing the functionality of the second entry:
+   function(defaultEntries)\{
+   secondEntryPosition = 2;
+   secondEntryDefaultCommand = defaultEntries[secondEntryPosition - 1].command;
+   defaultEntries[secondEntryPosition - 1].command = function(nodeId, pickInfo)\{
+   console.log("Second Entry was Executed", nodeId, pickInfo);
+   webvis.getProperty(nodeId, "label").then(
+   function(label)\{
+   webvis.postInfo("
+
+   |  |  |  |  |  |  |  |  |
+   | --- | --- | --- | --- | --- | --- | --- | --- |
+   | Node: " + nodeId + "|  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | | Label: " + label + "|  |  |  |  | | --- | --- | --- | --- | | 2D Coords: " + pickInfo.canvasCoords + "|  |  | | --- | --- | | 3D Pos: " + pickInfo.position)+" | | | | | | | |
+
+   ";
+   \});
+   secondEntryDefaultCommand();
+   \};
+   return defaultEntries;
+   \}
+5. Inserting a new entry in the menu at the third position:
+   function(defaultEntries)\{
+   newEntry = \{
+   label : "Set Current Language",
+   subEntries : [
+   \{
+   label : "English",
+   command : function()\{webvis.changeSetting("language", "en")\}
+   \},
+   \{
+   label : "Deutsch",
+   command : function()\{webvis.changeSetting("language", "de")\}
+   \},
+   \{
+   label : "Español",
+   command : function()\{webvis.changeSetting("language", "es")\}
+   \}
+   ]
+   \};
+   newEntryPosition = 3;
+   defaultEntries.splice(newEntryPosition - 1, 0, newEntry);
+   return defaultEntries;
+   \}
+6. Inserting a new entry in the menu, which will appear only after the condition is fulfilled, (e.g. When the node is an Aux node)
+   function (defaultEntries)
+   \{
+   const newEntry =
+   \{
+   label : "Custom entry visible only when condition is fulfilled"
+   , command : function(nodeID)\{webvis.postInfo("Custom entry clicked on Aux node:" + nodeID + "!!!")\}
+   , condition : function(nodeID)\{return webvis.getNodeType(nodeID) == webvis.NodeType.AUX\}
+   \};
+   defaultEntries.push(newEntry);
+   return defaultEntries;
+   \}
+
+#### Value Type
+
+function(entries: Array) => Array
+
+#### Default
+
+```ts
+undefined
+```
+
+### DEFAULT\_QUERY\_LINK\_DEPTH
+
+DEFAULT\_QUERY\_LINK\_DEPTH: "defaultQueryLinkDepth"
+
+Controls the default traversal depth for querying related resources when no explicit
+linkDepth is specified in a query.
+
+When executing queries across the instance graph, this setting determines how many levels
+of linked resources will be traversed when searching for data. A value of:
+
+* 0: Only searches within the directly targeted resource (fastest)
+* 1: Includes the target resource and its directly connected resources (default)
+* 2+: Traverses additional levels of connected resources (progressively slower)
+
+Higher values provide more complete search results by examining more distantly related
+resources, but can significantly impact query performance, especially in complex models
+with many interconnected resources.
+
+This setting can be overridden for individual queries by setting the linkDepth parameter
+explicitly in the query object.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Uses the default link depth (from this setting)  
+await context.query({  
+  select: ["nodeId", "label"],  
+  conditions: [{nodeType: "structure"}]  
+});  
+  
+// Overrides the default with explicit linkDepth  
+await context.query({  
+  select: ["nodeId", "label"],  
+  conditions: [{nodeType: "structure"}],  
+  linkDepth: 2  
+});
+```
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+1
+```
+
+#### See
+
+[QueryAPI.query](/api/webvis/interfaces/queryapi#query) For more information on executing queries
+
+### DISABLE\_DEFAULT\_INTERACTION
+
+DISABLE\_DEFAULT\_INTERACTION: "disableDefaultInteraction"
+
+Controls whether the default object selection interaction is enabled or disabled.
+
+When set to true, WebVis will operate in InteractionMode.NONE instead of the usual
+InteractionMode.DEFAULT mode, effectively disabling standard selection interactions.
+This provides a "view-only" experience where users can navigate around the model but not
+select or interact with individual components.
+
+When this setting changes, an [InteractionModeChangedEvent](/api/webvis/classes/interactionmodechangedevent) is triggered, allowing
+applications to respond to the mode change. Applications can temporarily override this
+setting by explicitly calling [InteractionAPI.setInteractionMode](/api/webvis/interfaces/interactionapi#setinteractionmode) with a specific
+interaction mode.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[InteractionAPI.setInteractionMode](/api/webvis/interfaces/interactionapi#setinteractionmode) - To programmatically change interaction modes
+
+### FRONT\_PLANE\_AXIS
+
+FRONT\_PLANE\_AXIS: "frontPlaneAxis"
+
+Defines the orientation of the front plane of the model in the 3D coordinate system.
+This setting determines which axes are used for the "right", "up", and "forward" vectors,
+which affects navigation, camera controls, and the interpretation of user interactions.
+
+Each option in the FrontPlaneAxis enum represents a specific orientation using a combination
+of two axes (e.g., POS\_X\_POS\_Y means the right vector is +X and the up vector is +Y).
+The forward vector is automatically determined to form a right-handed coordinate system.
+
+#### Value Type
+
+FrontPlaneAxis
+
+#### Default
+
+```ts
+FrontPlaneAxis.NEG_Y_POS_Z
+```
+
+#### See
+
+[CoordinateSystemAPI](/api/webvis/interfaces/coordinatesystemapi) for methods to access the resulting vectors and matrices
+
+### HUB\_URL
+
+HUB\_URL: "hubURL"
+
+Defines the URL of the instant3Dhub backend service.
+
+This setting determines the endpoint for all communications with the instant3Dhub service, including:
+
+* Data requests (model loading, queries, etc.)
+* Session management and authentication
+* WebSocket connections for real-time features
+
+The hub URL is resolved automatically by WebVis using the following priority sequence:
+
+1. **URL Parameter:** If a hub URL is specified in the browser's URL parameters (e.g., `?hubURL=...`), it takes
+   precedence and will be used.
+2. **Element:** If not found in the URL, WebVis searches for a `<webvis-config>` HTML element in
+   the DOM and attempts to parse the hub URL from its attributes or content.
+3. **Config File:** If still not found, WebVis tries to load the hub URL from a configuration file:
+   * It first looks for `webvis.config.json` at the root of the server.
+   * If not found there, it searches for a config file in the same directory as the script URL from which WebVis
+     was imported.
+4. **Script Parsing:** As a last resort, the hub URL is parsed directly from the imported WebVis script itself
+   (if embedded or bundled).
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+undefined
+```
+
+### INITIAL\_STATE\_ACTIVATION
+
+INITIAL\_STATE\_ACTIVATION: "initialStateActivation"
+
+#### Deprecated
+
+SettingStrings.INITIAL\_STATE\_ACTIVATION is deprecated and will be removed in a future version.
+
+This setting was intended to check for initial state activation but is no longer used anywhere
+in the WebVis system.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Experimental`LOAD\_REMOTE\_CONFIG\_FILE
+
+LOAD\_REMOTE\_CONFIG\_FILE: "loadRemoteConfigFile"
+
+Controls whether WebVis attempts to load settings from a remote configuration file.
+
+When enabled (default), WebVis will attempt to fetch a `webvis.config.json` file from the
+server during initialization. Settings from this file are merged with any explicitly
+provided settings, with explicit settings taking precedence.
+
+This capability is useful for:
+
+* Providing consistent default settings across multiple applications
+* Centralizing configuration management on the server side
+* Deploying configuration changes without updating application code
+* Supporting environment-specific settings (development, staging, production)
+
+The config file is loaded from the same path as the WebVis library itself. If the file
+cannot be found or accessed, initialization continues normally using only the explicitly
+provided settings.
+
+This feature may change in future releases
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### LOG\_LEVEL
+
+LOG\_LEVEL: "logLevel"
+
+Controls the verbosity of messages output to the browser console by the WebVis logging system.
+
+The log level acts as a filter, where only messages at or above the specified level are displayed.
+
+Setting a lower level (e.g., ERROR) shows fewer, more important messages, while higher levels
+(e.g., TRACE) show more messages including less critical ones. This can be helpful for troubleshooting
+but may impact performance when set to high verbosity levels in production environments.
+
+#### Value Type
+
+LogLevel
+
+#### Default
+
+```ts
+LogLevel.WARNING
+```
+
+### MAX\_ACTIVE\_SCENE\_VOLUME\_DIAMETER
+
+MAX\_ACTIVE\_SCENE\_VOLUME\_DIAMETER: "maxActiveSceneVolumeDiameter"
+
+Limits the scene's active bounding volume size. Ensures rendering accuracy and visual fidelity,
+especially in scenes which contain expansive geometries, infinite lines, or helper geometries.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+9007199254740991 (JavaScript's MAX_SAFE_INTEGER)
+```
+
+### MAX\_CONCURRENT\_DOWNLOADS
+
+MAX\_CONCURRENT\_DOWNLOADS: "maxConcurrentDownloads"
+
+#### Deprecated
+
+SettingStrings.MAX\_CONCURRENT\_DOWNLOADS is deprecated and will be removed in a future version.
+
+Controls the maximum number of concurrent downloads that WebVis will attempt to perform
+when loading model resources. This setting has been superseded by internal adaptive download
+management that automatically optimizes download concurrency based on network conditions
+and available system resources.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+50
+```
+
+### MEASUREMENT\_ANGULAR\_TOLERANCE
+
+MEASUREMENT\_ANGULAR\_TOLERANCE: "measurementAngularTolerance"
+
+Controls the angular tolerance (in degrees) used when determining parallelism in measurements.
+
+This setting defines a threshold (in degrees) for how much deviation from exact parallelism
+is acceptable when performing geometric measurements. When the angle between
+two geometric entities (like planes or lines) is within this tolerance of 0° or 180°,
+WebVis will treat them as exactly parallel.
+
+This is particularly useful in real-world CAD models where:
+
+* Manufacturing tolerances result in slightly imperfect geometry
+* Numerical precision issues create small deviations from ideal angles
+
+Note: Internally, the system adds a small epsilon value (0.001°) to this setting to ensure
+there's always a minimal tolerance. This additional value is maintained for backward
+compatibility.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.1
+```
+
+#### See
+
+[MeasurementAPI](/api/webvis/interfaces/measurementapi) - For performing measurements between geometric entities
+
+### MEASUREMENT\_MATERIAL\_DENSITIES
+
+MEASUREMENT\_MATERIAL\_DENSITIES: "measurementMaterialDensities"
+
+#### Deprecated
+
+MEASUREMENT\_MATERIAL\_DENSITIES is deprecated and will be removed in a future version.
+
+Defines material density values for mass calculations in measurements.
+
+This setting allowed specifying a JSON string containing a mapping of material names to
+their corresponding density values, which were used when calculating the mass of measured
+objects. The format was a stringified JSON object where keys were material names and values
+were numeric density factors.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+undefined
+```
+
+#### See
+
+[MeasurementAPI](/api/webvis/interfaces/measurementapi) - For performing measurements
+
+### NOTIFICATION\_LOG\_LEVELS
+
+NOTIFICATION\_LOG\_LEVELS: "notificationLogLevels"
+
+#### Deprecated
+
+NOTIFICATION\_LOG\_LEVELS is deprecated, please use UISetting.NOTIFICATION\_FILTER and the
+getSetting/setSetting functions on the webvisUI-Object"
+
+### PARENT\_SELECT\_ENABLED
+
+PARENT\_SELECT\_ENABLED: "parentSelectEnabled"
+
+Controls the hierarchical selection behavior when clicking on model objects.
+
+When enabled (default), clicking on an already selected component will select its parent
+in the hierarchy. Successive clicks at the same location will continue to traverse up the
+hierarchy, selecting each parent in turn. This allows easy navigation up the assembly
+structure without needing to locate and precisely click on parent components.
+
+Technically, this setting determines whether the interaction modifier is set to
+InteractionModifier.EXPAND during selection processing, which activates the
+parent traversal logic in the default interaction mode.
+
+When disabled, clicking on a selected object won't change the selection, making it
+more suitable for workflows that require stable selections.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### PREFER\_XHR\_WITH\_CREDENTIALS
+
+PREFER\_XHR\_WITH\_CREDENTIALS: "preferXHRWithCredentials"
+
+Controls whether credentials are included in cross-origin HTTP requests to the instant3Dhub backend.
+
+When enabled (default), WebVis will include authentication information such as cookies,
+HTTP authentication, and client-side SSL certificates in all cross-origin requests.
+This is required when your application needs to maintain authenticated sessions with the backend
+across different domains.
+
+Security note: Only enable this setting when connecting to trusted domains, as it allows
+those domains to access cookies that may contain sensitive authentication information.
+The server must also respond with appropriate CORS headers that allow credentialed requests.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+#### See
+
+[SettingStrings.ADDITIONAL\_REQUEST\_HEADERS](#additional_request_headers) - For custom authentication headers
+
+### SNAPSHOT\_CONTENT\_SELECTION
+
+SNAPSHOT\_CONTENT\_SELECTION: "snapshotContentSelection"
+
+Controls which elements of a snapshot are restored when loading a snapshot.
+
+Snapshots in WebVis capture the complete state of a scene, including the scene hierarchy,
+camera position, selections, and various annotations. This setting allows applications to
+specify default behavior for which elements should be restored when loading a snapshot.
+
+This setting provides the default behavior, but individual calls to
+[restoreSnapshot](/api/webvis/interfaces/sessionstorageapi#restoresnapshot) can override these defaults with specific options.
+
+#### Value Type
+
+[SnapshotRestoreOptions](/api/webvis/interfaces/snapshotrestoreoptions)
+
+#### Default
+
+```ts
+{  
+     *      restoreTree: true,  
+     *      restoreSelection: true,  
+     *      restoreCamera: true,  
+     *      restoreAnnotations: true,  
+     *      restoreMeasurements: true,  
+     *      restoreLayerFilter: true,  
+     *      restoreBackground: true  
+     * }
+```
+
+#### See
+
+* [SessionStorageAPI.restoreSnapshot](/api/webvis/interfaces/sessionstorageapi#restoresnapshot) - For restoring snapshots with specific options
+* [SessionStorageAPI.createSnapshot](/api/webvis/interfaces/sessionstorageapi#createsnapshot) - For creating snapshots
+
+### URI\_MAP
+
+URI\_MAP: "uriMap"
+
+Defines a set of URL rewriting rules that are applied to all network requests made by WebVis.
+
+The URI\_MAP is an array of objects, each containing a regex pattern and a replacement string.
+When WebVis makes any network request, the URL is passed through these rewriting rules in sequence,
+allowing you to transform URLs before they are sent to the network.
+
+This is particularly useful for:
+
+* Redirecting requests to local development servers
+* Mapping external URLs to internal resources
+* Handling URL differences between environments without changing application code
+* Implementing proxy patterns for specific resources
+
+Each entry in the array should have:
+
+* `regex`: A string containing a regular expression pattern to match
+* `replace`: A string containing the replacement text
+
+Example usage:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Redirect all requests from one domain to another  
+context.changeSetting(webvis.SettingStrings.URI_MAP, [  
+  {  
+    regex: "^https://production-server\\.example\\.com/",  
+    replace: "https://dev-server.example.com/"  
+  },  
+  {  
+    regex: "\\.json$",  
+    replace: ".json?cachebuster=" + Date.now()  
+  }  
+]);
+```
+
+The rules are processed in order, with each subsequent rule operating on the
+result of previous transformations.
+
+#### Value Type
+
+[URIMap](/api/webvis/types/urimap)
+
+#### Default
+
+```ts
+undefined
+```
+
+### USAGE\_GROUP
+
+USAGE\_GROUP: "usageGroup"
+
+Specifies the usage group of the application, which is sent to the instant3Dhub alongside the usage data.
+This can be used to separate usage data for different applications using the same instant3Dhub installation.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+undefined
+```
+
+### XR\_ENABLE\_DEBUG\_IMAGES
+
+XR\_ENABLE\_DEBUG\_IMAGES: "xrEnableDebugImages"
+
+Controls whether edge images from the XR model tracker are transmitted to the client.
+
+When enabled, WebVis will send edge images that visualize the tracking state of the XR model tracker.
+These images contain the detected edges of the 3D model that the system is using for tracking.
+The images are made available through [XRModelTrackerEdgeImgReceivedEvent](/api/webvis/classes/xrmodeltrackeredgeimgreceivedevent) events and
+can be displayed in debugging interfaces.
+
+This setting is primarily intended for debugging tracking issues in XR applications, allowing
+developers to visualize how well the model tracker is detecting edges in the camera feed and
+matching them to the 3D model.
+
+Important: Enabling this setting significantly increases bandwidth usage and can impact performance,
+especially on mobile devices or over limited network connections. It should be disabled in
+production environments and only enabled when needed for tracking diagnostics.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+* [XRModelTrackerEdgeImgReceivedEvent](/api/webvis/classes/xrmodeltrackeredgeimgreceivedevent) - Event that delivers the edge images
+* [XR\_MODEL\_TRACKER\_QUALITY\_THRESHOLD](#xr_model_tracker_quality_threshold) - Setting to configure tracking quality threshold
+
+### XR\_FUSION\_MODE
+
+XR\_FUSION\_MODE: "xrFusionMode"
+
+Controls how different tracking inputs are combined in AR use cases to create the final camera view.
+
+See XRFusionMode for a detailed description of the individual fusion modes.
+
+Changes to this setting take effect immediately without requiring a restart of the tracking service.
+
+#### Value Type
+
+XRFusionMode
+
+#### Default
+
+```ts
+XRFusionMode.SLAM_MODELTRACKER
+```
+
+#### See
+
+* [RealityAPI.connectXR](/api/webvis/interfaces/realityapi#connectxr) - For initializing AR functionality
+* [XR\_MODEL\_TRACKER\_QUALITY\_THRESHOLD](#xr_model_tracker_quality_threshold) - For adjusting model tracking sensitivity
+* [XR\_MODEL\_TRACKER\_SMOOTHING\_FACTOR](#xr_model_tracker_smoothing_factor) - For controlling tracking smoothness
+
+### XR\_IMAGE\_COMPRESSION\_QUALITY
+
+XR\_IMAGE\_COMPRESSION\_QUALITY: "xrImageCompressionQuality"
+
+Controls the image compression quality for XR camera frames transmitted during AR use cases.
+
+This setting defines a quality level for JPEG compression of the camera images used in
+AR experiences. It directly impacts both the visual quality of the AR camera feed and the
+bandwidth required for transmitting these images.
+
+The value is specified as a number between 0.0 (smallest file size, lowest visual quality) and 1.0 (largest file size, highest visual quality).
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.75
+```
+
+#### See
+
+[XR\_IMAGE\_RESOLUTION\_PROFILE](#xr_image_resolution_profile) - For another setting that affects AR image quality and performance
+
+### XR\_IMAGE\_RESOLUTION\_PROFILE
+
+XR\_IMAGE\_RESOLUTION\_PROFILE: "xrImageResolutionProfile"
+
+Controls the resolution of camera images used in AR use cases.
+
+This setting determines whether the AR camera feed uses full native resolution or a
+downsampled lower resolution. It has a significant impact on performance, bandwidth
+usage, and visual quality.
+
+This setting works in conjunction with [XR\_IMAGE\_COMPRESSION\_QUALITY](#xr_image_compression_quality) to determine
+the overall size and quality of the transmitted AR frames. For optimal performance in
+bandwidth-constrained environments, use LOW\_RES with moderate compression. For maximum
+visual quality where bandwidth is not a concern, use NATIVE with high compression quality.
+
+#### Value Type
+
+XRImageResolutionProfile
+
+#### Default
+
+```ts
+XRImageResolutionProfile.LOW_RES
+```
+
+#### See
+
+[XR\_IMAGE\_COMPRESSION\_QUALITY](#xr_image_compression_quality) - For controlling image compression level
+
+### XR\_MODEL\_TRACKER\_QUALITY\_THRESHOLD
+
+XR\_MODEL\_TRACKER\_QUALITY\_THRESHOLD: "xrModelTrackerQualityThreshold"
+
+Controls the confidence threshold required for the XR model tracker to consider a model "successfully tracked" in AR.
+
+Note: This setting is only relevant when the [XR\_FUSION\_MODE](#xr_fusion_mode) is set to XRFusionMode.SLAM\_MODELTRACKER.
+
+This setting defines the minimum level of confidence (between 0.0 and 1.0) that the model
+tracking system must have before transitioning the [XRState.modelTrackingPhase](/api/webvis/interfaces/xrstate#modeltrackingphase) to
+SNAPPED. When the confidence level exceeds this threshold:
+
+1. The tracking state changes to XRModelTrackingPhase.SNAPPED.
+2. The XR system automatically sets [XRState.anchored](/api/webvis/interfaces/xrstate#anchored) to `true`.
+3. The model's position becomes fixed relative to the real world.
+
+This threshold directly affects how easily the AR system will "lock onto" the physical object:
+Lower values allow for a more permissive tracking that snaps more easily but may result in less accurate
+alignment with the physical world. This can be useful in challenging environments with poor lighting or when
+tracking complex models. Higher values require a very precise tracking and will only lead to snapping when there
+is high confidence. They can results in more accurate alignment but snapping may be difficult to achieve in
+suboptimal conditions.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.65
+```
+
+#### See
+
+* [XR\_FUSION\_MODE](#xr_fusion_mode) - For controlling how tracking inputs are combined
+* [XR\_MODEL\_TRACKER\_SMOOTHING\_FACTOR](#xr_model_tracker_smoothing_factor) - For adjusting how quickly tracking changes are applied
+
+### XR\_MODEL\_TRACKER\_SMOOTHING\_FACTOR
+
+XR\_MODEL\_TRACKER\_SMOOTHING\_FACTOR: "xrModelTrackerSmoothingFactor"
+
+Controls how smoothly the AR camera transitions between different poses during model tracking.
+
+Note: This setting is only relevant when the [XR\_FUSION\_MODE](#xr_fusion_mode) is set to XRFusionMode.SLAM\_MODELTRACKER.
+
+When the model tracker detects changes in the position or orientation of the tracked object,
+this setting determines how gradually these changes are applied to the AR view. The value
+ranges from 0.0 (no smoothing) to 1.0 (maximum smoothing, interpolate over 16 frames).
+
+Internally, this setting controls the interpolation factor used when blending between the
+previous camera pose and the newly detected pose, essentially creating a moving average
+that filters out rapid changes.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0.20
+```
+
+#### See
+
+[XR\_FUSION\_MODE](#xr_fusion_mode) - For controlling how tracking inputs are combined

@@ -1,0 +1,58 @@
+---
+title: "Enumeration ViewerState"
+sidebarTitle: "ViewerState"
+description: "TheViewerStatedescribes the current state of a Viewer. The ViewerState is grouped by theViewerStateCategorywhich can be discovered by dividing the State by 1000."
+---
+
+The [ViewerState](#) describes the current state of a Viewer.
+The ViewerState is grouped by the ViewerStateCategory which can be discovered by dividing the State by 1000.
+
+```ts
+ const category : ViewerStateCategory = Math.floor(viewerState / 1000);
+```
+
+## Enumeration Members
+
+### CREATED
+
+CREATED: 1000
+
+Indicates that the Viewer is created
+
+### ERROR
+
+ERROR: 5000
+
+Indicates a general Error that doesn't match any of the specific ones.
+
+### ERROR\_WEBGL\_CONTEXT\_LOST
+
+ERROR\_WEBGL\_CONTEXT\_LOST: 5001
+
+Indicates that the Viewer lost the webGL Context.
+This can happen when your browser decides that your applications uses too many resources.
+
+### READY
+
+READY: 3000
+
+Indicates that the Viewer is ready to use.
+
+### SETUP
+
+SETUP: 2000
+
+Indicates that the Viewer is currently setting up the render pipeline.
+
+### WARNING
+
+WARNING: 4000
+
+Indicates a general Warning that doesn't match any of the specific ones.
+
+### WARNING\_LOW\_PERFORMANCE
+
+WARNING\_LOW\_PERFORMANCE: 4001
+
+Indicates that the Viewer is running without hardware acceleration.
+This may result in a degraded performance. Please check the browser settings to enable hardware acceleration.

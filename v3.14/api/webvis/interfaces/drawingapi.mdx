@@ -1,0 +1,95 @@
+---
+title: "Interface DrawingAPI"
+sidebarTitle: "DrawingAPI"
+description: "TheDrawingAPIprovides basic functionalities to interact with 2D Drawings created with the help of theViewerDrawingAPI."
+---
+
+The **DrawingAPI** provides basic functionalities to interact with 2D Drawings created with
+the help of the ViewerDrawingAPI.
+
+## Methods
+
+### changeDrawing
+
+* changeDrawing(  
+      drawingId: number,  
+      properties: DrawingProperties,  
+  ): DrawingProperties
+
+  Changes one or more properties of a Drawing with the specified id.
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the Drawing.
+  + properties: DrawingProperties
+
+    The properties of the Drawing.
+
+  #### Returns DrawingProperties
+
+  An object with the changed properties.
+
+### createDrawing
+
+* createDrawing(data: ViewerDrawingResult, properties?: DrawingProperties): number
+
+  Creates a new Drawing from the Output of the ViewerDrawingAPI.
+
+  #### Parameters
+
+  + data: ViewerDrawingResult
+
+    The data generated with the help of the ViewerDrawingAPI.
+  + `Optional`properties: DrawingProperties
+
+    Initial properties of the created Drawing.
+
+  #### Returns number
+
+  The id of the newly created Drawing.
+
+### getDrawings
+
+* getDrawings(): number[]
+
+  Returns all available Drawing ids.
+
+  #### Returns number[]
+
+  An Array of all available Drawing ids.
+
+### removeDrawing
+
+* removeDrawing(drawingId: number, safe?: boolean): [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  Removes a Drawing with the specified id.
+  If a Drawing is part of a Snapshot the removal will fail with the State [RemoveState.REFERENCED\_BY\_SNAPSHOT](/v3.14/api/webvis/enums/removestate#referenced_by_snapshot)
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the to be removed Drawing.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Drawing is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+### requestDrawingData
+
+* requestDrawingData(drawingId: number): Promise\<DrawingData>
+
+  Returns the DrawingData for the specified Drawing id.
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the Drawing from which the data is requested.
+
+  #### Returns Promise\<DrawingData>
+
+  The requested Drawing data.

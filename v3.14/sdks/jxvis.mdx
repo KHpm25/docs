@@ -1,0 +1,194 @@
+---
+title: "Embed 3D Visualization in Java Desktop Apps with JxVis"
+sidebarTitle: "JxVis"
+description: "Integrate JxVis into Java Swing or Eclipse SWT desktop applications to display and interact with instant3Dhub 3D content natively."
+---
+
+JxVis is a Java SDK that wraps the instant3Dhub webvis rendering engine, letting you embed interactive 3D visualization directly inside Java desktop applications. Whether you use Swing or Eclipse SWT, JxVis surfaces the same instant3Dhub API concepts — loading models, selecting parts, setting properties, and listening to events — through idiomatic Java objects.
+
+<Note>
+  JxVis currently supports **Windows (x86 and x64) only**. Linux and macOS are not supported at this time. Contact [Threedy support](mailto:support@threedy.ai) to request the JxVis SDK package or to inquire about roadmap availability for other platforms.
+</Note>
+
+## Requirements
+
+| Requirement    | Details                                          |
+|----------------|--------------------------------------------------|
+| **Java**       | Java 11 or later                                 |
+| **OS**         | Windows x86 or x64                               |
+| **UI toolkit** | Java Swing **or** Eclipse SWT                    |
+| **Network**    | Access to a running instant3Dhub instance        |
+
+## Adding JxVis to Your Project
+
+<Tabs>
+  <Tab title="Maven">
+    Add the JxVis dependency to your `pom.xml`. Replace `VERSION` with the version supplied in your SDK package:
+
+    ```xml
+    <dependency>
+      <groupId>io.threedy</groupId>
+      <artifactId>jxvis</artifactId>
+      <version>VERSION</version>
+    </dependency>
+    ```
+  </Tab>
+  <Tab title="Gradle">
+    Add the following to your `build.gradle`:
+
+    ```groovy
+    dependencies {
+        implementation 'io.threedy:jxvis:VERSION'
+    }
+    ```
+  </Tab>
+  <Tab title="JAR (manual)">
+    Download the `jxvis-VERSION.jar` from your Threedy customer portal and add it to your project classpath:
+
+    ```bash
+    javac -cp jxvis-VERSION.jar MyViewer.java
+    java  -cp jxvis-VERSION.jar:. MyViewer
+    ```
+  </Tab>
+</Tabs>
+
+## Swing Integration
+
+Create a `JxVisPanel` and add it to your Swing container. Use the `JxVisContext` returned by the panel to connect to your hub and load a model:
+
+```java
+import io.threedy.jxvis.swing.JxVisPanel;
+import io.threedy.jxvis.JxVisContext;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class MyViewer extends JFrame {
+
+    public MyViewer() {
+        super("instant3Dhub Viewer");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1280, 800);
+
+        JxVisPanel panel = new JxVisPanel();
+        add(panel, BorderLayout.CENTER);
+
+        JxVisContext context = panel.getContext();
+        context.setHubURL("https://your-hub.example.com");
+        context.add("https://your-hub.example.com/resources/model.stp");
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MyViewer::new);
+    }
+}
+```
+
+The `JxVisPanel` is a standard `JPanel` and can be composed with other Swing components, docked into `JSplitPane`, or embedded in any layout manager.
+
+## Eclipse SWT Integration
+
+For SWT-based applications such as Eclipse RCP plugins, use `JxVisWidget` in place of `JxVisPanel`. The widget integrates with the SWT event loop automatically:
+
+```java
+import io.threedy.jxvis.swt.JxVisWidget;
+import io.threedy.jxvis.JxVisContext;
+
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.*;
+
+public class SwtViewerPart {
+
+    public void createPartControl(Composite parent) {
+        parent.setLayout(new FillLayout());
+
+        JxVisWidget widget = new JxVisWidget(parent, SWT.NONE);
+
+        JxVisContext context = widget.getContext();
+        context.setHubURL("https://your-hub.example.com");
+        context.add("https://your-hub.example.com/resources/model.stp");
+    }
+}
+```
+
+## Working with JxVisContext
+
+`JxVisContext` is the primary API surface in JxVis. Its design mirrors the webvis JavaScript API, so existing instant3Dhub knowledge transfers directly.
+
+<Accordion title="Loading and removing content">
+  Use `add` to stream a model from an instant3Dhub URL into the scene, and `remove` to unload it:
+
+  ```java
+  // Load a model
+  String nodeId = context.add("https://your-hub.example.com/resources/assembly.stp");
+
+  // Remove it later
+  context.remove(nodeId);
+  ```
+</Accordion>
+
+<Accordion title="Setting properties">
+  Use `setProperty` to change attributes on a node — for example, toggling visibility or applying a highlight color:
+
+  ```java
+  // Hide a node
+  context.setProperty(nodeId, "visible", false);
+
+  // Highlight a node in red
+  context.setProperty(nodeId, "color", "#FF0000");
+  ```
+</Accordion>
+
+<Accordion title="Listening to events">
+  Register event listeners to react to user interactions such as selection changes or model load completion:
+
+  ```java
+  context.addEventListener("selectionChanged", event -> {
+      String[] selectedIds = event.getSelectedNodeIds();
+      System.out.println("Selected " + selectedIds.length + " node(s)");
+  });
+
+  context.addEventListener("modelLoaded", event -> {
+      System.out.println("Model loaded: " + event.getNodeId());
+  });
+  ```
+</Accordion>
+
+<Accordion title="Querying node metadata">
+  Retrieve structured metadata attached to any node in the scene graph:
+
+  ```java
+  Map<String, String> meta = context.getProperties(nodeId);
+  String material = meta.get("Material");
+  String partNumber = meta.get("PartNumber");
+  ```
+</Accordion>
+
+## Getting the JxVis SDK
+
+JxVis is distributed directly by Threedy and is not published to the central Maven repository. To obtain the SDK:
+
+<Steps>
+  <Step title="Contact Threedy">
+    Reach out to [sales@threedy.ai](mailto:sales@threedy.ai) or your existing account manager to request access to the JxVis SDK.
+  </Step>
+  <Step title="Download from the customer portal">
+    Once access is granted, download the JxVis JAR and any native runtime libraries from the Threedy customer portal.
+  </Step>
+  <Step title="Configure your private Maven repository (optional)">
+    If your organization uses a private artifact registry (Nexus, Artifactory, GitHub Packages), upload the JxVis JAR there so all team members can consume it via standard Maven or Gradle dependency management.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Unreal Engine Plugin" href="/v3.14/sdks/unreal-plugin" icon="gamepad">
+    Integrate instant3Dhub into Unreal Engine for VR and AR applications.
+  </Card>
+  <Card title="MCP Server" href="/v3.14/sdks/mcp-server" icon="robot">
+    Let AI assistants query your 3D models using the instant3Dhub MCP Server.
+  </Card>
+</CardGroup>

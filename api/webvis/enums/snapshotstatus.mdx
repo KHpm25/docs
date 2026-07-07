@@ -1,0 +1,34 @@
+---
+title: "Enumeration SnapshotStatus"
+sidebarTitle: "SnapshotStatus"
+description: "Describes the availability and integrity status of a snapshot's referenced data."
+---
+
+Describes the availability and integrity status of a snapshot's referenced data.
+
+#### See
+
+[SessionStorageAPI](/api/webvis/interfaces/sessionstorageapi)
+
+## Enumeration Members
+
+### CONSISTENT
+
+CONSISTENT: 0
+
+All data referenced by the snapshot is present and available.
+
+#### See
+
+[SnapshotProperties](/api/webvis/interfaces/snapshotproperties)
+
+### INCONSISTENT
+
+INCONSISTENT: 1
+
+One or more pieces of data referenced by the snapshot have been removed,
+making the snapshot incomplete.
+
+#### See
+
+[SnapshotProperties](/api/webvis/interfaces/snapshotproperties)

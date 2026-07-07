@@ -1,0 +1,55 @@
+---
+title: "Interface XRAutoDetectScore"
+sidebarTitle: "XRAutoDetectScore"
+description: "The result type for XR Edge Auto Detect requests."
+---
+
+The result type for XR Edge Auto Detect requests.
+
+#### See
+
+* ViewerXREdgeCompareAPI
+* ViewerXREdgeCompareAPI.requestXRAutoDetectScores
+* [XRAutoDetectViewportEnclosure](/v3.14/api/webvis/enums/xrautodetectviewportenclosure)
+
+## Properties
+
+### details
+
+details: \{  
+    edgeCompareEnabled: boolean;  
+    matchCount: number;  
+    noMatchCount: number;  
+    rect: DOMRect;  
+    viewportEnclosure: [XRAutoDetectViewportEnclosure](/v3.14/api/webvis/enums/xrautodetectviewportenclosure);  
+\}
+
+#### Type Declaration
+
+* ##### edgeCompareEnabled: boolean
+
+  Indicates if the requested node was in [XR Edge Compare mode](/v3.14/api/webvis/enums/comparisongroup#xr_edge).
+* ##### matchCount: number
+
+  The number of matching edge pixels.
+* ##### noMatchCount: number
+
+  The number of non-matching edge pixels.
+* ##### rect: DOMRect
+
+  The requested node's screen rectangle. `null` if the node was not in [XR Edge Compare mode](/v3.14/api/webvis/enums/comparisongroup#xr_edge).
+* ##### viewportEnclosure: [XRAutoDetectViewportEnclosure](/v3.14/api/webvis/enums/xrautodetectviewportenclosure)
+
+  Indicates if the requested node's screen rectangle was visible in the current viewport when the score was calculated.
+
+### nodeID
+
+nodeID: number
+
+The node for which the result was created.
+
+### score
+
+score: number
+
+The score value. A value between 0 and 1 where 1 states that all edge pixels match. The score value is calculated as `matchCount / (matchCount + noMatchCount)`

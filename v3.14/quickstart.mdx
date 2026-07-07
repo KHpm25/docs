@@ -1,0 +1,131 @@
+---
+title: "Quickstart: Load and Visualize Your First 3D Model"
+sidebarTitle: "Quickstart"
+description: "Load and visualize your first 3D model with instant3Dhub — covers browser access, adding data, navigation, session sharing, and initializing webvisAPI."
+---
+
+This guide walks you through loading and interacting with a 3D model using instant3Dhub. The browser-based steps take only a few minutes and require no software installation. If you are a developer building a custom application, a dedicated step at the end shows you how to initialize **webvisAPI** with a minimal JavaScript snippet.
+
+## Prerequisites
+
+Before you begin, make sure you have the following ready:
+
+- **A running instant3Dhub instance.** You need a URL for your hub — for example, `https://your-hub.example.com`. Contact your IT integrator or Threedy representative if you do not have one yet.
+- **A 3D file to load.** Any supported format works: CATIA V5, STEP, IFC, GLTF-Binary, or VRML. A small STEP or GLB file is ideal for a first test.
+- **A modern browser.** Chrome, Edge, Firefox, or Safari — any recent version. No plugins or extensions are required.
+
+<Note>
+  instant3Dhub runs entirely in the browser. You do not need to install any desktop software, browser extension, or runtime on your device.
+</Note>
+
+## Load and Visualize Your First Model
+
+<Steps>
+  <Step title="Open instant3Dhub in Your Browser">
+    Navigate to your hub URL in any modern browser:
+
+    ```text
+    https://your-hub.example.com
+    ```
+
+    You will see the instant3Dhub viewer interface. If your organization requires authentication, sign in with your enterprise credentials. The viewer opens with an empty scene ready to accept 3D data.
+  </Step>
+
+  <Step title="Add Your 3D Data">
+    You can load a model in two ways:
+
+    <Tabs>
+      <Tab title="Drag and Drop">
+        Drag your 3D file (`.stp`, `.glb`, `.ifc`, etc.) directly from your file system and drop it onto the viewer window. instant3Dhub uploads and begins streaming the model immediately — there is no separate conversion step.
+      </Tab>
+      <Tab title="Load from URL">
+        If your model is hosted on a web server or accessible via a Data Gateway, open the **Load** dialog (the folder icon in the toolbar) and paste the resource URL:
+
+        ```text
+        https://your-hub.example.com/resources/my-model.stp
+        ```
+
+        Click **Load** to begin streaming.
+      </Tab>
+    </Tabs>
+
+    Large assemblies stream progressively — you will see geometry appear in the viewport as it loads rather than waiting for the entire dataset.
+  </Step>
+
+  <Step title="Navigate the 3D View">
+    Use your mouse or touch input to explore the model:
+
+    | Action | Mouse | Trackpad / Touch |
+    |---|---|---|
+    | **Orbit** | Left-click + drag | One-finger drag |
+    | **Zoom** | Scroll wheel | Two-finger pinch |
+    | **Pan** | Middle-click + drag | Two-finger drag |
+    | **Select** | Left-click on geometry | Tap on geometry |
+    | **Fit to screen** | Double-click empty space | Double-tap empty space |
+
+    Use the toolbar at the top of the viewer to access additional tools: cross-section clip planes, measurement tools, and the model tree for navigating the assembly hierarchy.
+  </Step>
+
+  <Step title="Share the Session">
+    Every loaded scene in instant3Dhub is a persistent **3DSpace** with its own URL. To invite a colleague to the same view:
+
+    1. Click the **Share** icon in the top-right corner of the toolbar.
+    2. Copy the generated session URL.
+    3. Send it to your colleague — they open the link in their browser and join the same 3DSpace immediately.
+
+    Annotations, measurements, and clip planes you have added are part of the 3DSpace and visible to everyone with the link.
+
+    <Tip>
+      3DSpace URLs are persistent. Bookmark them to return to the same collaborative session with all your markups intact.
+    </Tip>
+  </Step>
+
+  <Step title="Initialize webvisAPI (Developers)">
+    If you are building a custom application, use the **webvisAPI** JavaScript library to embed instant3Dhub visualization directly in your own web app.
+
+    Install the package:
+
+    ```bash
+    npm install @threedy/webvis
+    ```
+
+    Then initialize a context and load your first model:
+
+    ```js
+    import { requestContext } from '@threedy/webvis';
+
+    // Connect to your instant3Dhub instance
+    const context = await requestContext({
+      hubURL: 'https://your-hub.example.com',
+    });
+
+    // Load a 3D resource by URL
+    await context.add('https://your-hub.example.com/resources/my-model.stp');
+    ```
+
+    The `requestContext` call establishes a connection to your hub and returns a context object that exposes the full webvisAPI surface — scene management, selection, annotations, measurements, camera control, and more.
+
+    <Note>
+      The hub URL must be reachable from the browser running your application. For local development, make sure CORS is configured correctly on your instant3Dhub instance.
+    </Note>
+  </Step>
+</Steps>
+
+## Next Steps
+
+Now that you have loaded and viewed your first model, explore what instant3Dhub can do at scale:
+
+<CardGroup cols={2}>
+  <Card title="Core Concepts" icon="layer-group" href="/v3.14/concepts/overview">
+    Learn about the InstanceGraph, 3DSpaces, and Data Gateway — the building blocks behind everything you just experienced.
+  </Card>
+  <Card title="How 3D Streaming Works" icon="wifi" href="/v3.14/concepts/3d-streaming">
+    Understand why loading felt fast and how spatial caching makes repeat visits even faster.
+  </Card>
+  <Card title="Connect a Data Source" icon="database" href="/v3.14/integration/data-gateway">
+    Point instant3Dhub directly at your PLM or PDM system so models load without any manual upload step.
+  </Card>
+  <Card title="webvisAPI Reference" icon="book" href="/v3.14/api/webvis-api">
+    Explore the full JavaScript API for building custom 3D applications.
+  </Card>
+</CardGroup>

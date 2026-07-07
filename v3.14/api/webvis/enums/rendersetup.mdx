@@ -1,0 +1,32 @@
+---
+title: "Enumeration RenderSetup"
+sidebarTitle: "RenderSetup"
+description: "Lists the different render setups available in the viewer."
+---
+
+Lists the different render setups available in the viewer.
+
+#### See
+
+* ViewerSettingStrings.RENDER\_SETUP
+* [HubAPI.requestSupportedRenderSetups](/v3.14/api/webvis/interfaces/hubapi#requestsupportedrendersetups)
+
+## Enumeration Members
+
+### HYBRID
+
+HYBRID: "hy\_rmcull"
+
+Rendering happens on the server. The server checks which parts are visible
+and sends the information about the parts to the client. The client then loads
+and renders only the visible parts. Requires server GPUs.
+
+#### See
+
+ServiceType.VIS
+
+### LOCAL
+
+LOCAL: "cl\_webgl1"
+
+Rendering happens only on the client side. Requires no server GPUs.

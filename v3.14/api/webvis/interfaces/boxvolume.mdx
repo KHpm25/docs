@@ -1,0 +1,465 @@
+---
+title: "Interface BoxVolume"
+sidebarTitle: "BoxVolume"
+description: "This interfaces provides functions for working with BoxVolumes. BoxVolumes are axis aligned bounding boxes (AABB). They are usually used to describe the minimal bounding box of a n"
+---
+
+This interfaces provides functions for working with BoxVolumes.
+BoxVolumes are axis aligned bounding boxes (AABB). They are usually used to describe the minimal bounding box of a node.
+They consist of six values, 3 for the minimum and 3 for the maximum corner.
+
+## Methods
+
+### contains
+
+* contains(other: BoxVolume): boolean
+
+  Checks if the given BoxVolume contains the other BoxVolume.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+    the other BoxVolume
+
+  #### Returns boolean
+
+  true if the given BoxVolume contains the other BoxVolume, false otherwise
+
+### copy
+
+* copy(other: BoxVolume): void
+
+  Sets the minimum and maximum corners of the BoxVolume to that of a given BoxVolume.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+    the BoxVolume to copy the corners from
+
+  #### Returns void
+
+### equals
+
+* equals(other: BoxVolume): boolean
+
+  Checks if the given BoxVolume equals the other BoxVolume.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+    the other BoxVolume
+
+  #### Returns boolean
+
+  true if the given BoxVolume equals the other BoxVolume, false otherwise
+
+### extend
+
+* extend(  
+      newMin: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      newMax: Float32Array\<ArrayBufferLike> | [number, number, number],  
+  ): void
+
+  Extends this box in such a way that both, `newMin` and `newMax`, are included.
+  If one of the given values is already inside the box, nothing is done (i.e., the box is potentially extended,
+  but never shrunk after calling this function).
+  If this box has no valid minimum / maximum yet, the given values are used.
+
+  #### Parameters
+
+  + newMin: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    The potential new minimum corner of the box in the format `[x, y, z]`.
+  + newMax: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    The potential new maximum corner of the box in the format `[x, y, z]`.
+
+  #### Returns void
+
+### extendByTransformedVolume
+
+* extendByTransformedVolume(  
+      other: BoxVolume,  
+      transform?:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+  ): void
+
+  Extends a BoxVolume by a transformed BoxVolume.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+    the BoxVolume to extend by
+  + `Optional`transform:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    the transformation matrix to apply to the `other` BoxVolume
+
+  #### Returns void
+
+### extendByVolume
+
+* extendByVolume(other: BoxVolume): void
+
+  Extends a BoxVolume by another BoxVolume.
+  The resulting BoxVolume will span over the other BoxVolume, too. If the other BoxVolume is already inside
+  this BoxVolume, nothing is done.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+    another BoxVolume
+
+  #### Returns void
+
+### fromArray
+
+* fromArray(array: number[] | Float32Array\<ArrayBufferLike>): boolean
+
+  Creates a BoxVolume from an array.
+
+  #### Parameters
+
+  + array: number[] | Float32Array\<ArrayBufferLike>
+
+    the number array with 6 values, representing the minimum and maximum corners of the BoxVolume
+
+  #### Returns boolean
+
+  true if the new BoxVolume is valid, false otherwise
+
+### getCenter
+
+* getCenter(): Float32Array
+
+  Gets the center point of the BoxVolume.
+  The point is specified as a single array with the format `[x, y, z]`.
+
+  #### Returns Float32Array
+
+  the center point of the BoxVolume
+
+### getCornerPoints
+
+* getCornerPoints(): Float32Array\<ArrayBufferLike>[]
+
+  Gets the corner points of a BoxVolume.
+
+  #### Returns Float32Array\<ArrayBufferLike>[]
+
+  An array of eight Float32Array objects. Each Float32Array represents a corner
+  point of the bounding box in 3D space, with the fourth component set to 1.
+
+### getDiameter
+
+* getDiameter(): number
+
+  Gets the diameter of the BoxVolume.
+
+  #### Returns number
+
+  The diameter of the bounding box, which is the Euclidean distance between
+  the minimum and maximum coordinates.
+
+### getMax
+
+* getMax(): Float32Array
+
+  Gets the maximum point of the BoxVolume.
+  The point is specified as a single array with the format `[x, y, z]`.
+
+  #### Returns Float32Array
+
+  the maximum point of the BoxVolume
+
+### getMin
+
+* getMin(): Float32Array
+
+  Gets the minimum point of the BoxVolume.
+  The point is specified as a single array with the format `[x, y, z]`.
+
+  #### Returns Float32Array
+
+  the minimum point of the BoxVolume
+
+### getRadialVec
+
+* getRadialVec(): Float32Array
+
+  Gets the radial vector of the BoxVolume.
+
+  #### Returns Float32Array
+
+  A Float32Array representing the radial vector, which is half the difference
+  between the maximum and minimum coordinates of the bounding box.
+
+### getSize
+
+* getSize(): Float32Array
+
+  Gets the size of the BoxVolume.
+
+  #### Returns Float32Array
+
+  the size of the BoxVolume, specified as a single array with the format `[max_x - min_x, max_y - min_y, max_z - min_z]`.
+
+### includePoint
+
+* includePoint(p: Float32Array): void
+
+  Extends the BoxVolume to include the given point.
+  If the point is already inside the BoxVolume, nothing is done.
+
+  #### Parameters
+
+  + p: Float32Array
+
+    the point to include in the BoxVolume with the format `[x, y, z]`
+
+  #### Returns void
+
+### isValid
+
+* isValid(): boolean
+
+  Checks if the BoxVolume is valid.
+
+  #### Returns boolean
+
+  true if the BoxVolume is valid, false otherwise
+
+### overlaps
+
+* overlaps(other: BoxVolume): boolean
+
+  Checks if two BoxVolumes are overlapping.
+
+  #### Parameters
+
+  + other: BoxVolume
+
+  #### Returns boolean
+
+  true if the BoxVolumes are overlapping, false otherwise
+
+### reset
+
+* reset(): void
+
+  Resets the BoxVolume to its initial state.
+
+  #### Returns void
+
+### setFromCenterSize
+
+* setFromCenterSize(  
+      center: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      size: Float32Array\<ArrayBufferLike> | [number, number, number],  
+  ): BoxVolume
+
+  Creates the BoxVolume from a center point and a size.
+
+  #### Parameters
+
+  + center: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    the center point of the new BoxVolume, consisting of the x, y, and z coordinates
+  + size: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    the size of the new BoxVolume, consisting of the width, height, and depth
+
+  #### Returns BoxVolume
+
+  the new BoxVolume
+
+### setMax
+
+* setMax(max: Float32Array\<ArrayBufferLike> | [number, number, number]): void
+
+  Sets the maximum corner of the BoxVolume.
+  The point is specified as a single array with the format `[x, y, z]`.
+
+  #### Parameters
+
+  + max: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    the maximum corner of the BoxVolume
+
+  #### Returns void
+
+### setMin
+
+* setMin(min: Float32Array\<ArrayBufferLike> | [number, number, number]): void
+
+  Sets the minimum corner of the BoxVolume.
+  The point is specified as a single array with the format `[x, y, z]`.
+
+  #### Parameters
+
+  + min: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    the minimum corner of the BoxVolume
+
+  #### Returns void
+
+### transformFrom
+
+* transformFrom(  
+      matrix:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+      other: BoxVolume,  
+  ): BoxVolume
+
+  Creates a new BoxVolume from a given BoxVolume which is transformed by a matrix.
+
+  #### Parameters
+
+  + matrix:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    the transformation matrix
+  + other: BoxVolume
+
+    the BoxVolume to transform
+
+  #### Returns BoxVolume
+
+  the new BoxVolume
+
+### transformFromArray
+
+* transformFromArray(  
+      matrix:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+      otherVolume: number[],  
+  ): BoxVolume
+
+  Creates a new BoxVolume from a given BoxVolume, defined by an array, which is then transformed by a matrix.
+
+  #### Parameters
+
+  + matrix:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    the transformation matrix
+  + otherVolume: number[]
+
+    the BoxVolume to transform defined by a 6-element array of the minimum and maximum corners.
+
+  #### Returns BoxVolume
+
+  the new BoxVolume

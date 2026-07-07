@@ -1,0 +1,88 @@
+---
+title: "Interface XRScanshotExperimental"
+sidebarTitle: "XRScanshot"
+description: "Represents a texture scanshot of the current view in the XR environment."
+---
+
+Represents a texture scanshot of the current view in the XR environment.
+
+A texture scanshot augments the digital model with the color of its real-world
+counterpart using the texture information from the camera stream.
+
+Model-based tracking is required to map texture data to the model with the
+correct position and orientation.
+
+#### See
+
+* RealityAPI
+* XRConfiguration
+* RealityAPI.enterXRInitMode
+
+## Properties
+
+### `Experimental`metadata
+
+metadata: \{  
+    projectionMatrix:  
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ];  
+    viewMatrix: | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ];  
+\}
+
+Stores any additional information about the scanshot other than the raw data itself.
+
+#### Type Declaration
+
+* ##### projectionMatrix:     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The projection matrix of the camera with which the scan has been made.
+* ##### viewMatrix:     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The view matrix at which the scan was shot.
+
+### `Optional` `Experimental`pointCloudData
+
+pointCloudData?: \{ points: CloudPoint[] \}
+
+Represents the scanshot as point cloud.
+
+#### Type Declaration
+
+* ##### points: CloudPoint[]
+
+  The CloudPoints within the point cloud representing the scan.

@@ -1,0 +1,278 @@
+---
+title: "Interface ClipPlaneProperties"
+sidebarTitle: "ClipPlaneProperties"
+description: "Configuration properties for clip planes."
+---
+
+Configuration properties for clip planes.
+
+These properties control the position, orientation, appearance, and behavior
+of clip planes. They can be used when creating or modifying
+clip planes.
+
+#### See
+
+* ClipPlaneAPI
+* ClipPlaneAPI.createClipPlane
+* ClipPlaneAPI.changeClipPlane
+
+## Properties
+
+### `Optional`animation
+
+animation?: \{ name: string \} & AnimationOptions
+
+Animation configuration for the clip plane.
+
+IMPORTANT: You must first create animation frames using AnimationAPI.createAnimationFrames
+with a specific name. Then you can reference those frames by providing that same name in this property.
+
+The [animation](#animation) property accepts a name (which must match the name used when creating the animation frames)
+and animation options that control how those frames are played. Animation only works when using
+ClipPlaneAPI.changeClipPlane, not when initially creating a clip plane.
+
+Setting this property to null stops any active animation.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// First, create animation frames with a specific name  
+context.createAnimationFrames("clip_plane_motion", [  
+  { time: 0, translation: [0, 0, 0], rotation: [0, 0, 0] },  
+  { time: 0.5, translation: [10, 0, 0], rotation: [0, Math.PI/4, 0] },  
+  { time: 1, translation: [0, 0, 0], rotation: [0, Math.PI/2, 0] }  
+]);  
+  
+// Create a clip plane (animation won't be applied here)  
+const clipPlaneId = context.createClipPlane({  
+  normal: [0, 0, 1],  
+  position: [0, 0, 0]  
+});  
+  
+// Apply animation to the existing clip plane, referencing the previously created frames  
+context.changeClipPlane(clipPlaneId, {  
+  animation: {  
+    name: "clip_plane_motion",  // Must match the name used in createAnimationFrames  
+    duration: 2000,  
+    iterationCount: 3  
+  }  
+});  
+  
+// Stop animation  
+context.changeClipPlane(clipPlaneId, {  
+  animation: null  
+});
+```
+
+#### See
+
+* AnimationOptions
+* AnimationFrame
+* AnimationAPI.createAnimationFrames
+
+#### Default
+
+```ts
+null
+```
+
+### `Optional`clippedNodes
+
+clippedNodes?: number[]
+
+List of node IDs which should be exclusively clipped by this clip plane.
+
+When specified, only these nodes will be affected by the clip plane, all others
+will be ignored. This property is mutually exclusive with excludedNodes.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Only clip nodes 123 and 456  
+context.createClipPlane({  
+  normal: [0, 1, 0],  
+  clippedNodes: [123, 456]  
+});
+```
+
+#### Default
+
+```ts
+[]
+```
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Controls whether the clip plane is enabled or disabled.
+
+When set to false, the clip plane exists but has no effect on the scene.
+This allows temporarily disabling clipping without removing the clip plane.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`excludedNodes
+
+excludedNodes?: number[]
+
+List of node IDs which should be excluded from clipping.
+
+When specified, these nodes will not be affected by the clip plane, while all others
+will be clipped. This property is mutually exclusive with clippedNodes.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Clip everything except nodes 123 and 456  
+context.createClipPlane({  
+  normal: [0, 1, 0],  
+  excludedNodes: [123, 456]  
+});
+```
+
+#### Default
+
+```ts
+[]
+```
+
+### `Optional`invisible
+
+invisible?: boolean
+
+Controls whether the visual representation of the clip plane is hidden.
+
+When set to true, the clip plane will still perform clipping, but its
+visual indicator (the plane outline) will not be displayed.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`name
+
+name?: string
+
+The display name of the clip plane.
+
+This name can be used for identification in user interfaces or debugging.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`normal
+
+normal?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The normal vector of the clip plane.
+
+This vector defines the orientation of the clip plane, pointing in the
+direction where geometry will be clipped away. The vector will be normalized
+internally.
+
+#### Default
+
+```ts
+[0, 1, 0]
+```
+
+### `Optional`position
+
+position?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The position of the clip plane in 3D space.
+
+This defines a point on the clip plane, determining its location in the scene.
+
+#### Default
+
+```ts
+[0, 0, 0]
+```
+
+### `Optional`tangent
+
+tangent?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The tangent vector of the clip plane.
+
+This vector is perpendicular to the normal and defines the orientation of the
+plane's visual representation. If not provided, it will be automatically calculated
+to be perpendicular to the normal.
+
+#### Default
+
+```ts
+[1, 0, 0]
+```
+
+### `Optional`thickness
+
+thickness?: number
+
+The thickness of the clip plane's non-clipping volume.
+
+When set to a value greater than zero, this creates a volume around the clip plane
+where geometry is not clipped. For example, if thickness is set to 1.0, then geometry
+within 1.0 units perpendicular distance on both sides of the plane will remain visible,
+regardless of which side of the plane it's on. This is useful for creating cross-section
+views that highlight geometry near the cut plane.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional`transform
+
+transform?:  
+    | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ]
+
+The transformation matrix of the clip plane.
+
+This 4x4 matrix defines the complete transformation (position, rotation, and scale)
+of the clip plane in world space.
+
+#### Default
+
+```ts
+[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+```

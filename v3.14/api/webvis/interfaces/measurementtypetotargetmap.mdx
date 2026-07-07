@@ -1,0 +1,45 @@
+---
+title: "Interface MeasurementTypeToTargetMap"
+sidebarTitle: "MeasurementTypeToTargetMap"
+description: "Helper to mapMeasurementTypes to corresponding input types."
+---
+
+Helper to map [MeasurementType](/v3.14/api/webvis/enums/measurementtype)s to corresponding input types.
+
+#### See
+
+* createMeasurement
+* [MeasurementType](/v3.14/api/webvis/enums/measurementtype)
+
+## Properties
+
+### 0
+
+"0": [[MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)]
+
+Input type for [MeasurementType.SINGLE](/v3.14/api/webvis/enums/measurementtype#single).
+
+### 1
+
+"1": [[MeasurementTarget](/v3.14/api/webvis/types/measurementtarget), [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)]
+
+Input type for [MeasurementType.MULTIPLE](/v3.14/api/webvis/enums/measurementtype#multiple).
+
+### 2
+
+"2": [  
+    \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+    \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+    \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+]
+
+Input type for [MeasurementType.ARC](/v3.14/api/webvis/enums/measurementtype#arc).
+
+### 3
+
+"3": [  
+    \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+    \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+]
+
+Input type for [MeasurementType.THICKNESS](/v3.14/api/webvis/enums/measurementtype#thickness).

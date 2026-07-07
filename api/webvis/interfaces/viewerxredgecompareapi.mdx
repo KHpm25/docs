@@ -1,0 +1,122 @@
+---
+title: "Interface ViewerXREdgeCompareAPIExperimental"
+sidebarTitle: "ViewerXREdgeCompareAPI"
+description: "The XR Edge Compare API allows to compare scene edges against edges generated from a camera image on a per-pixel basis. The feature is running in realtime and only available with t"
+---
+
+## InstanceGraphAPI
+
+### Overview
+
+The XR Edge Compare API allows to compare scene edges against edges generated from a camera image on a per-pixel basis.
+The feature is running in realtime and only available with the local rendering setup.
+
+### Quick Start
+
+**Example**
+
+```ts
+// Get an instance of the ContextAPI  
+const context = webvis.getContext()  
+  
+// Activate XR Edge Compare mode for one or more nodes  
+const nodeIDs = [1, 2, 3];  
+context.setProperty(nodeIDs, webvis.Property.COMPARISON_GROUP, webvis.ComparisonGroup.XR_EDGE);  
+  
+// Get default viewer  
+const viewer = context.getViewer();  
+  
+// Adjust all or a subset of the XR Edge compare properties  
+viewer.changeXREdgeCompare({  
+  mode: webvis.XREdgeCompareMode.SCENE_WITH_CAMERA,  
+  edgeDetectionThreshold: 0.8,  
+  searchRadius: 7  
+});
+```
+
+### Events
+
+The ViewerXREdgeCompareAPI emits the following events:
+
+* [ViewerXREdgeCompareChangedEvent](/api/webvis/classes/viewerxredgecomparechangedevent)
+
+## Methods
+
+### changeXREdgeCompare
+
+* changeXREdgeCompare(  
+      properties: XREdgeCompareProperties,  
+  ): XREdgeCompareProperties
+
+  `Experimental`
+
+  Sets the specified properties.
+
+  #### Parameters
+
+  + properties: XREdgeCompareProperties
+
+    An object with all or a subset of properties to update.
+
+  #### Returns XREdgeCompareProperties
+
+  An object with the changed properties.
+
+### getXREdgeCompareProperties
+
+* getXREdgeCompareProperties(): XREdgeCompareProperties
+
+  `Experimental`
+
+  Returns the currently set XR Edge Compare properties.
+
+  #### Returns XREdgeCompareProperties
+
+  The currently set properties.
+
+### requestXRAutoDetectScores
+
+* requestXRAutoDetectScores(nodeIDs: number[]): Promise\<XRAutoDetectScore[]>
+
+  `Experimental`
+
+  Request scores caluclated based on the ratio of matching/non-matching pixels of the XR Edge Compare feature. Passed nodes must be in [XR Edge Compare mode](/api/webvis/enums/comparisongroup#xr_edge) mode to produce a valid score. Multiple concurrent requests of this method are not allowed.
+
+  **Example**
+
+  ```ts
+  // Get an instance of the ContextAPI  
+  const myContext : ContextAPI = webvis.getContext( "example" )  
+    
+  // The node to request a result for  
+  const nodeID = 1;  
+    
+  // Enable XR Edge Compare mode for node  
+  myContext.setProperty(nodeID, webvis.Property.COMPARISON_GROUP, webvis.ComparisonGroup.XR_EDGE);  
+    
+  async function update() {  
+      // Request score  
+      const result = await myContext.getViewer().requestXRAutoDetectScores([nodeID]);  
+    
+      // Check score value  
+      console.log(result[0].score > 0.5 ? "Positive" : "Negative");  
+    
+      // Re-request score twice per second as long as node is in XR Edge Compare mode  
+      if (result[0].details.edgeCompareEnabled) {  
+          setTimeout(update, 500);  
+      }  
+  }  
+    
+  // Start loop  
+  update();
+  ```
+
+  #### Parameters
+
+  + nodeIDs: number[]
+
+    The nodeIDs to process.
+
+  #### Returns Promise\<XRAutoDetectScore[]>
+
+  + A promise containing a list of auto detect score results.

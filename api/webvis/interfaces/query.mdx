@@ -1,0 +1,30 @@
+---
+title: "Interface Query"
+sidebarTitle: "Query"
+description: "A query for metadata of structure or aux nodes that can be used in theQueryAPI. For each node that matches the specified conditions, the values defined by the selectors are returne"
+---
+
+A query for metadata of structure or aux nodes that can be used in the QueryAPI.
+For each node that matches the specified conditions, the values defined by the selectors
+are returned.
+
+The `linkDepth` property defines how many levels of linked 3D models are included in the
+query. The default value is `1`. For more information, see QueryAPI.
+
+#### See
+
+QueryAPI
+
+## Properties
+
+### conditions
+
+conditions: QueryCondition[]
+
+### `Optional`linkDepth
+
+linkDepth?: number
+
+### select
+
+select: [QuerySelect](/api/webvis/types/queryselect)[]

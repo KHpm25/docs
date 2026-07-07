@@ -1,0 +1,38 @@
+---
+title: "Interface SpaceHandle"
+sidebarTitle: "SpaceHandle"
+description: "Shareable reference to a3D space."
+---
+
+Shareable reference to a 3D space.
+
+#### See
+
+* SpaceAPI.requestSpaceHandle to obtain a space handle for the current space.
+* SpaceAPI.openSpace to open a space via a space handle.
+
+## Properties
+
+### `Optional`roleKey
+
+roleKey?: string
+
+An optional key of a member role to assign when the space is opened via the handle.
+Undefined, if the handle was requested without specifying a role.
+If undefined, the [MemberRole.VIEWER](/v3.14/api/webvis/enums/memberrole#viewer) role will be assigned when opening the space via the handle.
+
+### spaceId
+
+spaceId: string
+
+The ID of the space in which the handle was requested.
+This is the space that will be opened when using the handle with SpaceAPI.openSpace.
+
+### `Optional`spaceUrl
+
+spaceUrl?: string
+
+URL that can be used to open the space via the handle. Satisfies the format
+`<HUB_URL>/space/<SPACE_ID>[?roleKey=<ROLE_KEY>]`, where `<HUB_URL>` is the URL of the hub, `<SPACE_ID>` is the
+ID of the space, and `<ROLE_KEY>` is an optional key of a member role to assign when opening the space via
+the handle.

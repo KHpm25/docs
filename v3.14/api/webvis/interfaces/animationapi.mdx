@@ -1,0 +1,83 @@
+---
+title: "Interface AnimationAPI"
+sidebarTitle: "AnimationAPI"
+description: "TheAnimationAPIprovides basic functionalities to define keyframe-based animation sequences. An animation sequence defines a gradual change from one node state to another, whereby a"
+---
+
+## The AnimationAPI
+
+### Overview
+
+The **AnimationAPI** provides basic functionalities to define keyframe-based animation sequences.
+An animation sequence defines a gradual change from one node state to another, whereby a single
+state is defined by an AnimationFrame which includes different properties to specify the
+transformation and appearance of a node at that point in time. An animation sequence is independent
+of a specific node and can be applied to multiple nodes with different AnimationOptions.
+
+### Quick Start
+
+Example: create a simple animation sequence which does a full rotation around the Y-axis and apply it to a node.
+
+```ts
+const context = webvis.getContext();  
+  
+// Create a simple animation sequence which does a full rotation around the Y-axis  
+context.createAnimationFrames( "rotate" , [  
+ { rotation: [ 0, 0,   0 ] },  
+ { rotation: [ 0, 180, 0 ] },  
+ { rotation: [ 0, 360, 0 ] }  
+]);  
+  
+// Apply the animation sequence to an InstanceGraph node with a total duration of 1000ms  
+context.setProperty( 1, webvis.Property.ANIMATION, {  
+   name     : "rotate",  
+   duration : 1000,  
+});
+```
+
+### Events
+
+The following events are associated with the AnimationAPI:
+
+* [AnimationStartedEvent](/v3.14/api/webvis/classes/animationstartedevent)
+* [AnimationEndedEvent](/v3.14/api/webvis/classes/animationendedevent)
+* [AnimationIterationEvent](/v3.14/api/webvis/classes/animationiterationevent)
+* [AnimationFramesCreatedEvent](/v3.14/api/webvis/classes/animationframescreatedevent)
+* [AnimationFramesRemovedEvent](/v3.14/api/webvis/classes/animationframesremovedevent)
+
+### Restrictions
+
+Animation sequences that include transformations and are applied to a leaf node cannot yet be visualized by the viewer.
+
+## Methods
+
+### createAnimationFrames
+
+* createAnimationFrames(name: string, frames: AnimationFrame[]): void
+
+  Creates a new keyframe-based animation sequence.
+
+  #### Parameters
+
+  + name: string
+
+    The name of the animation sequence.
+  + frames: AnimationFrame[]
+
+    The keyframes of the animation sequence.
+
+  #### Returns void
+
+### removeAnimationFrames
+
+* removeAnimationFrames(name: string): void
+
+  Removes an existing animation sequence.
+
+  #### Parameters
+
+  + name: string
+
+    Specifies the name of the animation frames.
+
+  #### Returns void

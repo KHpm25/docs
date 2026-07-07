@@ -1,0 +1,256 @@
+---
+title: "Interface InitialNodeProperties"
+sidebarTitle: "InitialNodeProperties"
+description: "Defines initial properties of a new node. These become the default values for the new node, i.e.InstanceGraphAPI.resetPropertyandInstanceGraphAPI.resetPropertieswill reset to these"
+---
+
+Defines initial properties of a new node. These become the default values
+for the new node, i.e. InstanceGraphAPI.resetProperty and
+InstanceGraphAPI.resetProperties will reset to these values.
+
+#### See
+
+InstanceGraphAPI.add
+
+## Properties
+
+### `Optional`appearanceURI
+
+appearanceURI?: string
+
+Specifies the initial appearance URI of the added node.
+
+#### Default
+
+```ts
+null
+```
+
+#### See
+
+[Property.APPEARANCE\_URI](/v3.14/api/webvis/enums/property#appearance_uri)
+
+### `Optional`attachmentId
+
+attachmentId?: number
+
+Specifies the initial attachment ID of the added node.
+
+#### Default
+
+```ts
+undefined
+```
+
+#### See
+
+AttachmentAPI
+
+### `Optional`auxEnabled
+
+auxEnabled?: boolean
+
+Specifies the initial aux enabled state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.AUX\_ENABLED](/v3.14/api/webvis/enums/property#aux_enabled)
+
+### `Optional`comparisonGroup
+
+comparisonGroup?: [ComparisonGroup](/v3.14/api/webvis/enums/comparisongroup)
+
+Specifies the initial comparison of the added node.
+
+#### Default
+
+```ts
+ComparisonGroup.NONE
+```
+
+#### See
+
+[Property.COMPARISON\_GROUP](/v3.14/api/webvis/enums/property#comparison_group)
+
+### `Optional`customProperties
+
+customProperties?: \{ [customPropertyName: string]: [Serializable](/v3.14/api/webvis/types/serializable) \}
+
+Specifies the initial custom property states of the added node.
+
+#### Default
+
+```ts
+undefined
+```
+
+#### See
+
+[Property](/v3.14/api/webvis/enums/property)
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Specifies the initial enabled state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.ENABLED](/v3.14/api/webvis/enums/property#enabled)
+
+### `Optional`ghosted
+
+ghosted?: boolean
+
+Specifies the initial ghosted state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.GHOSTED](/v3.14/api/webvis/enums/property#ghosted)
+
+### `Optional`hidden
+
+hidden?: boolean
+
+Specifies the initial hidden state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.HIDDEN](/v3.14/api/webvis/enums/property#hidden)
+
+### `Optional`localTransform
+
+localTransform?: [  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+]
+
+Specifies the initial local transform of the added node.
+
+#### Default
+
+```ts
+[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+```
+
+#### See
+
+[Property.LOCAL\_TRANSFORM](/v3.14/api/webvis/enums/property#local_transform)
+
+### `Optional`outlined
+
+outlined?: boolean
+
+Specifies the initial outlined state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.OUTLINED](/v3.14/api/webvis/enums/property#outlined)
+
+### `Optional`pickable
+
+pickable?: boolean
+
+Specifies the initial pickable state of the added node.
+
+#### Default
+
+```ts
+true
+```
+
+#### See
+
+[Property.PICKABLE](/v3.14/api/webvis/enums/property#pickable)
+
+### `Optional`real
+
+real?: boolean
+
+Specifies the initial real state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.REAL](/v3.14/api/webvis/enums/property#real)
+
+### `Optional`realOccluder
+
+realOccluder?: boolean
+
+Specifies the initial real occluder state of the added node.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[Property.REAL\_OCCLUDER](/v3.14/api/webvis/enums/property#real_occluder)
+
+### `Optional`renderMode
+
+renderMode?: [RenderMode](/v3.14/api/webvis/enums/rendermode)
+
+Specifies the initial render mode of the added node.
+
+#### Default
+
+```ts
+RenderMode.UNSET
+```
+
+#### See
+
+[Property.RENDER\_MODE](/v3.14/api/webvis/enums/property#render_mode)

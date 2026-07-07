@@ -1,0 +1,98 @@
+---
+title: "Interface AnnotationProperties"
+sidebarTitle: "AnnotationProperties"
+description: "TheAnnotationPropertiestype defines the properties of an annotation."
+---
+
+The **AnnotationProperties** type defines the properties of an annotation.
+
+#### See
+
+AnnotationAPI
+
+## Properties
+
+### `Optional`anchorPosition
+
+anchorPosition?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The anchor position of the annotation.
+
+#### Default
+
+```ts
+[0,0,0]
+```
+
+### `Optional`connectedNodeId
+
+connectedNodeId?: number
+
+The connected Node ID of the annotation.
+
+#### Default
+
+```ts
+null
+```
+
+### `Optional`content
+
+content?: string
+
+The content of the annotation.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`contentOffset
+
+contentOffset?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The content offset of the annotation.
+
+#### Default
+
+```ts
+[1,0,1]
+```
+
+### `Optional`enabled
+
+enabled?: boolean
+
+The enabled state of the annotation.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`name
+
+name?: string
+
+The name of the annotation.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Readonly`trustedSource
+
+trustedSource?: boolean
+
+Specifies if the annotation comes from a trusted source.
+
+#### Default
+
+```ts
+true  
+ @readonly
+```

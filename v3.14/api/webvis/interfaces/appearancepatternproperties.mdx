@@ -1,0 +1,133 @@
+---
+title: "Interface AppearancePatternProperties"
+sidebarTitle: "AppearancePatternProperties"
+description: "The properties of an appearance pattern entity in the webvis context."
+---
+
+The properties of an appearance pattern entity in the webvis context.
+
+#### See
+
+AppearancePatternAPI
+
+## Properties
+
+### `Optional`backgroundColor
+
+backgroundColor?: [number, number, number, number]
+
+Specifies the background color of the pattern as [R, G, B, A], each value in the range 0-1.
+
+#### Default
+
+```ts
+[0, 0, 0, 0]
+```
+
+### `Optional`distortRatio
+
+distortRatio?: number
+
+Specifies an optional distortion ratio for the pattern in the range 0-∞.
+
+#### Default
+
+```ts
+0.5
+```
+
+### `Optional`distortStrength
+
+distortStrength?: number
+
+Specifies an optional distortion strength for the pattern in the range 0-∞.
+
+#### Default
+
+```ts
+0.0
+```
+
+### `Optional`foregroundColor
+
+foregroundColor?: [number, number, number, number]
+
+Specifies the foreground color of the pattern as [R, G, B, A], each value in the range 0-1.
+
+#### Default
+
+```ts
+[1, 0, 0, 1]
+```
+
+### `Optional`name
+
+name?: string
+
+Specifies an optional name for the pattern.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`offset
+
+offset?: [number, number]
+
+Specifies an optional x/y offset for the pattern as [x, y].
+
+#### Default
+
+```ts
+[0, 0]
+```
+
+### `Optional`rotation
+
+rotation?: number
+
+Specifies an optional rotation of the pattern in radians.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional`scale
+
+scale?: number
+
+Specifies the scale of the pattern. A value of 0.25 results in 4 checkerboard tiles horizontally.
+
+#### Default
+
+```ts
+0.005
+```
+
+### `Optional`type
+
+type?: [AppearancePatternType](/v3.14/api/webvis/enums/appearancepatterntype)
+
+Specifies the type of the pattern to be used.
+
+#### Default
+
+```ts
+AppearancePatternType.STRIPES
+```
+
+### `Optional`weight
+
+weight?: number
+
+Specifies an optional weight for the pattern in the range 0-1.
+
+#### Default
+
+```ts
+0.5
+```

@@ -1,0 +1,51 @@
+---
+title: "Interface XRState"
+sidebarTitle: "XRState"
+description: "Reflects the current state of the XR system."
+---
+
+Reflects the current state of the XR system.
+
+#### See
+
+* RealityAPI.getXRState
+* [XRStateChangedEvent](/v3.14/api/webvis/classes/xrstatechangedevent)
+
+## Properties
+
+### anchored
+
+anchored: boolean
+
+Whether the rendered model is anchored in the XR space or not.
+
+#### See
+
+* RealityAPI.anchorXR
+* RealityAPI.unanchorXR
+
+### backgroundFeedVisible
+
+backgroundFeedVisible: boolean
+
+Whether the background feed is visible or not.
+
+#### See
+
+* RealityAPI.showXRBackgroundFeed
+* RealityAPI.hideXRBackgroundFeed
+
+### modelTrackingPhase
+
+modelTrackingPhase: [XRModelTrackingPhase](/v3.14/api/webvis/enums/xrmodeltrackingphase)
+
+Specifies in which phase the model tracking is.
+
+If the XR system does not support model tracking, this value will always be [XRModelTrackingPhase.NONE](/v3.14/api/webvis/enums/xrmodeltrackingphase#none).
+
+### worldMappingStatus
+
+worldMappingStatus: [XRWorldMappingStatus](/v3.14/api/webvis/enums/xrworldmappingstatus)
+
+Represents the current world mapping status
+of the XR system if available.

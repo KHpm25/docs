@@ -1,0 +1,109 @@
+---
+title: "Enumeration ServiceState"
+sidebarTitle: "ServiceState"
+description: "TheServiceStatedescribes the current state of a Service. The ServiceState is grouped by theServiceStateCategorywhich can be discovered by dividing the State by 1000."
+---
+
+The [ServiceState](#) describes the current state of a Service.
+The ServiceState is grouped by the ServiceStateCategory which can be discovered by dividing the State by 1000.
+
+```ts
+const category = Math.floor(serviceState / 1000);
+```
+
+#### See
+
+* ServiceStateCategory
+* ServiceType
+
+## Enumeration Members
+
+### CREATED
+
+CREATED: 1000
+
+Indicates that the Service was created.
+
+### ERROR
+
+ERROR: 5000
+
+Indicates a general Error that doesn't match any of the specific ones.
+
+### ERROR\_ABNORMAL\_WS\_CLOSE
+
+ERROR\_ABNORMAL\_WS\_CLOSE: 5002
+
+Indicates that a WS connection closed abnormally.
+
+### ERROR\_NO\_LICENSE
+
+ERROR\_NO\_LICENSE: 5004
+
+Indicates that there was a problem to acquire a license for the Service.
+
+### ERROR\_REQUEST
+
+ERROR\_REQUEST: 5003
+
+Indicates that there was a problem to request the Service from the backend.
+
+### ERROR\_REQUEST\_EXPIRED
+
+ERROR\_REQUEST\_EXPIRED: 5005
+
+Indicates that there was a Timeout while waiting for a response from the Service.
+
+### ERROR\_SHUTDOWN\_TIMEOUT\_REACHED
+
+ERROR\_SHUTDOWN\_TIMEOUT\_REACHED: 5001
+
+Indicates that the Service was not responding for a longer time and the automatic shutdown timeout was reached.
+
+### ERROR\_UNQUEUEABLE
+
+ERROR\_UNQUEUEABLE: 5006
+
+Indicates that the service could not be scheduled or queued.
+
+### READY
+
+READY: 3000
+
+Indicates that the Service is ready to use.
+
+### REQUESTED
+
+REQUESTED: 2000
+
+Indicates that the Service is requested.
+
+### SHUTDOWN
+
+SHUTDOWN: 6000
+
+Indicates that the Service is shutting down
+
+### WARNING
+
+WARNING: 4000
+
+Indicates a general Warning that doesn't match any of the specific ones.
+
+### WARNING\_HTTP\_AND\_WS\_NOT\_RESPONDING
+
+WARNING\_HTTP\_AND\_WS\_NOT\_RESPONDING: 4003
+
+Indicates that the HTTP and WS connection to the Service is not responding.
+
+### WARNING\_HTTP\_NOT\_RESPONDING
+
+WARNING\_HTTP\_NOT\_RESPONDING: 4001
+
+Indicates that the HTTP connection to the Service is not responding.
+
+### WARNING\_WS\_NOT\_RESPONDING
+
+WARNING\_WS\_NOT\_RESPONDING: 4002
+
+Indicates that the WS connection to the Service is not responding.

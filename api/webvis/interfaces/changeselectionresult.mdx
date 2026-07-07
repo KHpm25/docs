@@ -1,0 +1,37 @@
+---
+title: "Interface ChangeSelectionResult"
+sidebarTitle: "ChangeSelectionResult"
+description: "Represents the result of a change selection operation."
+---
+
+Represents the result of a change selection operation.
+
+This type contains information about the selection change, including the target node ID,
+the count of nodes in the selection before and after the change, and the list of currently selected nodes.
+
+## Properties
+
+### newSelectionCount
+
+newSelectionCount: number
+
+The number of nodes that are selected after the change.
+
+### oldSelectionCount
+
+oldSelectionCount: number
+
+The number of nodes that were selected before the change.
+
+### selectedNodes
+
+selectedNodes: number[]
+
+An array containing the IDs of all currently selected nodes.
+
+### targetNodeID
+
+targetNodeID: number
+
+The ID of the node that was the target of the selection change.
+If value is -1, no node was targeted (for example SelectionAPI.clearSelection) or multiple nodes were effected.

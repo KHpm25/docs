@@ -1,0 +1,133 @@
+---
+title: "Interface CoordinateSystemAPI"
+sidebarTitle: "CoordinateSystemAPI"
+description: "TheCoordinateSystemAPIprovides methods to retrieve the current (right-handed) coordinate system's transformation matrix and its right, up, and forward vectors. All information are "
+---
+
+## CoordinateSystemAPI
+
+### Overview
+
+The `CoordinateSystemAPI` provides methods to retrieve the current (right-handed) coordinate system's transformation matrix and its right,
+up, and forward vectors.
+All information are based on the [front plane axis setting](/api/webvis/enums/settingstrings#front_plane_axis) which defines the orientation of the
+front plane of the model in the 3D space.
+
+### Quick Start
+
+To read out the current coordinate system as well as the currently set [front plane axis setting](/api/webvis/enums/settingstrings#front_plane_axis),
+you can use the following code:
+
+```ts
+// Get the webvis context  
+const webvis = webvis.getContext();  
+  
+const csMat = context.getCoordinateSystemMatrix();  
+const front = context.readSetting(webvis.SettingStrings.FRONT_PLANE_AXIS);  
+  
+// Print the current coordinate system matrix and the corresponding front plane axis.  
+console.log('Front Plane Axis Setting:', front);  
+console.log('Coordinate System Matrix (column-major):');  
+console.table([  
+  [csMat[0], csMat[4], csMat[8],  csMat[12]],  // First row  
+  [csMat[1], csMat[5], csMat[9],  csMat[13]],  // Second row  
+  [csMat[2], csMat[6], csMat[10], csMat[14]],  // Third row  
+  [csMat[3], csMat[7], csMat[11], csMat[15]]   // Fourth row  
+]);
+```
+
+To change the transformations, change the [front plane axis setting](/api/webvis/enums/settingstrings#front_plane_axis):
+
+```ts
+// Change the front plane to be defined by right=-y, up=+z and thus forward=-x.  
+const context = webvis.getContext();  
+context.changeSetting(webvis.SettingStrings.FRONT_PLANE_AXIS, webvis.FrontPlaneAxis.NEG_Y_POS_Z);  
+  
+const csMat = context.getCoordinateSystemMatrix();  
+const csRight = context.getCoordinateSystemRightVector();  
+const csUp = context.getCoordinateSystemUpVector();  
+const csForward = context.getCoordinateSystemForwardVector();  
+  
+console.log('Coordinate System Vectors:');  
+console.log('  Right:',      csRight);  
+console.log('  Up:',         csUp);  
+console.log('  Forward:',    csForward);  
+  
+console.log('Coordinate System Matrix (column-major):');  
+console.table([  
+  [csMat[0], csMat[4], csMat[8],  csMat[12]],  // First row  
+  [csMat[1], csMat[5], csMat[9],  csMat[13]],  // Second row  
+  [csMat[2], csMat[6], csMat[10], csMat[14]],  // Third row  
+  [csMat[3], csMat[7], csMat[11], csMat[15]]   // Fourth row  
+]);
+```
+
+#### See
+
+* [SettingStrings.FRONT\_PLANE\_AXIS](/api/webvis/enums/settingstrings#front_plane_axis) for the corresponding setting
+* [FrontPlaneAxis](/api/webvis/enums/frontplaneaxis) for all possible front plane values
+
+## Methods
+
+### getCoordinateSystemForwardVector
+
+* getCoordinateSystemForwardVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the forward vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The forward vector of the current coordinate system.
+
+### getCoordinateSystemMatrix
+
+* getCoordinateSystemMatrix(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  This function returns a 4x4 transformation matrix that transforms the default right-handed coordinate system,
+  where the x-axis points right, the y-axis points up, and the z-axis points forward (towards the viewer),
+  to a custom coordinate system defined by the [front plane axis setting](/api/webvis/enums/settingstrings#front_plane_axis).
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The 4x4 coordinate system matrix
+
+### getCoordinateSystemRightVector
+
+* getCoordinateSystemRightVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the right vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The right vector of the current coordinate system.
+
+### getCoordinateSystemUpVector
+
+* getCoordinateSystemUpVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the up vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The up vector of the current coordinate system.

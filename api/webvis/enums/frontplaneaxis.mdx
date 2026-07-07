@@ -1,0 +1,113 @@
+---
+title: "Enumeration FrontPlaneAxis"
+sidebarTitle: "FrontPlaneAxis"
+description: "Defines all possible definitions of the front plane axis in a right-handed coordinate system."
+---
+
+Defines all possible definitions of the front plane axis in a right-handed coordinate system.
+
+The front plane axis is defined by the right and up vector of the coordinate system.
+The forward vector is then defined by the cross product of the right and up vector.
+
+#### See
+
+* SettingStrings.FRONT\_PLANE\_AXIS
+* [CoordinateSystemAPI](/api/webvis/interfaces/coordinatesystemapi)
+
+## Enumeration Members
+
+### NEG\_X\_NEG\_Y
+
+NEG\_X\_NEG\_Y: "-x-y"
+
+Specifies a front plane which is defined by right=-x, up=-y and thus forward=+z.
+This means that the x-axis points to the left, the y-axis points down and
+the z-axis points towards the viewer.
+
+### NEG\_X\_NEG\_Z
+
+NEG\_X\_NEG\_Z: "-x-z"
+
+Specifies a front plane which is defined by right=-x, up=-z and thus forward=-y.
+This means that the x-axis points to the left, the y-axis points away from the viewer and
+the z-axis points down.
+
+### NEG\_X\_POS\_Y
+
+NEG\_X\_POS\_Y: "-xy"
+
+Specifies a front plane which is defined by right=-x, up=+y and thus forward=-z.
+This means that the x-axis points to the left, the y-axis points up and
+the z-axis points away from the viewer.
+
+### NEG\_X\_POS\_Z
+
+NEG\_X\_POS\_Z: "-xz"
+
+Specifies a front plane which is defined by right=-x, up=+z and thus forward=+y.
+This means that the x-axis points to the left, the y-axis points towards the viewer and
+the z-axis points up.
+
+### NEG\_Y\_NEG\_Z
+
+NEG\_Y\_NEG\_Z: "-y-z"
+
+Specifies a front plane which is defined by right=-y, up=-z and thus forward=+x.
+This means that the x-axis points towards the viewer, the y-axis points to the left and
+the z-axis points down.
+
+### NEG\_Y\_POS\_Z
+
+NEG\_Y\_POS\_Z: "-yz"
+
+Specifies a front plane which is defined by right=-y, up=+z and thus forward=-x.
+This means that the x-axis points away from the viewer, the y-axis points to the left and
+the z-axis points up.
+
+### POS\_X\_NEG\_Y
+
+POS\_X\_NEG\_Y: "x-y"
+
+Specifies a front plane which is defined by right=+x, up=-y and thus forward=-z.
+This means that the x-axis points to the right, the y-axis points down and
+the z-axis points away from the viewer.
+
+### POS\_X\_NEG\_Z
+
+POS\_X\_NEG\_Z: "x-z"
+
+Specifies a front plane which is defined by right=+x, up=-z and thus forward=+y.
+This means that the x-axis points to the right, the y-axis points towards the viewer and
+the z-axis points down.
+
+### POS\_X\_POS\_Y
+
+POS\_X\_POS\_Y: "xy"
+
+Specifies a front plane which is defined by right=+x, up=+y and thus forward=+z.
+This means that the x-axis points to the right, the y-axis points up and
+the z-axis points towards the viewer.
+
+### POS\_X\_POS\_Z
+
+POS\_X\_POS\_Z: "xz"
+
+Specifies a front plane which is defined by right=+x, up=+z and thus forward=-y.
+This means that the x-axis points to the right, the y-axis points away from the viewer and
+the z-axis points up.
+
+### POS\_Y\_NEG\_Z
+
+POS\_Y\_NEG\_Z: "y-z"
+
+Specifies a front plane which is defined by right=+y, up=-z and thus forward=-x.
+This means that the x-axis points away from the viewer, the y-axis points to the right and
+the z-axis points down.
+
+### POS\_Y\_POS\_Z
+
+POS\_Y\_POS\_Z: "yz"
+
+Specifies a front plane which is defined by right=+y, up=+z and thus forward=+x.
+This means that the x-axis points towards the viewer, the y-axis points to the right and
+the z-axis points up.

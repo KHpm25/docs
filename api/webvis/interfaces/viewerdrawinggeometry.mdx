@@ -1,0 +1,64 @@
+---
+title: "Interface ViewerDrawingGeometry"
+sidebarTitle: "ViewerDrawingGeometry"
+description: "Contains the underlying geometry of drawing primitives."
+---
+
+Contains the underlying geometry of drawing primitives.
+
+## Properties
+
+### color
+
+color: [number, number, number, number]
+
+Specifies the color of the geometry.
+
+### positions
+
+positions: number[]
+
+Specifies the vertex positions of the geometry.
+
+### primitiveType
+
+primitiveType: number
+
+Specifies primitive type of the geometry.
+
+### `Optional`slices
+
+slices?: number[]
+
+Specifies a partition of the vertex list into contiguous sub-ranges (slices).
+
+### `Optional`useWorldUnits
+
+useWorldUnits?: boolean
+
+Specifies how the width value is interpreted.
+If set to true, the width is interpreted in world space (meters) otherwise in screen space (pixels).
+
+#### Default
+
+```ts
+false
+```
+
+### volume
+
+volume: [number, number, number, number, number, number]
+
+Specifies the volume of the geometry.
+
+### `Optional`width
+
+width?: number
+
+Specifies the width of the geometry.
+
+#### Default
+
+```ts
+1
+```

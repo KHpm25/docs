@@ -1,0 +1,49 @@
+---
+title: "Enumeration RenderMode"
+sidebarTitle: "RenderMode"
+description: "The possible Render Modes. The render mode defines how the geometry is rendered."
+---
+
+The possible Render Modes. The render mode defines how the geometry is rendered.
+
+It can be set globally for a single viewer using the ViewerSettingStrings.RENDER\_MODE setting
+or for individual nodes using the Property.RENDER\_MODE property, the latter taking precedence.
+Furthermore, the method [ViewerAPI.forceRenderMode](/api/webvis/interfaces/viewerapi#forcerendermode) overrides both settings.
+
+## Enumeration Members
+
+### Faces
+
+Faces: 0
+
+Render only the faces of the geometry.
+
+### FacesTopology
+
+FacesTopology: 2
+
+Render the faces and the edges of the geometry.
+
+### Occluder
+
+Occluder: 3
+
+Render the faces of the geometry as occlude.
+
+### OccluderTopology
+
+OccluderTopology: 4
+
+Render the faces of the geometry as occlude plus the edges of the geometry.
+
+### Topology
+
+Topology: 1
+
+Render only the edges of the geometry.
+
+### Unset
+
+Unset: 5
+
+Renders the geometry with currently set ViewerSettingStrings.RENDER\_MODE of the individual viewers.

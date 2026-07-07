@@ -1,0 +1,32 @@
+---
+title: "Interface ViewerDrawingResult"
+sidebarTitle: "ViewerDrawingResult"
+description: "Specifies the result of a viewer drawing operation. The result contains the geometries of the drawing, a thumbnail of the drawing, and the version of data contained within the draw"
+---
+
+Specifies the result of a viewer drawing operation.
+The result contains the geometries of the drawing, a thumbnail of the drawing, and the version of data contained within the drawing.
+
+#### See
+
+ViewerDrawingGeometry
+
+## Properties
+
+### geometries
+
+geometries: ViewerDrawingGeometry[]
+
+Contains the geometries of the drawing.
+
+### thumbnail
+
+thumbnail: string
+
+Thumbnail of the drawing, which is encoded as a base64 string.
+
+### version
+
+version: \{ major: number; minor: number; patch: number \}
+
+Version of the data contained within the drawing. Current version: 1.0.2

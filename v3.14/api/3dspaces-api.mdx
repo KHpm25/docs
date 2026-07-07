@@ -1,0 +1,468 @@
+---
+title: "3DSpaces API: Manage Collaborative Spaces via REST"
+sidebarTitle: "3DSpaces API"
+description: "REST API reference for the experimental instant3Dhub 3DSpaces API — create spaces, manage members, annotations, and snapshots programmatically."
+---
+
+The 3DSpaces API lets you create and manage **3DSpaces** — persistent, shareable collaborative sessions where multiple users can view 3D models together, leave annotations, and capture snapshots. Use this REST API to integrate space lifecycle management into your PLM portal, notification pipelines, or operations tooling.
+
+<Note>
+  The 3DSpaces API is currently in **experimental preview**. Endpoints, request/response shapes, and behavior may change in future releases without a deprecation window. Do not build production-critical integrations against experimental endpoints without first contacting Threedy support to discuss stability guarantees.
+</Note>
+
+## Base URL
+
+```text
+https://your-hub.example.com/api/v1/spaces
+```
+
+## Authentication
+
+```http
+Authorization: Bearer <token>
+```
+
+All endpoints require a valid bearer token. The user identity associated with the token is used to record authorship of annotations, snapshots, and membership actions.
+
+---
+
+## Space Management
+
+### `POST /spaces`
+
+Creates a new 3DSpace. You can optionally attach an initial 3D model by providing a resource URN or URL and upload a local file directly using multipart form upload.
+
+**JSON Request (URN-based)**
+
+```http
+POST /api/v1/spaces HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Turbine Blade Review — Sprint 14",
+  "description": "Design review for ECO-4821",
+  "resourceUrn": "urn:my-org:assembly:turbine-blade-v4",
+  "visibility": "PRIVATE"
+}
+```
+
+<ParamField body="name" type="string" required>
+  A human-readable display name for the space. Maximum 120 characters.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Optional free-text description. Maximum 1000 characters.
+</ParamField>
+
+<ParamField body="resourceUrn" type="string">
+  The URN of an existing hub resource to load into the space at creation time. Either `resourceUrn` or a multipart file upload (see below) can be provided — not both.
+</ParamField>
+
+<ParamField body="visibility" type="string">
+  Access control: `"PRIVATE"` (invite-only) or `"INTERNAL"` (all authenticated hub users). Defaults to `"PRIVATE"`.
+</ParamField>
+
+**Multipart File Upload**
+
+To upload a local 3D file directly when creating a space, use `multipart/form-data` instead of JSON:
+
+```http
+POST /api/v1/spaces HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=----Boundary
+
+------Boundary
+Content-Disposition: form-data; name="name"
+
+Turbine Blade Review
+------Boundary
+Content-Disposition: form-data; name="model"; filename="turbine-blade.jt"
+Content-Type: application/octet-stream
+
+<binary file content>
+------Boundary--
+```
+
+The uploaded file is ingested synchronously. For large files (> 100 MB) consider registering the resource via the Resource API first and referencing it by URN.
+
+**Response `201 Created`**
+
+```json
+{
+  "id": "sp_3f8a12cd",
+  "name": "Turbine Blade Review — Sprint 14",
+  "description": "Design review for ECO-4821",
+  "visibility": "PRIVATE",
+  "resourceUrn": "urn:my-org:assembly:turbine-blade-v4",
+  "shareUrl": "https://your-hub.example.com/spaces/sp_3f8a12cd",
+  "createdBy": "user@example.com",
+  "createdAt": "2024-06-01T09:00:00Z",
+  "memberCount": 1
+}
+```
+
+<ResponseField name="id" type="string">
+  Unique space identifier. Use this in all subsequent requests.
+</ResponseField>
+
+<ResponseField name="shareUrl" type="string">
+  A direct link that collaborators can open in a browser to join the space.
+</ResponseField>
+
+<ResponseField name="createdBy" type="string">
+  Email address of the creating user.
+</ResponseField>
+
+<ResponseField name="memberCount" type="integer">
+  Number of current members (includes the creator).
+</ResponseField>
+
+---
+
+### `GET /spaces/{spaceId}`
+
+Returns the details of an existing space.
+
+**Request**
+
+```http
+GET /api/v1/spaces/sp_3f8a12cd HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "id": "sp_3f8a12cd",
+  "name": "Turbine Blade Review — Sprint 14",
+  "description": "Design review for ECO-4821",
+  "visibility": "PRIVATE",
+  "resourceUrn": "urn:my-org:assembly:turbine-blade-v4",
+  "shareUrl": "https://your-hub.example.com/spaces/sp_3f8a12cd",
+  "createdBy": "user@example.com",
+  "createdAt": "2024-06-01T09:00:00Z",
+  "updatedAt": "2024-06-01T11:32:10Z",
+  "memberCount": 3,
+  "annotationCount": 7,
+  "snapshotCount": 2
+}
+```
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `404 Not Found` | No space with the given ID exists or you do not have access to it. |
+
+---
+
+### `DELETE /spaces/{spaceId}`
+
+Permanently deletes a space and all associated members, annotations, and snapshots. This action cannot be undone. Only the space creator or a hub administrator can delete a space.
+
+**Request**
+
+```http
+DELETE /api/v1/spaces/sp_3f8a12cd HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `204 No Content`**
+
+---
+
+## Member Management
+
+### `GET /spaces/{spaceId}/members`
+
+Returns the list of members who have access to the space.
+
+**Request**
+
+```http
+GET /api/v1/spaces/sp_3f8a12cd/members HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "members": [
+    {
+      "id": "mbr_001a",
+      "email": "designer@example.com",
+      "role": "OWNER",
+      "joinedAt": "2024-06-01T09:00:00Z"
+    },
+    {
+      "id": "mbr_002b",
+      "email": "reviewer@example.com",
+      "role": "EDITOR",
+      "joinedAt": "2024-06-01T09:15:00Z"
+    }
+  ]
+}
+```
+
+<ResponseField name="members[].id" type="string">
+  Member record identifier.
+</ResponseField>
+
+<ResponseField name="members[].email" type="string">
+  Email address of the member.
+</ResponseField>
+
+<ResponseField name="members[].role" type="string">
+  `"OWNER"`, `"EDITOR"`, or `"VIEWER"`.
+</ResponseField>
+
+<ResponseField name="members[].joinedAt" type="string">
+  ISO 8601 timestamp when the member accepted their invitation.
+</ResponseField>
+
+---
+
+### `POST /spaces/{spaceId}/members`
+
+Invites a user to the space by email.
+
+**Request**
+
+```http
+POST /api/v1/spaces/sp_3f8a12cd/members HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "email": "newmember@example.com",
+  "role": "VIEWER"
+}
+```
+
+<ParamField body="email" type="string" required>
+  The email address of the user to invite. An invitation email is sent automatically if the user does not yet have a hub account.
+</ParamField>
+
+<ParamField body="role" type="string">
+  The role to assign: `"EDITOR"` (can create annotations and snapshots) or `"VIEWER"` (read-only). Defaults to `"VIEWER"`.
+</ParamField>
+
+**Response `201 Created`**
+
+```json
+{
+  "id": "mbr_003c",
+  "email": "newmember@example.com",
+  "role": "VIEWER",
+  "status": "INVITED",
+  "invitedAt": "2024-06-01T14:00:00Z"
+}
+```
+
+---
+
+### `DELETE /spaces/{spaceId}/members/{memberId}`
+
+Removes a member from the space. Owners cannot remove themselves — transfer ownership first.
+
+**Request**
+
+```http
+DELETE /api/v1/spaces/sp_3f8a12cd/members/mbr_003c HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `204 No Content`**
+
+---
+
+## Annotations
+
+### `GET /spaces/{spaceId}/annotations`
+
+Returns all annotations in the space.
+
+**Request**
+
+```http
+GET /api/v1/spaces/sp_3f8a12cd/annotations HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "annotations": [
+    {
+      "id": "ann_9a1f",
+      "text": "Check this weld seam — surface roughness out of spec.",
+      "nodeId": 4821,
+      "position": { "x": 12.4, "y": 3.1, "z": -0.5 },
+      "createdBy": "designer@example.com",
+      "createdAt": "2024-06-01T10:05:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### `POST /spaces/{spaceId}/annotations`
+
+Creates a new annotation in the space.
+
+**Request**
+
+```http
+POST /api/v1/spaces/sp_3f8a12cd/annotations HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "text": "Flange bolt torque spec unclear — see drawing rev B.",
+  "nodeId": 5104,
+  "position": { "x": 8.0, "y": 0.0, "z": 14.5 }
+}
+```
+
+<ParamField body="text" type="string" required>
+  The annotation body text. Maximum 2000 characters. Plain text only — HTML is escaped.
+</ParamField>
+
+<ParamField body="nodeId" type="number" required>
+  The scene graph node the annotation is pinned to.
+</ParamField>
+
+<ParamField body="position" type="object" required>
+  The 3D world-space position `{ x, y, z }` of the annotation pin.
+</ParamField>
+
+**Response `201 Created`** — returns the created annotation object.
+
+---
+
+## Snapshots
+
+### `GET /spaces/{spaceId}/snapshots`
+
+Returns all snapshots captured in the space.
+
+**Request**
+
+```http
+GET /api/v1/spaces/sp_3f8a12cd/snapshots HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "snapshots": [
+    {
+      "id": "snap_7b2e",
+      "name": "Cross-section view — internal channels",
+      "thumbnailUrl": "https://your-hub.example.com/spaces/sp_3f8a12cd/snapshots/snap_7b2e/thumbnail",
+      "createdBy": "designer@example.com",
+      "createdAt": "2024-06-01T11:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### `POST /spaces/{spaceId}/snapshots`
+
+Captures the current viewer state (camera, visibility, clip planes, annotations) as a named snapshot.
+
+**Request**
+
+```http
+POST /api/v1/spaces/sp_3f8a12cd/snapshots HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Approval state — Rev C"
+}
+```
+
+<ParamField body="name" type="string" required>
+  A display name for the snapshot. Maximum 120 characters.
+</ParamField>
+
+**Response `201 Created`** — returns the created snapshot object including a `thumbnailUrl`.
+
+---
+
+## Complete Workflow Example
+
+The following example shows the full lifecycle of creating a space, uploading a model, adding a member, creating an annotation, and capturing a snapshot — all via the REST API.
+
+```bash
+HUB="https://your-hub.example.com"
+TOKEN="eyJhbGciOiJSUzI1NiJ9..."
+
+# 1. Create a space (JSON body referencing a hub resource)
+SPACE=$(curl -s -X POST "$HUB/api/v1/spaces" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ECO-4821 Review",
+    "resourceUrn": "urn:my-org:assembly:turbine-blade-v4",
+    "visibility": "PRIVATE"
+  }')
+
+SPACE_ID=$(echo "$SPACE" | jq -r '.id')
+SHARE_URL=$(echo "$SPACE" | jq -r '.shareUrl')
+echo "Space created: $SPACE_ID"
+echo "Share URL: $SHARE_URL"
+
+# 2. Invite a team member
+curl -s -X POST "$HUB/api/v1/spaces/$SPACE_ID/members" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "reviewer@example.com", "role": "EDITOR"}'
+
+echo "Member invited."
+
+# 3. Create an annotation
+curl -s -X POST "$HUB/api/v1/spaces/$SPACE_ID/annotations" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Root fillet radius appears undersized. Verify against DIN 509.",
+    "nodeId": 2041,
+    "position": { "x": 5.2, "y": 1.1, "z": 0.0 }
+  }'
+
+echo "Annotation created."
+
+# 4. Capture a snapshot
+curl -s -X POST "$HUB/api/v1/spaces/$SPACE_ID/snapshots" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Initial review state"}'
+
+echo "Snapshot captured."
+```
+
+<Note>
+  Spaces created via the REST API are accessible in the instant3Dhub web client as soon as they are created. Members receive an email invitation with the `shareUrl` and can join without installing any software — only a WebGL-capable browser is required.
+</Note>

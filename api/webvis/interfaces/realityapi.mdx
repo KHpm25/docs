@@ -1,0 +1,525 @@
+---
+title: "Interface RealityAPIExperimental"
+sidebarTitle: "RealityAPI"
+description: "TheRealityAPIprovides AR functionalities inside the webvis context. This includes:"
+---
+
+## AR and webvis: The RealityAPI
+
+### Overview
+
+The **RealityAPI** provides AR functionalities inside the webvis context. This includes:
+
+* Connecting to the device's camera stream
+* Model-based Tracking
+* SLAM-based anchoring of a model to the real world
+* Playback of prerecorded sequences
+
+### Quick Start
+
+The easiest way to get started with the RealityAPI is to connect to the XR system with the default configuration via the [connectXR](#connectxr) method.
+It will try to connect to the device's camera stream and enable model-based tracking.
+Once connected, the camera stream will be shown in the background of the viewer automatically.
+
+```ts
+await webvis.getContext().connectXR();
+```
+
+### Prerequisites: XR Capabilities, XR Configuration and connecting to the local XR system
+
+Since having access to an image source (e.g. the AR camera stream) is a prerequisite for using the
+AR functionalities, the RealityAPI methods can only be used once the RealityAPI has been connected to an image source.
+This can be done by calling the [connectXR](#connectxr) method. The method will return a Promise which resolves when the connection was successful.
+It requires a configuration object as an argument, which determines what parts of the API are desired to be used.
+See XRConfiguration for more information. Whether the desired capabilities are available can be checked by
+calling the [getXRCapabilities](#getxrcapabilities) method.
+
+**Example: Using the device's camera stream**
+
+```ts
+const ctx = webvis.getContext();  
+  
+// Start by requesting the capabilities of the XR system  
+const capabilities = ctx.getXRCapabilities();  
+  
+// Check if the XR system supports providing XR images from the device  
+if (!capabilities.includes(webvis.XRCapability.SUPPORTS_DEVICE_IMAGE_SOURCE)) {  
+   // The XR system does not support providing XR images from the device.  
+}  
+  
+// Connect to the XR system with the desired configuration  
+const xrConfiguration = {  
+   imageSourceConfig: {  
+      type: webvis.XRImageSource.DEVICE // Use the device's camera stream  
+   },  
+   modelTrackingEnabled: capabilities.includes(webvis.XRCapability.MODELTRACKER), // If unset, defaults to true  
+   deviceScreenshotsEnabled: capabilities.includes(webvis.XRCapability.DEVICE_SCREENSHOTS), // If unset, defaults to false  
+   autoShowBackgroundFeed: true // Show the background feed automatically when available, default is true  
+};  
+await ctx.connectXR(xrConfiguration);
+```
+
+Now, the RealityAPI is connected to the XR system and can be used to access the AR functionalities.
+Please note, that you can only use some of the functionalities if the XR system has the required capabilities.
+
+**Example: RealityAPI function call fails due to unsupported XR Capability**
+
+```ts
+// Will fail if the XR system does not support model tracking, i.e. XRCapability.SUPPORTS_MODEL_TRACKING is not present in the capabilities  
+ctx.exportXRInitTemplate();
+```
+
+For a complete list of available capabilities, see [XRCapability](/api/webvis/enums/xrcapability).
+For a detailed description of the AR functionalities, see the corresponding methods in the RealityAPI.
+
+### XR State
+
+The XR state can be queried by calling the [getXRState](#getxrstate) method. The XR state is represented by the XRState type.
+
+### Disconnecting from the XR system
+
+After the AR functionalities are no longer needed, the RealityAPI can be disconnected by calling the [disconnectXR](#disconnectxr) method.
+Also, if the user wants to use a different configuration, the RealityAPI can be reconnected with the new configuration.
+
+**Example: Disconnecting from and reconnecting to the XR system**
+
+```ts
+// ...  
+// Disconnect from the XR system  
+await ctx.disconnectXR();  
+  
+// Reconnect to the XR system with a different configuration  
+const newXRConfiguration = { ... };  
+await ctx.connectXR(newXRConfiguration);  
+// ...  
+await ctx.disconnectXR();
+```
+
+### XR Playback API
+
+The XR Playback API is a subset of the RealityAPI that allows for playback of frame sequences.
+
+With the XR Playback API, recorded frame sequences can be played back anywhere, removing the need to visit the physical location for each test iteration.
+The recordings can be used to test new features easily or increase development iteration speed without the need of having a physical device available.
+
+To use the XR Playback API, the XR system must have the XR Playback capability [XRCapability.SUPPORTS\_PLAYBACK](/api/webvis/enums/xrcapability#supports_playback). Furthermore, inside the xrConfiguration
+object, the XRConfiguration.imageSourceConfig must be of type [XRImageSource.PLAYBACK](/api/webvis/enums/xrimagesource#playback). This type allows for a more detailed configuration
+tailored to the playback source. The configuration object must specify the URL of the frame sequence to be played back.
+The URL must point to the `manifest.json` file of the frame sequence which contains the necessary information about the frame sequence.
+See XRImageSourceConfigPlayback for more information.
+
+**Example: XR Playback API**
+
+```ts
+const xrPlaybackConfiguration = {  
+  imageSourceConfig: {  
+   type: webvis.XRImageSource.PLAYBACK,  
+   url: "https://example.com/manifest.json",  
+   autoPlay: true // Start playback automatically, default is false  
+  }  
+};  
+await ctx.connectXR(xrPlaybackConfiguration);
+```
+
+The XR Playback API provides methods to control the playback, such as starting, pausing, stopping, seeking, setting the playback speed, etc.
+You can also query the playback properties and state to get information about the playback sequence.
+XR Playback API methods can be identified by the naming infix `XRPlayback`.
+
+## Methods
+
+### anchorXR
+
+* anchorXR(xrAnchorOptions?: XRAnchorOptions): void
+
+  `Experimental`
+
+  Anchors the model at the current 3D pose. Visually, this will have the effect that the model will stay at the
+  current position and orientation in the real world.
+
+  Please note, that in a model-based tracking scenario, the model will get anchored automatically
+  when the alignment of the model with the real world object is high enough that tracking can be performed
+  (model is snapped).
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.anchored set to `true`.
+
+  The optional parameter XRAnchorOptions, in conjunction with XRAnchorOptions.anchorToSurface,
+  can be used to anchor the model on a detected surface. By default, this is set to false, and the model
+  is anchored at the current 3D pose of the device, as described above.
+
+  However, if set to true, and if the device running webvis supports XR and ray casting, a mathematical ray will be cast from the device into the real world.
+  If this ray intersects with a detected surface, the scene will be transformed and anchored to this surface at the intersection point, with the Y axis alined orthogonally to the surface.
+  On occasion, the model may need to be offset, so it does not appear to be imbedded in the surface it is anchored to.
+  In order to achieve this, an optional parameter can be set in the XRAnchorOptions, by updating the XRAnchorOptions.xrAnchorOffsetTransform matrix.
+
+  #### Parameters
+
+  + `Optional`xrAnchorOptions: XRAnchorOptions
+
+    An optional object that contains the anchorToSurface property.
+
+  #### Returns void
+
+### connectXR
+
+* connectXR(xrConfiguration?: XRConfiguration): Promise\<void>
+
+  `Experimental`
+
+  Connect to the XR system with the given XRConfiguration. The configuration determines what parts of the API are desired to be used.
+
+  By default, XR will be connected with the following configuration:
+
+  ```ts
+  const defaultXRConfiguration = {  
+       imageSourceConfig:  
+       {  
+           type: XRImageSource.DEVICE  
+       }  
+  }
+  ```
+
+  If unspecified, `modelTrackingEnabled` and `autoShowBackgroundFeed` will be inferred as `true` and `deviceScreenshotsEnabled` as `false` automatically.
+
+  Note: If a change of configuration is required after being initialized, the user has to [disconnectXR](#disconnectxr) and connect with the new configuration.
+
+  #### Parameters
+
+  + `Optional`xrConfiguration: XRConfiguration
+
+    The configuration for the XR system
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### disconnectXR
+
+* disconnectXR(): Promise\<void>
+
+  `Experimental`
+
+  Disconnect from the XR system.
+
+  This method should be called when the AR functionalities are no longer needed.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### enterXRInitMode
+
+* enterXRInitMode(xrInitOptions?: XRInitOptions): Promise\<void>
+
+  `Experimental`
+
+  Enter the XR initialization mode. The initialization mode is used as an entry point for model-based tracking.
+  It unanchors any previously anchored model and starts the model-based tracking process.
+  In this mode, the user can align the model with the real object (snapping). When the model is
+  snapped, the XRState.anchored value will be set to `true` which will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent).
+  By that, the init mode gets exited and the model is anchored to the real object. The model now gets tracked
+  and moves with the device.
+
+  Please note, that this method should only be called if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  #### Parameters
+
+  + `Optional`xrInitOptions: XRInitOptions
+
+    The options for the XR initialization mode
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### exportXRInitTemplate
+
+* exportXRInitTemplate(): Promise\<string>
+
+  `Experimental`
+
+  Exports an initialization template for model-based tracking.
+
+  In a model-based tracking scenario, after a successful tracking session, the learned initialization data
+  can be exported with this function and stored as a template for later.
+
+  This method is only available if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  The acquired data can be imported via [importXRInitTemplate](#importxrinittemplate) function.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains the base64 encoded initialization template data
+  when the operation was successful or rejects in an error case.
+
+### getXRCapabilities
+
+* getXRCapabilities(): [XRCapability](/api/webvis/enums/xrcapability)[]
+
+  `Experimental`
+
+  Get the array of [XRCapability](/api/webvis/enums/xrcapability). The array of capabilities determines what parts of the API can be used. The capabilities
+  are mostly defined by the used device.
+
+  #### Returns [XRCapability](/api/webvis/enums/xrcapability)[]
+
+  Returns an Array<[XRCapability](/api/webvis/enums/xrcapability)> containing the XR system's capabilities.
+
+### getXRPlaybackProperties
+
+* getXRPlaybackProperties(): XRPlaybackProperties
+
+  `Experimental`
+
+  Get static information about the playback sequence.
+
+  #### Returns XRPlaybackProperties
+
+  The current XRPlaybackProperties
+
+### getXRPlaybackState
+
+* getXRPlaybackState(): XRPlaybackState
+
+  `Experimental`
+
+  Get real-time information about the current state of the playback.
+
+  #### Returns XRPlaybackState
+
+  The current XRPlaybackState
+
+### getXRState
+
+* getXRState(): XRState
+
+  `Experimental`
+
+  Get the runtime state of the XR system.
+
+  #### Returns XRState
+
+  Returns either the current XRState or undefined if the XR system is not connected.
+
+### hideXRBackgroundFeed
+
+* hideXRBackgroundFeed(): Promise\<void>
+
+  `Experimental`
+
+  Stops putting the image feed into the viewer's background. Also see [showXRBackgroundFeed](#showxrbackgroundfeed).
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.backgroundFeedVisible set to `false`.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### importXRInitTemplate
+
+* importXRInitTemplate(template: string): Promise\<void>
+
+  `Experimental`
+
+  Imports an initialization template for model-based tracking.
+
+  In a model-based tracking scenario, initialization templates are captured during the tracking process.
+  This initialization data is linked to previously visited viewpoints along the traveled camera path.
+  Once the tracking is lost the templates are used to quickly reinitialize from similar viewpoints without the
+  user having to align the line model with the real object.
+
+  Once the initialization template data is imported, it will persist until [enterXRInitMode](#enterxrinitmode) with
+  XRInitOptions.resetInitTemplate set to `true` is called.
+
+  This method is only available if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  The input data can be aquired via the [exportXRInitTemplate](#exportxrinittemplate) method.
+
+  #### Parameters
+
+  + template: string
+
+    The base64 encoded initialization template data
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### requestXRDeviceScreenshot
+
+* requestXRDeviceScreenshot(): Promise\<string>
+
+  `Experimental`
+
+  Request a screenshot of the webview's content inside the native XR device application.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains the base64 encoded image data when the operation
+  was successful or rejects in an error case.
+
+### requestXRScanshot
+
+* requestXRScanshot(): Promise\<XRScanshot>
+
+  `Experimental`
+
+  Requests a scanshot of the current view in the XR environment.
+
+  #### Returns Promise\<XRScanshot>
+
+  The scanshot data.
+
+### seekXRPlayback
+
+* seekXRPlayback(frameIndex: number): Promise\<void>
+
+  `Experimental`
+
+  Jump to the frame with the specified index in the playback sequence. To get the total amount of frames in the sequence,
+  see XRPlaybackProperties and [getXRPlaybackProperties](#getxrplaybackproperties) method.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + frameIndex: number
+
+    The index of the frame to jump to
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which reports wether the operation was successful or not
+
+### setXRPlaybackBoomerang
+
+* setXRPlaybackBoomerang(boomerang: boolean): Promise\<void>
+
+  `Experimental`
+
+  Specify whether the playback should "boomerang" (play forward and backward in a loop).
+  This is useful for creating a seamless transition at the end of a sequence in terms of pose updates.
+
+  #### Parameters
+
+  + boomerang: boolean
+
+    Whether the playback should boomerang or not
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which reports whether the operation was successful or not
+
+### setXRPlaybackFrameRange
+
+* setXRPlaybackFrameRange(startFrame: number, endFrame: number): Promise\<number>
+
+  `Experimental`
+
+  Sets the frame range to play back. The total amount of frames in a sequence can be found in the XRPlaybackProperties.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + startFrame: number
+
+    The index of the first frame to play back
+  + endFrame: number
+
+    The index of the last frame to play back
+
+  #### Returns Promise\<number>
+
+  Returns a Promise which resolves with the new amount of frames in the playback if successful
+  and rejects otherwise
+
+### setXRPlaybackSource
+
+* setXRPlaybackSource(url: string): Promise\<number>
+
+  `Experimental`
+
+  Set the URL pointing to the `manifest.json` file of the frame sequence to be played back.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + url: string
+
+    The URL of the frame sequence
+
+  #### Returns Promise\<number>
+
+  Returns a Promise which resolves with the amount of frames in the playback if successful
+  and rejects otherwise
+
+### setXRPlaybackSpeed
+
+* setXRPlaybackSpeed(speed: number): void
+
+  `Experimental`
+
+  Set the desired playback speed. The specified speed must be a value between 0 and 1.
+  It gives the playback speed as a fraction of the original FPS which is stored in the XRPlaybackProperties.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + speed: number
+
+    The desired playback speed. Must be a value between 0 and 1.
+
+  #### Returns void
+
+### showXRBackgroundFeed
+
+* showXRBackgroundFeed(): Promise\<void>
+
+  `Experimental`
+
+  Starts putting the image feed into the viewer's background. Also see [hideXRBackgroundFeed](#hidexrbackgroundfeed).
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.backgroundFeedVisible set to `true`.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+### startXRPlayback
+
+* startXRPlayback(): void
+
+  `Experimental`
+
+  Start the XR playback.
+
+  Make sure to set the playback source before starting the playback.
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Returns void
+
+### stopXRPlayback
+
+* stopXRPlayback(): void
+
+  `Experimental`
+
+  Stop the XR playback.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Returns void
+
+### unanchorXR
+
+* unanchorXR(): void
+
+  `Experimental`
+
+  Unanchors the model. This will have the effect that the model will no longer be anchored to the real world.
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.anchored set to `false`.
+
+  #### Returns void

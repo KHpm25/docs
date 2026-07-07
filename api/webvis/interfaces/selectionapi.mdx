@@ -1,0 +1,257 @@
+---
+title: "Interface SelectionAPI"
+sidebarTitle: "SelectionAPI"
+description: "TheSelectionAPIprovides basic functionalities to manipulate the current selection of nodes. It allowsadding,removing, and checking the selection status of nodes, as well as replaci"
+---
+
+## SelectionAPI
+
+### Overview
+
+The **SelectionAPI** provides basic functionalities to manipulate the current selection of nodes.
+It allows [adding](#addtoselection), [removing](#removefromselection), and checking the selection status of nodes, as well as replacing the current selection.
+
+### Quick Start
+
+Example: add a node to the selection, query the selection, and clear the selection in the end.
+
+```ts
+const context = webvis.getContext()  
+  
+// add node with ID 5 to the selection  
+await context.addToSelection(5)  
+  
+// get selected nodes  
+context.getSelectedNodes() // returns [5]  
+  
+// clear the selection  
+await context.clearSelection()
+```
+
+### Reading the selection state of a node
+
+Instead of using the [isSelected](#isselected) method,
+you can also check whether a node is selected by using the getProperty method.
+The property [Property.SELECTED](/api/webvis/enums/property#selected) can be used to check the selection state of a node.
+
+The selection state is recursive, meaning:
+
+* When a parent node is selected, all its children are selected as well.
+* When all children of a node become selected, the parent node is considered selected.
+
+The [getSelectedNodes](#getselectednodes) method returns the list of selected nodes. If a parent node is selected, it will return the parent node, but not its children.
+
+To get a list of all selected leaf nodes (nodes without children), you can use the [getSelectedLeafNodes](#getselectedleafnodes) method.
+
+### Events
+
+The following event is associated with the SelectionAPI:
+
+* [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent): Triggered when the selection changes.
+
+## Methods
+
+### addToSelection
+
+* addToSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Adds the specified nodes to the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to add to the selection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+### clearSelection
+
+* clearSelection(silent?: boolean): Promise\<ChangeSelectionResult>
+
+  Clears the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+### getSelectedLeafNodes
+
+* getSelectedLeafNodes(): number[]
+
+  Returns a list of all selected leaf nodes.
+
+  #### Returns number[]
+
+  An array which contains the IDs of all leaf nodes in the current selection.
+
+### getSelectedNodes
+
+* getSelectedNodes(): number[]
+
+  Returns a list of all selected nodes.
+  When a whole subtree is selected, only the parent node will be included in the returned array.
+  To get the selected leaf nodes of the subtree, use [getSelectedLeafNodes](#getselectedleafnodes) instead.
+
+  #### Returns number[]
+
+  An array which contains the IDs of all nodes in the current selection.
+
+### getSelection
+
+* getSelection(): Promise\<number[]>
+
+  Returns a list of all selected nodes.
+
+  #### Returns Promise\<number[]>
+
+  An array which contains the IDs of all nodes in the current selection.
+
+  #### Deprecated
+
+  getSelection is deprecated, please use [getSelectedNodes](#getselectednodes) instead.
+
+### invertSelection
+
+* invertSelection(silent?: boolean): Promise\<ChangeSelectionResult>
+
+  Inverts the current selection.
+
+  Selected nodes will be unselected, and then all previously unselected leaf nodes will be selected.
+  When all child nodes of a parent are selected, the selection moves up the hierarchy as usual.
+
+  For example, consider the following hierarchy:
+
+  ```ts
+  Node 0  
+   |- Node 1  
+       |- Node 1.1  
+       |- Node 1.2  
+   |- Node 2  
+       |- Node 2.1  
+       |- Node 2.2
+  ```
+
+  If the initial selection is only `Node 2.1`, calling `invertSelection` will result in the selection including `Node 2.2`, `Node 1.1`, `Node 1.2`, and therefore also `Node 1`.
+  `Node 0` and `Node 2` will not become selected, even though they were not selected initially.
+  If [getSelectedNodes](#getselectednodes) is called at this point, it will return `[Node 1, Node 2.2]`.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+### isSelected
+
+* isSelected(nodeID: number): Promise\<boolean>
+
+  Checks if the specified node is part of the selection.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node to check for selection status.
+
+  #### Returns Promise\<boolean>
+
+  True if the given node is selected, otherwise false.
+
+### removeFromSelection
+
+* removeFromSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Removes the specified nodes from the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to remove from the selection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+### selectCollection
+
+* selectCollection(  
+      collectionID: number,  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  #### Parameters
+
+  + collectionID: number
+
+    The ID of the collection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  #### Deprecated
+
+  selectCollection is deprecated, please use [setSelection](#setselection) instead.
+
+  Replaces the current selection with the nodes from the given collection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+### setSelection
+
+* setSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Replaces the current selection with the specified nodes.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to select.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.

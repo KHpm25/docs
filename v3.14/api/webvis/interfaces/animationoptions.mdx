@@ -1,0 +1,97 @@
+---
+title: "Interface AnimationOptions"
+sidebarTitle: "AnimationOptions"
+description: "TheAnimationOptionsprovide additional options of a whole animation sequence."
+---
+
+The **AnimationOptions** provide additional options of a whole animation sequence.
+
+#### See
+
+AnimationAPI
+
+## Properties
+
+### `Optional`delay
+
+delay?: number
+
+The initial delay of the animation sequence.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional`duration
+
+duration?: number
+
+The total duration of the animation sequence in milliseconds.
+
+#### Default
+
+```ts
+1000
+```
+
+### `Optional`iterationCount
+
+iterationCount?: number
+
+The number of iterations of the animation sequence.
+
+#### Default
+
+```ts
+1
+```
+
+### `Optional`playbackRate
+
+playbackRate?: number
+
+The playback rate of the animation sequence.
+
+#### Default
+
+```ts
+1
+```
+
+### `Optional`playState
+
+playState?: [AnimationPlayState](/v3.14/api/webvis/enums/animationplaystate)
+
+The play state of the animation sequence.
+
+#### Default
+
+```ts
+AnimationPlayState.INITIAL
+```
+
+### `Optional`time
+
+time?: number
+
+The current time of the animation sequence between 0 and the total duration.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional`timingFunction
+
+timingFunction?: [AnimationTimingFunction](/v3.14/api/webvis/enums/animationtimingfunction)
+
+The timing function used for the interpolation.
+
+#### Default
+
+```ts
+AnimationTimingFunction.LINEAR
+```

@@ -1,0 +1,109 @@
+---
+title: "Interface AnimationFrame"
+sidebarTitle: "AnimationFrame"
+description: "AnAnimationFramedefines a single state inside of an animation sequence."
+---
+
+An **AnimationFrame** defines a single state inside of an animation sequence.
+
+#### See
+
+AnimationAPI
+
+## Properties
+
+### `Optional`center
+
+center?: [number, number, number]
+
+The center point which is used for all rotation and scale interpolations.
+
+#### Default
+
+```ts
+[0, 0, 0]
+```
+
+### `Optional`color
+
+color?: string | [number, number, number] | [number, number, number, number]
+
+The color as [r,g,b], [r,g,b,a], string (hexadecimal value or HTML Color Code). Use null to reset.
+
+#### Default
+
+```ts
+null
+```
+
+### `Optional`enabled
+
+enabled?: boolean
+
+The enabled state as true or false.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`opacity
+
+opacity?: number
+
+The opacity between 0 and 1.
+
+#### Default
+
+```ts
+1
+```
+
+### `Optional`rotation
+
+rotation?: [number, number, number] | [number, number, number, number]
+
+The rotation as Euler angles [x,y,z] or Quaternion [C,xS,yS,zS].
+
+#### Default
+
+```ts
+[0, 0, 0]
+```
+
+### `Optional`scale
+
+scale?: [number, number, number]
+
+The scale as [x,y,z].
+
+#### Default
+
+```ts
+[1, 1, 1]
+```
+
+### `Optional`time
+
+time?: number
+
+The time between 0 and 1. Indicates the progress of the animation sequence for this AnimationFrame.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional`translation
+
+translation?: [number, number, number]
+
+The translation as [x,y,z].
+
+#### Default
+
+```ts
+[0, 0, 0]
+```

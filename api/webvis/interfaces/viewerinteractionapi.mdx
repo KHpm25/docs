@@ -1,0 +1,146 @@
+---
+title: "Interface ViewerInteractionAPI"
+sidebarTitle: "ViewerInteractionAPI"
+description: "TheViewerInteractionAPIprovides methods to control the user's interaction with a viewer."
+---
+
+## ViewerInteractionAPI
+
+### Overview
+
+The `ViewerInteractionAPI` provides methods to control the user's interaction with a viewer.
+
+### Quick Start
+
+The following example enables snapping to topological entities and then reacts to
+[NodeClickedEvent](/api/webvis/classes/nodeclickedevent)s:
+
+```ts
+const context = webvis.getContext();  
+const viewer = context.getViewer();  
+  
+// Render topological entities  
+// This is required to enable interaction with and snapping  
+// to topological entities  
+viewer.forceRenderMode(webvis.RenderMode.FacesTopology);  
+  
+viewer.setInteractionLevel(webvis.ViewerInteractionLevel.TOPOLOGY);  
+viewer.enableSnapping(true);  
+  
+// Disable the default node selection on click.  
+// This is not required, but recommended to improve the user experience  
+context.setInteractionMode(webvis.InteractionMode.NONE);  
+  
+const listenerId = context.registerListener([webvis.EventType.NODE_CLICKED], async (event) => {  
+    const pointerInfo = event.pointerInfo;  
+    console.log("Click position in 3D: ", pointerInfo.position);  
+  
+    const topologyHandle = await pointerInfo.requestTopologyHandle();  
+    console.log("Topological entity: ", topologyHandle);  
+}, 0, true); // Set option 'observeSubTree' to true to observe all entities  
+  
+//...  
+  
+// Don't forget to unregister the listener when you are done  
+context.unregisterListener(listenerId);
+```
+
+### Interaction Levels
+
+Get the current [interaction level](/api/webvis/enums/viewerinteractionlevel) of a viewer:
+
+```ts
+const viewer = webvis.getContext().getViewer("my-viewer");  
+const interactionLevel = viewer.getInteractionLevel();
+```
+
+By default, the interaction level is set to `NODE`, which means that the user will interact with viewer at the
+node level. In other words, on a desktop device using a mouse, the viewer will respond to clicks with the respective
+node under the mouse cursor.
+
+Changing the interaction level to `TOPOLOGY` will make the viewer respond to clicks with the respective topology
+under the mouse cursor:
+
+```ts
+viewer.setInteractionLevel(webvis.ViewerInteractionLevel.TOPOLOGY);
+```
+
+### Snapping
+
+The `ViewerInteractionAPI` also provides the option to enable or disable snapping.
+Snapping is a feature that allows the user to snap to the nearest edge or point.
+
+```ts
+viewer.enableSnapping(true); // Enable snapping
+```
+
+### Remarks
+
+Interaction and snapping only work on entities that are being rendered in the viewer.
+For example, if the [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel) is set to [ViewerInteractionLevel.TOPOLOGY](/api/webvis/enums/viewerinteractionlevel#topology),
+but the viewer's [ViewerSettingStrings.RENDER\_MODE](/api/webvis/enums/viewersettingstrings#render_mode) is set to
+[RenderMode.Faces](/api/webvis/enums/rendermode#faces) only, then snapping to edges will not work. To enable
+snapping to all topological entities, the render mode should be set to
+[RenderMode.FacesTopology](/api/webvis/enums/rendermode#facestopology) instead.
+
+### Events
+
+The `ViewerInteractionAPI` emits the following events:
+
+* [BackgroundClickedEvent](/api/webvis/classes/backgroundclickedevent)
+* [NodeClickedEvent](/api/webvis/classes/nodeclickedevent)
+* [NodePointerEnterEvent](/api/webvis/classes/nodepointerenterevent)
+* [NodePointerOutEvent](/api/webvis/classes/nodepointeroutevent)
+* [NodePointerOverEvent](/api/webvis/classes/nodepointeroverevent)
+* [TopologyPointerEnterEvent](/api/webvis/classes/topologypointerenterevent)
+* [TopologyPointerOutEvent](/api/webvis/classes/topologypointeroutevent)
+
+## Methods
+
+### enableSnapping
+
+* enableSnapping(useSnapping: boolean): void
+
+  Enables or disables snapping in the viewer.
+
+  #### Parameters
+
+  + useSnapping: boolean
+
+    Whether to enable or disable snapping.
+
+  #### Returns void
+
+### getInteractionLevel
+
+* getInteractionLevel(): [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+  Returns the current interaction level of the viewer.
+
+  #### Returns [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+  The current interaction level of the viewer.
+
+### isSnappingEnabled
+
+* isSnappingEnabled(): boolean
+
+  Returns whether snapping is enabled in the viewer.
+
+  #### Returns boolean
+
+  `true` if snapping is enabled, `false` otherwise.
+
+### setInteractionLevel
+
+* setInteractionLevel(level: [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)): void
+
+  Sets the viewer's interaction level.
+
+  #### Parameters
+
+  + level: [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+    Specifies the viewer's interaction level.
+
+  #### Returns void

@@ -1,0 +1,198 @@
+---
+title: "Work with Nodes and Properties in the InstanceGraph"
+sidebarTitle: "Nodes & Properties"
+description: "Learn how to traverse the InstanceGraph, read and set node properties, query nodes by selector, and control visibility and appearance of 3D parts."
+---
+
+Every model loaded into instant3Dhub is represented internally as an **InstanceGraph** — a tree of nodes where each node corresponds to a part, assembly, or other logical element in the 3D data. Understanding the InstanceGraph is the key to controlling what your users see and how they can interact with the scene.
+
+## Understanding Nodes
+
+Each node in the InstanceGraph has:
+
+- **A unique integer ID** — assigned by the hub when the model is loaded. You receive the root node ID from `context.add()`.
+- **A parent** — every node except the root has a parent. The scene root is always node `1`.
+- **Children** — assemblies contain child nodes representing their sub-components.
+- **Properties** — key/value pairs that control appearance, visibility, interaction, and metadata.
+
+```javascript
+// Load a model — context.add() returns the root node ID of the loaded asset
+const rootNodeId = await context.add('https://your-hub.example.com/resources/engine.stp');
+console.log('Root node ID:', rootNodeId);
+
+// The global scene root is always node 1
+const sceneRootId = 1;
+```
+
+## Reading and Writing Properties
+
+### Set a Property
+
+Use `context.setProperty(nodeId, propertyName, value)` to change a property on any node. The change is applied immediately and propagates through the subtree for inheritable properties like `visible`.
+
+```javascript
+// Hide a part
+await context.setProperty(nodeId, 'visible', false);
+
+// Highlight a part in orange
+await context.setProperty(nodeId, 'color', '#ef7025');
+
+// Make a part semi-transparent
+await context.setProperty(nodeId, 'opacity', 0.3);
+
+// Set a display label
+await context.setProperty(nodeId, 'label', 'Cylinder Head');
+
+// Select a node programmatically
+await context.setProperty(nodeId, 'selected', true);
+```
+
+### Get a Property
+
+Use `context.getProperty(nodeId, propertyName)` to read the current value of a property:
+
+```javascript
+const isVisible = await context.getProperty(nodeId, 'visible');
+const currentColor = await context.getProperty(nodeId, 'color');
+const label = await context.getProperty(nodeId, 'label');
+
+console.log(`Node ${nodeId}: visible=${isVisible}, label="${label}"`);
+```
+
+## Node Properties Reference
+
+| Property | Type | Description |
+|---|---|---|
+| `visible` | `boolean` | Show or hide the node and its entire subtree. Defaults to `true`. |
+| `selected` | `boolean` | Selection state of the node. Setting `true` adds the node to the current selection. |
+| `color` | `string` (hex) | Override the node's rendered color. Pass a hex color string such as `'#ef7025'`. Set to `null` to restore the original material color. |
+| `opacity` | `number` (0–1) | Transparency level. `1` is fully opaque, `0` is fully transparent. |
+| `label` | `string` | A display label shown in the viewer UI and returned in query results. |
+| `transform` | `number[]` (mat4) | The node's local transform as a flat 16-element column-major matrix. |
+| `enabled` | `boolean` | Enable or disable interaction (selection, hover) for the node. Defaults to `true`. |
+
+## Querying Nodes
+
+`context.query(selector)` lets you find nodes by their properties or path without walking the tree manually. It returns an array of matching node IDs.
+
+```javascript
+// Find all currently visible nodes
+const visibleNodes = await context.query({ visible: true });
+
+// Find all nodes with a specific label
+const headNodes = await context.query({ label: 'Cylinder Head' });
+
+// Find all selected nodes
+const selection = await context.query({ selected: true });
+
+console.log('Currently selected:', selection);
+```
+
+<Tip>
+  Use `context.query({ selected: true })` as a reliable way to read the current selection without managing state yourself — it always reflects the live state of the InstanceGraph.
+</Tip>
+
+## Common Patterns
+
+### Show and Hide Parts
+
+Toggle visibility on individual nodes or entire assemblies. Setting `visible: false` on an assembly node hides all its children automatically.
+
+```javascript
+// Hide a single part
+await context.setProperty(partNodeId, 'visible', false);
+
+// Show it again
+await context.setProperty(partNodeId, 'visible', true);
+
+// Hide an entire assembly (all children hidden automatically)
+await context.setProperty(assemblyNodeId, 'visible', false);
+```
+
+### Highlight Parts
+
+Use `color` and `opacity` together for an X-ray effect — a common pattern for emphasising selected components while keeping context visible.
+
+```javascript
+async function highlightPart(context, targetNodeId, allNodeIds) {
+  // Dim everything
+  for (const id of allNodeIds) {
+    await context.setProperty(id, 'opacity', 0.15);
+  }
+
+  // Highlight the target in full color
+  await context.setProperty(targetNodeId, 'opacity', 1.0);
+  await context.setProperty(targetNodeId, 'color', '#ef7025');
+}
+
+async function clearHighlight(context, allNodeIds) {
+  for (const id of allNodeIds) {
+    await context.setProperty(id, 'opacity', 1.0);
+    await context.setProperty(id, 'color', null); // restore original
+  }
+}
+```
+
+### Bulk Operations on an Assembly
+
+When you need to apply the same property change to every node under an assembly, query the subtree first and then iterate:
+
+```javascript
+async function hideAssemblyByLabel(context, labelPrefix) {
+  // Find all nodes whose label starts with the given prefix
+  const nodes = await context.query({ label: labelPrefix });
+
+  await Promise.all(
+    nodes.map((nodeId) => context.setProperty(nodeId, 'visible', false))
+  );
+
+  console.log(`Hid ${nodes.length} node(s) matching "${labelPrefix}"`);
+}
+```
+
+<Note>
+  Using `Promise.all` submits all property changes concurrently. For very large node sets (thousands of nodes), consider batching calls into groups of 50–100 to avoid overwhelming the hub connection.
+</Note>
+
+### Reading Node Metadata
+
+Nodes carry metadata attached during CAD import — part numbers, material names, engineering attributes, and so on. Read them with `getProperty`:
+
+```javascript
+async function printNodeInfo(context, nodeId) {
+  const [label, visible, color, opacity] = await Promise.all([
+    context.getProperty(nodeId, 'label'),
+    context.getProperty(nodeId, 'visible'),
+    context.getProperty(nodeId, 'color'),
+    context.getProperty(nodeId, 'opacity')
+  ]);
+
+  console.log({
+    nodeId,
+    label,
+    visible,
+    color,
+    opacity
+  });
+}
+```
+
+### Applying a Custom Transform
+
+Override a node's position, rotation, and scale by writing a column-major 4×4 matrix to the `transform` property:
+
+```javascript
+// Translate a node 10 units along the X axis
+const translateX10 = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  10, 0, 0, 1   // translation in the last row (column-major)
+];
+
+await context.setProperty(nodeId, 'transform', translateX10);
+```
+
+<Warning>
+  Transform overrides are applied on top of the node's original transform from the CAD data. To reset to the original position, set `transform` to `null`.
+</Warning>

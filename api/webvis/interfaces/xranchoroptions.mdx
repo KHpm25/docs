@@ -1,0 +1,51 @@
+---
+title: "Interface XRAnchorOptions"
+sidebarTitle: "XRAnchorOptions"
+description: "Options for anchoring an object in AR."
+---
+
+Options for anchoring an object in AR.
+
+This type specifies the configuration options available when creating an anchor
+for an object in an Augmented Reality (AR) environment.
+
+#### See
+
+RealityAPI.anchorXR
+
+## Properties
+
+### anchorToSurface
+
+anchorToSurface: boolean
+
+Determines whether the anchor should be attached to a detected surface.
+
+### `Optional`xrAnchorOffsetTransform
+
+xrAnchorOffsetTransform?:  
+    | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ]
+
+The XR anchor offset transform is used to set a scene's box volume position in conjunction with ContextAPI.anchorXR so that
+when anchored to a surface, the scene does not appear to be embedded in the surface.
+The offset transform also allows for rotations to be applied, but not scaling. If scaling is
+included in the offset transform, unexpected results may occur.
+Default value is the identity matrix.

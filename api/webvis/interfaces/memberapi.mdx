@@ -1,0 +1,280 @@
+---
+title: "Interface MemberAPIExperimental"
+sidebarTitle: "MemberAPI"
+description: "The Member API provides methods to interact with members in the currentspacefor live collaboration. Members represent clients connected to thespace. You can retrieve information ab"
+---
+
+## Member API
+
+### Overview
+
+The Member API provides methods to interact with members in the current space for
+live collaboration. Members represent clients connected to the space. You can retrieve
+information about members, manage custom data associated with them, and perform actions on them.
+
+### Quick Start
+
+```ts
+// Get the webvis context  
+const context = await webvis.getContext();  
+  
+// Get the IDs of all members in the current space  
+const memberIds = context.getMembers();  
+  
+console.log(`The current space has ${memberIds.length} members.`);  
+  
+// Request properties for the local member, which is always the first in the members list  
+const localMemberId = memberIds[0];  
+const localMemberProps = await context.requestMemberProperties(localMemberId);  
+  
+// Request properties for another member  
+const otherMemberId = memberIds[1];  
+const otherMemberProps = context.requestMemberProperties(otherMemberId);  
+  
+// Set/get the name of the local member  
+context.setMemberName("John Doe");  
+const memberName = context.getMemberName();  
+  
+// Get notified about changes to the properties of another member via the MemberChangedEvent  
+context.registerListener([webvis.EventType.MEMBER_CHANGED], (event) => {  
+  if (event.memberId === otherMemberId) {  
+    console.log(`${otherMemberProps.name} changed the properties to ${JSON.stringify(event.memberProperties)}`);  
+  }  
+});
+```
+
+### Member IDs
+
+Every member has an ID, which is a randomly generated unique number. The member IDs can be obtained by calling
+[getMembers](#getmembers). The first entry of the members list is always the local member (i.e. the client itself).
+
+### Custom member data
+
+You can manage custom data at the profile entries of a member using the
+[setMemberProfileEntry](#setmemberprofileentry) and [deleteMemberProfileEntry](#deletememberprofileentry) methods. This data
+is stored in the `profile` field of the MemberProperties object and will be
+synced with other members in the same space. Other members can subscribe to changes of the
+profile entries of a member via the [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent).
+
+```ts
+// Client A: Set/get custom data at the profile entries of the local member  
+await context.setMemberProfileEntry("status", "online");  
+await context.setMemberProfileEntry("age", 30);  
+const status = localMemberProps.profile?.userData["status"]  
+const age = localMemberProps.profile?.userData["age"]; // 30  
+  
+// Client B: Get notified about the changes to the profile entries of client A  
+// via the MemberProfileEntryChangedEvent  
+context.registerListener([webvis.EventType.MEMBER_PROFILE_ENTRY_CHANGED], (event) => {  
+  if (event.memberId === otherMemberId) {  
+    console.log(`Client A changed the profile entry with key ${event.key} to value ${event.value}`);  
+  }  
+});  
+  
+// Client A: Delete a profile entry of the local member  
+await context.deleteMemberProfileEntry("age");  
+  
+// Client B: Gets notified again about the deletion of the profile entry of client A  
+// via the MemberProfileEntryChangedEvent  
+  
+// Client B: Can also read client A's profile explicitly at any time  
+const otherMemberProps = await context.requestMemberProperties(otherMemberId);  
+const status = otherMemberProps.profile?.userData["status"];
+```
+
+### Member actions
+
+You can request and use actions available on a member using the
+[requestMemberActions](#requestmemberactions) and [useMemberAction](#usememberaction) methods. Member actions
+allow you to perform predefined operations on members, see [MemberAction](/api/webvis/enums/memberaction)
+for a list of available actions. Members can subscribe to changes of available actions on a member
+via the [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent) and [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent).
+
+```ts
+// Request available actions on another member  
+const actions = await context.requestMemberActions(otherMemberId);  
+  
+// Use an action on another member  
+if (actions.includes(webvis.MemberAction.PROMOTE)) {  
+  await context.useMemberAction(otherMemberId, webvis.MemberAction.PROMOTE);  
+}  
+  
+// Get notified about changes to available actions on a member  
+// via the MemberActionAddedEvent and MemberActionRemovedEvent  
+context.registerListener([webvis.EventType.MEMBER_ACTION_ADDED, webvis.EventType.MEMBER_ACTION_REMOVED], (event) => {  
+  console.log(`Member action ${event.memberAction} was ${event instanceof webvis.MemberActionAddedEvent ? "added to" : "removed from"} member with ID ${event.memberId}`);  
+});
+```
+
+### Events
+
+The Member API emits the following events:
+
+* [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent)
+* [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent)
+* [MemberChangedEvent](/api/webvis/classes/memberchangedevent)
+* [MemberCreatedEvent](/api/webvis/classes/membercreatedevent)
+* [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent)
+* [MemberRemovedEvent](/api/webvis/classes/memberremovedevent)
+
+## Methods
+
+### deleteMemberProfileEntry
+
+* deleteMemberProfileEntry(key: string): Promise\<void>
+
+  `Experimental`
+
+  Deletes a profile entry of the local member.
+
+  Triggers a [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent) if successful.
+
+  #### Parameters
+
+  + key: string
+
+    The key of the profile entry to delete.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the profile entry has been deleted.
+
+### getMemberName
+
+* getMemberName(): string
+
+  `Experimental`
+
+  Gets the name of the local member.
+
+  #### Returns string
+
+  The name of the local member, or undefined if not set.
+
+### getMembers
+
+* getMembers(): number[]
+
+  `Experimental`
+
+  Gets a list of all member IDs in the current space.
+  The first entry of the list is always the local member (i.e. the client itself).
+
+  #### Returns number[]
+
+  An array of member IDs.
+
+### requestMemberActions
+
+* requestMemberActions(memberId: number): Promise<[MemberAction](/api/webvis/enums/memberaction)[]>
+
+  `Experimental`
+
+  Requests the actions available on a member.
+
+  Get notified about changes to available actions on a member via the
+  [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent) and [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent).
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to request actions for.
+
+  #### Returns Promise<[MemberAction](/api/webvis/enums/memberaction)[]>
+
+  A promise that resolves to an array of member actions.
+
+### requestMemberProperties
+
+* requestMemberProperties(memberId: number): Promise\<MemberProperties>
+
+  `Experimental`
+
+  Requests the properties of a member.
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to request the properties for.
+
+  #### Returns Promise\<MemberProperties>
+
+  A promise that resolves to the member properties, or undefined if the member does not exist.
+
+### setMemberName
+
+* setMemberName(name: string): void
+
+  `Experimental`
+
+  Sets the name of the local member.
+
+  Triggers a [MemberChangedEvent](/api/webvis/classes/memberchangedevent) if the name changes.
+
+  #### Parameters
+
+  + name: string
+
+    The new name for the local member.
+
+  #### Returns void
+
+### setMemberProfileEntry
+
+* setMemberProfileEntry(key: string, value: [Serializable](/api/webvis/types/serializable)): Promise\<void>
+
+  `Experimental`
+
+  Sets a profile entry of the local member.
+
+  Triggers a [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent) if the profile entry changes or is created.
+
+  #### Parameters
+
+  + key: string
+
+    The key of the profile entry to set.
+  + value: [Serializable](/api/webvis/types/serializable)
+
+    The value to set for the profile entry.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the profile entry has been set.
+
+### useMemberAction
+
+* useMemberAction<[A](#usememberactiona) extends [MemberAction](/api/webvis/enums/memberaction)>(  
+      memberId: number,  
+      action: A,  
+      options?: MemberActionsToOptionsMap[A],  
+  ): Promise\<void>
+
+  `Experimental`
+
+  Uses an action on a member.
+
+  Get notified about changes to available actions on a member via the
+  [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent) and [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent).
+
+  #### Type Parameters
+
+  + A extends [MemberAction](/api/webvis/enums/memberaction)
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to use the action on.
+  + action: A
+
+    The action to use.
+  + `Optional`options: MemberActionsToOptionsMap[A]
+
+    Optional parameters for the action.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the action has been used.

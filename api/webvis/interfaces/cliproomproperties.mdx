@@ -1,0 +1,148 @@
+---
+title: "Interface ClipRoomProperties"
+sidebarTitle: "ClipRoomProperties"
+description: "Configuration properties for clip rooms."
+---
+
+Configuration properties for clip rooms.
+
+These properties control the size, position, appearance, and behavior
+of clip rooms in the scene. A clip room is a box-shaped clipping volume
+that hides geometry outside its boundaries, allowing you to examine
+internal structures of models.
+
+#### See
+
+* ClipPlaneAPI
+* ClipPlaneAPI.createClippingRoom
+* ClipPlaneAPI.changeClippingRoom
+
+## Properties
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Controls whether the clip room is enabled or disabled.
+
+When set to false, the clip room exists but has no effect on the scene.
+This allows temporarily disabling clipping without removing the clip room.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`invisible
+
+invisible?: boolean
+
+Controls whether the visual representation of the clip room is hidden.
+
+When set to true, the clip room will still perform clipping, but its
+visual indicator (the wireframe box) will not be displayed.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`name
+
+name?: string
+
+The display name of the clip room.
+
+This name can be used for identification in user interfaces or debugging.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`size
+
+size?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The dimensions of the clip room along the X, Y, and Z axes.
+
+These values define the width, height, and depth of the clip room
+in local space before any transformations are applied.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a clip room that's 10 units wide, 5 units tall, and 8 units deep  
+context.createClippingRoom({  
+  size: [10, 5, 8]  
+});
+```
+
+#### Default
+
+```ts
+[1, 1, 1]
+```
+
+### `Optional`transform
+
+transform?:  
+    | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ]
+
+The transformation matrix of the clip room.
+
+This 4x4 matrix defines the complete transformation (position, rotation, and scale)
+of the clip room in world space. It allows positioning and orienting the clip room
+anywhere in the scene.
+
+Example:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a clip room rotated 45 degrees around the Y axis  
+const angle = Math.PI / 4; // 45 degrees  
+const c = Math.cos(angle);  
+const s = Math.sin(angle);  
+  
+context.createClippingRoom({  
+  size: [10, 5, 8],  
+  transform: [  
+    c, 0, s, 0,    // First row (rotation + scale)  
+    0, 1, 0, 0,    // Second row (rotation + scale)   
+    -s, 0, c, 0,   // Third row (rotation + scale)  
+    0, 0, 0, 1     // Fourth row (translation + w)  
+  ]  
+});
+```
+
+#### Default
+
+```ts
+[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+```

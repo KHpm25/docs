@@ -1,0 +1,332 @@
+---
+title: "Data Gateway API: URN Resolution and Cache Control"
+sidebarTitle: "Data Gateway API"
+description: "REST API reference for the instant3Dhub Data Gateway — resolve URNs to signed resource URLs, prefetch data, and monitor cache statistics."
+---
+
+The Data Gateway is the hub component that sits between instant3Dhub and your back-end data sources. It accepts opaque Uniform Resource Names (URNs), resolves them to signed, time-limited download URLs, and aggressively caches the results so that subsequent requests are served at low latency without hitting your origin system. The Data Gateway API exposes health, resolution, cache pre-warming, and cache statistics endpoints for integration, monitoring, and operations workflows.
+
+## URN Resolution Flow
+
+When the hub's streaming server needs to deliver a 3D resource to a connected viewer, the following sequence occurs:
+
+1. The viewer requests a resource by URN (e.g. `urn:my-org:part:gear-001`).
+2. The hub calls `GET /gateway/resolve/{urn}` internally.
+3. The Data Gateway checks its cache. On a **cache hit**, it returns the signed URL immediately.
+4. On a **cache miss**, it forwards the URN to the configured **resolver plugin** — typically an adapter to your PLM system, object store, or file share.
+5. The resolver returns a signed URL valid for a configured time window.
+6. The Data Gateway caches the resolved URL and returns it to the hub.
+7. The hub streams the file to the viewer directly from the signed URL.
+
+You can interact with this pipeline directly via the REST API to pre-warm the cache, audit resolution results, and monitor cache efficiency.
+
+## Base URL
+
+```text
+https://your-hub.example.com/api/v1/gateway
+```
+
+## Authentication
+
+```http
+Authorization: Bearer <token>
+```
+
+All endpoints except `GET /gateway/health` require a valid bearer token.
+
+---
+
+## Endpoints
+
+### `GET /gateway/health`
+
+Returns the health status of the Data Gateway service. Use this endpoint for infrastructure monitoring and load-balancer health checks.
+
+**Request**
+
+```http
+GET /api/v1/gateway/health HTTP/1.1
+Host: your-hub.example.com
+```
+
+No authorization header is required.
+
+**Response `200 OK`**
+
+```json
+{
+  "status": "UP",
+  "version": "2.4.1",
+  "uptime": 863400,
+  "resolverConnected": true,
+  "cacheConnected": true
+}
+```
+
+<ResponseField name="status" type="string">
+  Overall health: `"UP"` or `"DEGRADED"` or `"DOWN"`.
+</ResponseField>
+
+<ResponseField name="version" type="string">
+  Data Gateway software version.
+</ResponseField>
+
+<ResponseField name="uptime" type="integer">
+  Seconds since the service last started.
+</ResponseField>
+
+<ResponseField name="resolverConnected" type="boolean">
+  Whether the configured resolver backend (PLM adapter, object store, etc.) is reachable.
+</ResponseField>
+
+<ResponseField name="cacheConnected" type="boolean">
+  Whether the cache layer is operational.
+</ResponseField>
+
+**Response `503 Service Unavailable`** — returned when `status` is `"DOWN"`.
+
+---
+
+### `GET /gateway/resolve/{urn}`
+
+Resolves a URN to a signed download URL. This endpoint is called internally by the hub but is also available for direct use — for example, when you need a signed URL to stream a resource to a custom client or to validate that a URN is correctly registered.
+
+**Request**
+
+```http
+GET /api/v1/gateway/resolve/urn%3Amy-org%3Apart%3Agear-001 HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+**Path Parameters**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `urn` | string | The URL-encoded URN to resolve. Encode colons as `%3A` and slashes as `%2F`. |
+
+**Response `200 OK`**
+
+```json
+{
+  "urn": "urn:my-org:part:gear-001",
+  "resolvedUrl": "https://storage.example.com/parts/gear-001.jt?X-Amz-Signature=abc123&X-Amz-Expires=3600",
+  "expiresAt": "2024-06-01T12:00:00Z",
+  "fromCache": true,
+  "contentType": "model/jt",
+  "contentLength": 2847392
+}
+```
+
+<ResponseField name="urn" type="string">
+  The input URN, normalized.
+</ResponseField>
+
+<ResponseField name="resolvedUrl" type="string">
+  The signed, time-limited URL from which the raw resource file can be downloaded. Treat this URL as sensitive — it grants unauthenticated read access to the file until `expiresAt`.
+</ResponseField>
+
+<ResponseField name="expiresAt" type="string">
+  ISO 8601 timestamp when the signed URL expires. Do not cache the URL past this time.
+</ResponseField>
+
+<ResponseField name="fromCache" type="boolean">
+  `true` when the result was served from the cache; `false` when the resolver was called.
+</ResponseField>
+
+<ResponseField name="contentType" type="string">
+  MIME type of the resolved resource, e.g. `model/jt`, `model/step`, `model/gltf+json`.
+</ResponseField>
+
+<ResponseField name="contentLength" type="integer">
+  File size in bytes. May be `null` if the resolver did not provide a `Content-Length`.
+</ResponseField>
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `404 Not Found` | The URN does not match any resource known to the resolver. |
+| `502 Bad Gateway` | The resolver backend returned an error or was unreachable. |
+
+---
+
+### `POST /gateway/prefetch`
+
+Submits a list of URNs for asynchronous cache pre-warming. The Data Gateway resolves each URN in the background and caches the signed URLs so that subsequent viewer requests are served from cache without resolver latency.
+
+Use this endpoint as part of your application loading sequence — trigger it when a user opens a project that contains many models so that by the time the viewer starts streaming, the URLs are already warm.
+
+**Request**
+
+```http
+POST /api/v1/gateway/prefetch HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "urns": [
+    "urn:my-org:assembly:turbine-v3",
+    "urn:my-org:part:blade-001",
+    "urn:my-org:part:blade-002",
+    "urn:my-org:part:shaft-main"
+  ],
+  "priority": "HIGH"
+}
+```
+
+<ParamField body="urns" type="string[]" required>
+  An array of URNs to prefetch. You can submit up to 500 URNs per request.
+</ParamField>
+
+<ParamField body="priority" type="string">
+  Queue priority for this batch: `"HIGH"`, `"NORMAL"`, or `"LOW"`. Defaults to `"NORMAL"`. High-priority batches are processed before lower-priority queued work.
+</ParamField>
+
+**Response `202 Accepted`**
+
+```json
+{
+  "batchId": "pf_a3c91d82",
+  "submitted": 4,
+  "estimatedCompletionSeconds": 12
+}
+```
+
+<ResponseField name="batchId" type="string">
+  Identifier for this prefetch batch. Reserved for future use in batch status queries.
+</ResponseField>
+
+<ResponseField name="submitted" type="integer">
+  Number of URNs accepted into the prefetch queue.
+</ResponseField>
+
+<ResponseField name="estimatedCompletionSeconds" type="integer">
+  Rough estimate of how many seconds until all submitted URNs have been resolved and cached.
+</ResponseField>
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `400 Bad Request` | The request body is malformed or `urns` is empty or exceeds the 500-item limit. |
+
+---
+
+### `GET /gateway/cache/stats`
+
+Returns aggregate cache performance statistics for the Data Gateway. Use this endpoint to monitor cache efficiency over time, tune your prefetch strategy, and set up alerts for low hit rates.
+
+**Request**
+
+```http
+GET /api/v1/gateway/cache/stats HTTP/1.1
+Host: your-hub.example.com
+Authorization: Bearer <token>
+```
+
+Optional query parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `window` | string | Aggregation window: `"1h"`, `"24h"`, `"7d"`. Defaults to `"1h"`. |
+
+**Response `200 OK`**
+
+```json
+{
+  "window": "24h",
+  "requests": 18432,
+  "hits": 16741,
+  "misses": 1691,
+  "hitRatePercent": 90.83,
+  "evictions": 214,
+  "cachedEntries": 3087,
+  "cacheSizeBytes": 48201482,
+  "avgResolutionLatencyMs": {
+    "hit": 2,
+    "miss": 347
+  }
+}
+```
+
+<ResponseField name="window" type="string">
+  The aggregation window for these statistics.
+</ResponseField>
+
+<ResponseField name="requests" type="integer">
+  Total number of resolve requests in the window.
+</ResponseField>
+
+<ResponseField name="hits" type="integer">
+  Number of requests served from cache.
+</ResponseField>
+
+<ResponseField name="misses" type="integer">
+  Number of requests that required a resolver call.
+</ResponseField>
+
+<ResponseField name="hitRatePercent" type="number">
+  Cache hit rate as a percentage. Aim to maintain this above 85% in production for optimal streaming latency.
+</ResponseField>
+
+<ResponseField name="evictions" type="integer">
+  Number of entries evicted from cache due to TTL expiry or memory pressure in the window.
+</ResponseField>
+
+<ResponseField name="cachedEntries" type="integer">
+  Current number of entries in the cache.
+</ResponseField>
+
+<ResponseField name="cacheSizeBytes" type="integer">
+  Current cache memory usage in bytes.
+</ResponseField>
+
+<ResponseField name="avgResolutionLatencyMs.hit" type="number">
+  Average end-to-end latency in milliseconds for cache hits.
+</ResponseField>
+
+<ResponseField name="avgResolutionLatencyMs.miss" type="number">
+  Average end-to-end latency in milliseconds for cache misses (includes resolver round-trip).
+</ResponseField>
+
+---
+
+## Usage Example
+
+The following JavaScript snippet shows a typical application loading sequence: fetch a project's URN list from your backend, prefetch them via the Data Gateway API, then open the viewer while the cache warms up in parallel.
+
+```typescript
+const HUB = 'https://your-hub.example.com';
+const TOKEN = await getAuthToken();
+
+// 1. Fetch the list of URNs for this project from your application backend
+const { urns } = await fetch(`/api/projects/${projectId}/urns`).then(r => r.json());
+
+// 2. Submit prefetch request (non-blocking — fire and forget)
+fetch(`${HUB}/api/v1/gateway/prefetch`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${TOKEN}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ urns, priority: 'HIGH' }),
+});
+
+// 3. Initialize the viewer in parallel — streaming starts immediately,
+//    benefiting from cached URLs as they become available
+import { requestContext } from '@threedy/webvis';
+
+const context = await requestContext({
+  hubURL: HUB,
+  container: document.getElementById('viewer'),
+  token: TOKEN,
+});
+
+await context.add(urns[0]); // root assembly URN
+```
+
+<Note>
+  Signed URLs returned by `GET /gateway/resolve/{urn}` carry time-limited credentials from your storage backend. Never log, store long-term, or share these URLs publicly. The Data Gateway automatically refreshes them before expiry when serving the hub's internal streaming pipeline.
+</Note>

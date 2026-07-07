@@ -1,0 +1,379 @@
+---
+title: "License Server API: Monitor Seats and Usage Reports"
+sidebarTitle: "License API"
+description: "REST API reference for the instant3Dhub License Server — monitor seat consumption, inspect active sessions, and export session usage reports."
+---
+
+The License Server API gives you programmatic access to the instant3Dhub license engine. Use it to verify your current entitlements, monitor seat consumption in real time, audit active sessions, and export usage reports for cost-allocation or compliance purposes.
+
+## Obtaining a License Key
+
+License keys are issued by Threedy GmbH as part of your instant3Dhub subscription. To obtain, renew, or upgrade your license, contact **support@threedy.ai** with your organization name and hub deployment identifier. Your license key is loaded into the License Server by your hub administrator during initial setup.
+
+## Base URL
+
+```text
+https://your-license-server.example.com/api/v1
+```
+
+The License Server may run on the same host as your hub or on a dedicated machine depending on your deployment topology. Confirm the correct hostname with your hub administrator.
+
+## Authentication
+
+```http
+Authorization: Bearer <token>
+```
+
+All endpoints require a valid bearer token with the `license:read` scope. The export endpoint additionally requires `license:export`.
+
+---
+
+## Endpoints
+
+### `GET /license/status`
+
+Returns the current license status, including seat consumption, expiry date, and overall validity. Poll this endpoint from your operations dashboard to detect approaching seat limits or expiry dates before they affect users.
+
+**Request**
+
+```http
+GET /api/v1/license/status HTTP/1.1
+Host: your-license-server.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "valid": true,
+  "licensee": "Acme Engineering GmbH",
+  "licenseId": "LIC-2024-00142",
+  "edition": "ENTERPRISE",
+  "expiresAt": "2025-12-31T23:59:59Z",
+  "daysUntilExpiry": 213,
+  "seats": {
+    "total": 50,
+    "active": 12,
+    "available": 38
+  },
+  "concurrentSessions": {
+    "limit": 100,
+    "active": 17
+  }
+}
+```
+
+<ResponseField name="valid" type="boolean">
+  `true` when the license is currently active and within its validity period. `false` indicates an expired or revoked license; existing sessions may continue for a grace period depending on your license terms.
+</ResponseField>
+
+<ResponseField name="licensee" type="string">
+  The organization name as it appears on the license certificate.
+</ResponseField>
+
+<ResponseField name="licenseId" type="string">
+  The unique license identifier. Include this in any support requests related to licensing.
+</ResponseField>
+
+<ResponseField name="edition" type="string">
+  The licensed edition: `"STANDARD"`, `"PROFESSIONAL"`, or `"ENTERPRISE"`.
+</ResponseField>
+
+<ResponseField name="expiresAt" type="string">
+  ISO 8601 expiry timestamp. For perpetual licenses this is a far-future date.
+</ResponseField>
+
+<ResponseField name="daysUntilExpiry" type="integer">
+  Convenience field: days remaining before `expiresAt`. Negative values indicate the license has expired.
+</ResponseField>
+
+<ResponseField name="seats.total" type="integer">
+  Total named-user seats licensed.
+</ResponseField>
+
+<ResponseField name="seats.active" type="integer">
+  Number of seats currently assigned to users.
+</ResponseField>
+
+<ResponseField name="seats.available" type="integer">
+  Remaining assignable seats.
+</ResponseField>
+
+<ResponseField name="concurrentSessions.limit" type="integer">
+  Maximum number of simultaneous viewer sessions permitted.
+</ResponseField>
+
+<ResponseField name="concurrentSessions.active" type="integer">
+  Number of viewer sessions open right now.
+</ResponseField>
+
+---
+
+### `GET /license/info`
+
+Returns the detailed feature entitlements and capability packages included in the license. Use this to programmatically determine which instant3Dhub features are available in your deployment and adjust your application's UI accordingly.
+
+**Request**
+
+```http
+GET /api/v1/license/info HTTP/1.1
+Host: your-license-server.example.com
+Authorization: Bearer <token>
+```
+
+**Response `200 OK`**
+
+```json
+{
+  "licenseId": "LIC-2024-00142",
+  "edition": "ENTERPRISE",
+  "packages": [
+    "CORE_VIEWER",
+    "COLLABORATION",
+    "BREP_TOPOLOGY",
+    "DATA_GATEWAY",
+    "3D_SPACES",
+    "PDF_EXPORT",
+    "AR_VIEW"
+  ],
+  "entitlements": {
+    "maxNodes": 10000000,
+    "maxFileSize": "unlimited",
+    "storageQuotaGb": 500,
+    "apiCallsPerDay": "unlimited"
+  },
+  "maintenanceUntil": "2025-12-31T23:59:59Z"
+}
+```
+
+<ResponseField name="packages" type="string[]">
+  Array of licensed feature package identifiers. Compare this list against the capability identifiers returned by `context.hub.getCapabilities()` in the webvisAPI.
+</ResponseField>
+
+<ResponseField name="entitlements.maxNodes" type="integer">
+  Maximum number of nodes in a single scene graph. `null` means unlimited.
+</ResponseField>
+
+<ResponseField name="entitlements.maxFileSize" type="string">
+  Maximum permitted source file size: a size string like `"2GB"` or `"unlimited"`.
+</ResponseField>
+
+<ResponseField name="entitlements.storageQuotaGb" type="number">
+  Total storage quota for processed resources, in gigabytes.
+</ResponseField>
+
+<ResponseField name="entitlements.apiCallsPerDay" type="string">
+  Daily REST API call limit: a number string or `"unlimited"`.
+</ResponseField>
+
+<ResponseField name="maintenanceUntil" type="string">
+  ISO 8601 date until which software updates and support are included.
+</ResponseField>
+
+---
+
+### `GET /license/sessions`
+
+Returns a list of all currently active viewer sessions. Use this to understand who is consuming seats and sessions in real time, or to investigate unexpected seat exhaustion.
+
+**Request**
+
+```http
+GET /api/v1/license/sessions HTTP/1.1
+Host: your-license-server.example.com
+Authorization: Bearer <token>
+```
+
+Optional query parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `page` | integer | Page number (1-based). Defaults to `1`. |
+| `pageSize` | integer | Results per page. Defaults to `20`, maximum `100`. |
+
+**Response `200 OK`**
+
+```json
+{
+  "sessions": [
+    {
+      "sessionId": "sess_aa1b2c",
+      "userId": "user-0042",
+      "userEmail": "engineer@example.com",
+      "contextId": "ctx-9f1a",
+      "hubInstance": "hub-eu-01",
+      "startedAt": "2024-06-01T09:30:00Z",
+      "lastActivityAt": "2024-06-01T11:45:00Z",
+      "durationSeconds": 8100,
+      "ipAddress": "198.51.100.42"
+    }
+  ],
+  "total": 17,
+  "page": 1,
+  "pageSize": 20
+}
+```
+
+<ResponseField name="sessions[].sessionId" type="string">
+  Unique session identifier.
+</ResponseField>
+
+<ResponseField name="sessions[].userId" type="string">
+  Internal user identifier from your identity provider.
+</ResponseField>
+
+<ResponseField name="sessions[].userEmail" type="string">
+  Email address of the active user.
+</ResponseField>
+
+<ResponseField name="sessions[].contextId" type="string">
+  The webvisAPI context ID associated with this session.
+</ResponseField>
+
+<ResponseField name="sessions[].hubInstance" type="string">
+  The hub node that created this session (relevant in multi-node deployments).
+</ResponseField>
+
+<ResponseField name="sessions[].startedAt" type="string">
+  ISO 8601 session start timestamp.
+</ResponseField>
+
+<ResponseField name="sessions[].lastActivityAt" type="string">
+  ISO 8601 timestamp of the most recent interaction. Sessions idle for longer than the configured timeout are automatically terminated.
+</ResponseField>
+
+<ResponseField name="sessions[].durationSeconds" type="integer">
+  Elapsed session duration in seconds.
+</ResponseField>
+
+<ResponseField name="sessions[].ipAddress" type="string">
+  Client IP address. May be a NAT gateway or proxy address in corporate network environments.
+</ResponseField>
+
+---
+
+### `POST /license/sessions/export`
+
+Generates a CSV export of session usage data for a specified time range. Use this for monthly usage reporting, cost allocation across departments, or compliance audits.
+
+**Request**
+
+```http
+POST /api/v1/license/sessions/export HTTP/1.1
+Host: your-license-server.example.com
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "from": "2024-05-01T00:00:00Z",
+  "to": "2024-05-31T23:59:59Z",
+  "format": "CSV"
+}
+```
+
+<ParamField body="from" type="string" required>
+  ISO 8601 start of the reporting period (inclusive).
+</ParamField>
+
+<ParamField body="to" type="string" required>
+  ISO 8601 end of the reporting period (inclusive).
+</ParamField>
+
+<ParamField body="format" type="string">
+  Export format. Currently `"CSV"` is supported. Defaults to `"CSV"`.
+</ParamField>
+
+**Response `200 OK`**
+
+The response body is a UTF-8 encoded CSV file:
+
+```http
+Content-Type: text/csv
+Content-Disposition: attachment; filename="session-usage-2024-05.csv"
+```
+
+```csv
+sessionId,userId,userEmail,hubInstance,startedAt,endedAt,durationSeconds,ipAddress
+sess_aa1b2c,user-0042,engineer@example.com,hub-eu-01,2024-05-01T09:30:00Z,2024-05-01T11:45:00Z,8100,198.51.100.42
+sess_bb3d4e,user-0019,designer@example.com,hub-eu-01,2024-05-01T10:00:00Z,2024-05-01T12:30:00Z,9000,198.51.100.88
+```
+
+**CSV Columns**
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `sessionId` | string | Unique session identifier. |
+| `userId` | string | Identity provider user ID. |
+| `userEmail` | string | Email address. |
+| `hubInstance` | string | Hub node name. |
+| `startedAt` | ISO 8601 | Session start time (UTC). |
+| `endedAt` | ISO 8601 | Session end time (UTC). Empty for sessions still active at export time. |
+| `durationSeconds` | integer | Total session duration. |
+| `ipAddress` | string | Client IP address. |
+
+**Error Responses**
+
+| Code | Description |
+|------|-------------|
+| `400 Bad Request` | Missing date range or `from` is after `to`. |
+| `403 Forbidden` | Token lacks the `license:export` scope. |
+
+---
+
+## Usage Example: Automated Monthly Report
+
+The following shell script exports a usage CSV for the previous calendar month and saves it locally:
+
+```bash
+LICENSE_SERVER="https://your-license-server.example.com"
+TOKEN="eyJhbGciOiJSUzI1NiJ9..."
+
+# Calculate first and last day of the previous month (GNU date)
+FROM=$(date -d "$(date +%Y-%m-01) -1 month" +%Y-%m-01T00:00:00Z)
+TO=$(date -d "$(date +%Y-%m-01) -1 day" +%Y-%m-%dT23:59:59Z)
+FILENAME="session-usage-$(date -d "$FROM" +%Y-%m).csv"
+
+echo "Exporting sessions from $FROM to $TO..."
+
+curl -s -X POST "$LICENSE_SERVER/api/v1/license/sessions/export" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"from\": \"$FROM\", \"to\": \"$TO\", \"format\": \"CSV\"}" \
+  -o "$FILENAME"
+
+echo "Report saved to: $FILENAME"
+```
+
+---
+
+## Setting Up License Expiry Alerts
+
+You can integrate the `/license/status` endpoint into your existing monitoring stack. The example below uses a simple health-check script that exits non-zero when expiry is within 30 days:
+
+```bash
+STATUS=$(curl -s "$LICENSE_SERVER/api/v1/license/status" \
+  -H "Authorization: Bearer $TOKEN")
+
+DAYS=$(echo "$STATUS" | jq -r '.daysUntilExpiry')
+VALID=$(echo "$STATUS" | jq -r '.valid')
+
+if [ "$VALID" != "true" ]; then
+  echo "CRITICAL: License is invalid or expired." >&2
+  exit 2
+fi
+
+if [ "$DAYS" -lt 30 ]; then
+  echo "WARNING: License expires in $DAYS days. Contact support@threedy.ai." >&2
+  exit 1
+fi
+
+echo "OK: License valid, $DAYS days remaining."
+exit 0
+```
+
+Wire this script into your Nagios, Zabbix, or Prometheus Alertmanager setup on a daily schedule to receive proactive renewal reminders.
+
+<Note>
+  If your license is approaching expiry or you need to increase your seat count, contact **support@threedy.ai** well in advance. License renewals typically have a processing time of 2–5 business days. Emergency extensions may be available for critical situations — include your `licenseId` in all support correspondence.
+</Note>

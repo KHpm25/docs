@@ -1,0 +1,108 @@
+---
+title: "How to Load 3D Models and CAD Files into instant3Dhub"
+sidebarTitle: "Adding Data"
+description: "How to load 3D data into instant3Dhub via drag-and-drop, direct URL, or a connected PLM/PDM data source through the Data Gateway integration."
+---
+
+instant3Dhub can pull 3D data from your local machine, a remote URL, or directly from your enterprise PLM or PDM system through the Data Gateway integration. Regardless of the source, models are **streamed** to your browser in real time — no file is permanently stored on the instant3Dhub server, and terabyte-scale assemblies are handled without pre-processing or waiting for a full upload. This page explains the three loading methods and describes the supported file formats.
+
+<Note>
+  instant3Dhub uses a streaming architecture. Your model data is never permanently stored by the platform — it is rendered on demand from the original source. Large assemblies, including those exceeding several hundred gigabytes, load progressively so you can start exploring immediately while the remaining geometry streams in the background.
+</Note>
+
+## Loading Methods
+
+<Tabs>
+  <Tab title="Drag & Drop">
+    Drag-and-drop is the fastest way to load a locally stored file for quick review.
+
+    <Steps>
+      <Step title="Open instant3Dhub in your browser">
+        Navigate to your instant3Dhub instance URL. The landing screen shows an empty viewport with a drop zone prompt.
+      </Step>
+      <Step title="Drag your file onto the viewport">
+        Locate the CAD or model file on your machine. Drag it directly onto the browser viewport. A highlighted drop zone confirms that the file is recognized.
+      </Step>
+      <Step title="Wait for streaming to begin">
+        instant3Dhub begins streaming the geometry immediately. A progress indicator in the status bar shows how much of the model has loaded. You can start navigating as soon as the first geometry appears.
+      </Step>
+      <Step title="Confirm the model in the Tree View">
+        The Tree View on the left populates with the assembly hierarchy. Expand nodes to explore sub-assemblies and parts.
+      </Step>
+    </Steps>
+
+    <Tip>
+      You can drag multiple files onto the viewport at once to load them as a combined scene. Each file appears as a top-level entry in the Tree View.
+    </Tip>
+  </Tab>
+
+  <Tab title="Load from URL">
+    If your model is hosted on a web server, object storage bucket, or any HTTP-accessible endpoint, you can point instant3Dhub directly at it.
+
+    <Steps>
+      <Step title="Open the Load dialog">
+        Click the **Open** button in the toolbar (or press **Ctrl+O** / **Cmd+O**). Select the **URL** tab in the dialog that appears.
+      </Step>
+      <Step title="Paste the resource URL">
+        Enter the full URL to your model file, for example:
+        ```text
+        https://storage.example.com/assets/assembly_v3.step
+        ```
+        The URL must be publicly accessible or include a valid authentication token.
+      </Step>
+      <Step title="Click Load">
+        Press **Load**. instant3Dhub fetches the resource and begins streaming it into the viewport. The file extension is used to detect the format automatically.
+      </Step>
+      <Step title="Bookmark or share the session link">
+        After loading, the current viewport URL updates to include a reference to the loaded resource. Copy this URL to share the exact view with colleagues.
+      </Step>
+    </Steps>
+
+    <Warning>
+      Make sure the server hosting your file includes appropriate CORS headers (`Access-Control-Allow-Origin`) if instant3Dhub is served from a different domain. Requests to servers without CORS headers will be blocked by the browser.
+    </Warning>
+  </Tab>
+
+  <Tab title="Data Gateway (PLM/PDM)">
+    Enterprise deployments of instant3Dhub connect to your PLM or PDM system through the **Data Gateway** — a backend connector that translates PLM queries into streaming geometry. This method provides the richest metadata experience because part attributes, revision history, and material data are all passed through alongside the geometry.
+
+    <Steps>
+      <Step title="Open the Data Sources panel">
+        Click **Data Sources** in the toolbar or navigate to **File → Open from Data Gateway**. This option is only visible when a Data Gateway has been configured by your administrator.
+      </Step>
+      <Step title="Browse or search for your assembly">
+        Use the search bar to find an assembly by part number, name, or revision. The panel queries your connected PLM system in real time.
+      </Step>
+      <Step title="Select the target configuration">
+        If your assembly has multiple configurations or revisions, choose the correct one from the dropdown. The system shows the revision date and status from your PLM.
+      </Step>
+      <Step title="Click Open">
+        Confirm your selection and click **Open**. The assembly streams directly from the Data Gateway into the viewport, with full metadata visible in the Data Info panel.
+      </Step>
+    </Steps>
+
+    <Note>
+      Access to the Data Gateway is controlled by your organization's PLM permissions. If you cannot see the Data Sources panel or receive an authentication error, contact your instant3Dhub administrator.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Supported File Formats
+
+instant3Dhub natively supports the following CAD and 3D model formats:
+
+| Format | File Extensions | Notes |
+|---|---|---|
+| **CATIA V5** | `.CATPart`, `.CATProduct` | Full assembly hierarchy and PMI supported |
+| **STEP** | `.stp`, `.step` | ISO 10303; supports AP203, AP214, AP242 |
+| **IFC** | `.ifc` | Industry Foundation Classes for BIM/AEC workflows |
+| **GLTF-Binary** | `.glb` | Efficient binary runtime format; ideal for web delivery |
+| **VRML** | `.wrl`, `.vrml` | Legacy format; geometry and basic materials supported |
+
+<Tip>
+  If your format is not listed above, check with your Threedy representative. Additional format connectors can be enabled through the Data Gateway for formats such as JT, NX, Creo, and SolidWorks.
+</Tip>
+
+## Clearing the Scene
+
+To remove all loaded data and start fresh, click **File → Clear Scene** in the toolbar menu or press **Ctrl+Shift+Delete**. This unloads all streamed geometry from the current session without affecting any saved snapshots or 3DSpace data.

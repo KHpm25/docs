@@ -1,0 +1,349 @@
+---
+title: "Interface QueryAPI"
+sidebarTitle: "QueryAPI"
+description: "The QueryAPI allows you to filter nodes and query their metadata. Each query is scoped to either structure or aux nodes and consists of a set of conditions and a set of selectors. "
+---
+
+## Search Nodes & Query Metadata: The QueryAPI
+
+### Overview
+
+The QueryAPI allows you to filter nodes and query their metadata. Each query is scoped to either
+structure or aux nodes and consists of a set of conditions and a set of selectors. For each node that matches
+the conditions, the values specified by the selectors are returned. The result contains a data array with one
+entry for each matching node. Each entry is an array containing the selected values for the corresponding node
+in the same order as the selectors in the query. For example, if the selectors are `['nodeId', 'label']`, then
+each entry in the result will be an array with the node ID as the first element and the label as the
+second element.
+
+The QueryAPI currently has several known issues. For details, see section "Known Issues" below.
+
+### Quick Start
+
+```ts
+const context = webvis.getContext();  
+const queryResult = await context.query({  
+    select: ['nodeId', 'label'],  
+    conditions: [  
+        {nodeType: 'aux'},  
+        {metadata: 'auxProperties.pmiType', equals: 'ModelView'},  
+        {metadata: 'label', equals: 'Part_*'}  
+    ],  
+    linkDepth: 2  
+});  
+  
+// The query result will have the form:  
+// {  
+//     data: [  
+//         [123, 'Part_A_View'], // node ID, label of first matching node  
+//         [456, 'Part_B_View'], // node ID, label of second matching node  
+//         ...  
+//     ],  
+//     errors: [] // Error codes of any errors that occurred during query execution  
+// }  
+  
+if (queryResult.errors.length > 0) {  
+    console.error('Query errors:', queryResult.errors);  
+} else {  
+    console.log('Query results:', queryResult.data);  
+}
+```
+
+### Conditions
+
+By convention, each query must contain one top-level `nodeType` condition with the value `aux` or `structure`.
+The conditions have an implicit AND relation and can contain nested logical groups. For type information, see
+QueryCondition.
+
+Several of the supported conditions have the form `{metadata: <key>, <operator>: <value>}`. For these, the
+following rules apply:
+
+* Depending on the node type, only specific key formats are supported (see below).
+* The available operators are `equals`, `equalsAny`, `contains`, and numeric comparison operators. While `equals`
+  supports strings, numbers, and subqueries, `equalsAny` and `contains` only support strings. For details, see
+  QueryCondition.
+* In string values, `*` can be used as a wildcard for any sequence of characters.
+* For string values, the boolean `caseSensitive` option can be added to the condition. By default, string
+  comparisons are case-insensitive.
+
+#### General Conditions
+
+* `{nodeType: "aux" | "structure"}`: Sets the node type.
+* `{nodeId: number}`: The node with the specified ID.
+* `{metadata: "label", <operator>: string}`: Nodes with a matching label. This condition operates on the
+  node labels defined in the original CAD files. Any client-side changes to the node labels are ignored.
+* **Experimental** `{property: <property name>, <operator>: <value>}`: Nodes with a matching property value.
+  The available property names are the string values of the [Property](/v3.14/api/webvis/enums/property) enum. This condition does not
+  support properties which are matrices or objects. This condition only operates on nodes which are loaded
+  in the client.
+  Note: this condition is experimental and may be changed in future releases. Mixing of `property` and
+  `metadata` conditions in logical condition groups is not yet supported.
+
+#### Aux Node Conditions
+
+In addition to the general conditions, aux nodes support the following conditions. For an explanation of the
+aux node metadata namespacing, see the section "Aux Node Metadata Namespacing" below.
+
+* `{metadata: "auxProperties.pmiType", <operator>: string}`: Aux nodes with a matching PMI type.
+* `{metadata: "auxProperties.<key>", <operator>: <value>}`: Aux nodes with a matching aux properties entry.
+* `{metadata: "auxAttributes.<key>", <operator>: <value>}`: Aux nodes with a matching aux attributes entry.
+* `{pointsTo: number}`: Aux nodes that point to the aux node with the specified ID.
+* `{faceHandle: TopologyHandle}`: Aux nodes connected to the specified face. See TopologyAPI.
+* `{extFaceLink: string}`: Aux nodes with the specified external face link.
+
+#### Structure Node Conditions
+
+In addition to the general conditions, structure nodes support the following conditions:
+
+* `{metadata: <key>, <operator>: <value>}`: Structure nodes with a matching metadata entry.
+* `{ancestors: <condition array>}`: Structure nodes that have an ancestor which matches all of the specified
+  conditions.
+
+#### Logical Groups
+
+* `{and: <condition array>}`: Nodes that match all of the specified conditions.
+* `{or: <condition array>}`: Nodes that match one or more of the specified conditions.
+* `{not: <condition array>}`: Nodes that do not match any of the specified conditions.
+
+### Selectors
+
+The selectors specify which values are returned for each matching node. The available selectors depend on the
+node type and include the node ID, metadata entries, and topology handles.
+
+#### General Selectors
+
+* `nodeId`: The ID of the node.
+* `label`: The label of the node, as defined in the original CAD file. Any client-side changes to the
+  node label are not reflected in this selector.
+* **Experimental** `property.<property name>`: The value of the specified property. The available property
+  names are the string values of the [Property](/v3.14/api/webvis/enums/property) enum. Note: this selector is experimental and may be
+  changed in future releases.
+
+#### Aux Node Selectors
+
+* `metadata.auxProperties.pmiType`: The PMI type of the aux node.
+* `metadata.auxProperties.<key>`: The value of the specified aux property, or `null` if non-existent.
+* `metadata.auxProperties.*`: All aux properties of the node aggregated into an object. Each metadata key
+  will be prefixed with `metadata.auxProperties.`.
+* `metadata.auxAttributes.<key>`: The value of the specified aux attribute, or `null` if non-existent.
+* `metadata.auxAttributes.*`: All aux attributes of the node aggregated into an object. Each metadata key
+  will be prefixed with `metadata.auxAttributes.`.
+* `faceHandles`: An array of TopologyHandles for the faces connected to the aux node, or an empty
+  array if the aux node is not connected to any face.
+* `faceHandle`: This is a legacy selector. New code should use the `faceHandles` selector instead. This
+  selector returns TopologyHandles for the faces connected to the aux node and changes the
+  result structure in the same way as the `extFaceLink` selector described below.
+* `extFaceLinks`: The external face links of the aux node, as strings. This selector changes the result
+  structure in the following way: If an aux node has multiple external face links, there will be multiple
+  result entries for that node, each with a different external face link and the same values for all other
+  selectors. If an aux node has no external face links and there are no other selectors, then the result will
+  not contain an entry for that node. If an aux node has no external face links but there are other selectors,
+  then this selector will return the string `"undefined"` for that node.
+
+#### Structure Node Selectors
+
+* `metadata.<key>`: The value of the specified metadata entry, or `null` if non-existent.
+* `metadata.*`: All metadata entries of the node aggregated into an object. For backward compatibility, each
+  metadata key will be prefixed with `metadata.structMetaData.`.
+* `ancestors.<selector>`: An array with the value of the nested selector for each ancestor of the node. The
+  ancestors are ordered from highest to lowest in the hierarchy. This selector can not contain another
+  `ancestors` selector.
+
+### Link Depth
+
+The `linkDepth` property of the query defines how many levels of linked 3D models are included in the query.
+The default value is `1`, which means that the scope root model and its directly linked models are included.
+The scope root model is defined by the optional `nodeID` parameter of the function [QueryAPI.query](#query). If
+the root model is not specified and the link depth is `1`, then all top-level models of the space are considered.
+
+### Error Handling
+
+Error codes for any errors that occur during query execution are returned in the `errors` property of the query
+result. If one or more errors have occurred, the result data must be considered incomplete.
+
+### Known Issues
+
+* Mixing of `metadata` and `property` conditions in logical condition groups is not yet supported.
+* Inconsistent "all nodes" semantics: If a query does not contain any conditions except for `nodeType`,
+  it matches all nodes of the specified type. Similarly, a `not` condition matches all nodes except for
+  some specific ones. Before the introduction of `property` conditions and selectors, the QueryAPI only
+  operated on added 3D models and ignored any additional nodes created via the webvis API. With the
+  introduction of `property` conditions and selectors, we aim to extend the query scope to all nodes in the
+  3D space. However, not all condition and selector types have been updated to this extended scope yet. In
+  particular, if a query does not contain any `property` conditions or selectors, then the behavior will
+  currently be the same as before.
+* Inconsistent ancestor paths: Before the introduction of `property` conditions and selectors, `ancestors`
+  conditions and selectors only operated on the ancestor path of a node within its 3D resource. Now, when
+  `ancestors` conditions or selectors are used together with `property` conditions or selectors, the complete
+  ancestor path in the webvis node tree is considered. However, using `ancestors` conditions or selectors
+  together with `metadata` conditions or selectors will still only consider the ancestor path within the
+  node's 3D resource.
+* Multiple result entries for certain nodes: When a node in a 3D model links to another 3D model, then the
+  linking node and the root node of the linked model are merged in the webvis node tree. Currently, the query
+  evaluation logic does not take this merging into account for most conditions and selectors. As a result,
+  the corresponding nodes may not be filtered as expected and may have multiple entries in the query result.
+
+### Aux Node Metadata Namespacing
+
+Aux node metadata entries are grouped into the two namespaces `auxAttributes` and `auxProperties`. The first,
+`auxAttributes`, contains all key-value pairs that are associated with a given aux node. Here, all values are
+stored as strings. The second namespace, `auxProperties`, contains only a subset of the key-value pairs, but
+supports both strings and numbers as values. For aux node metadata conditions, numerical comparison operators
+can only be used with numerical values from the `auxProperties` namespace.
+
+To discover the available `auxAttributes` or `auxProperties` keys for a given node, you can use the selectors
+`metadata.auxAttributes.*` and `metadata.auxProperties.*`, which return all entries of the respective namespace
+aggregated into an object:
+
+```ts
+const queryResult = await context.query({  
+    select: ['nodeId', 'metadata.auxProperties.*'],  
+    conditions: [  
+        {nodeType: 'aux'},  
+        {metadata: 'auxProperties.pmiType', equals: 'ModelView'},  
+        {metadata: 'label', equals: 'Part_*'}  
+    ]  
+});  
+  
+// The query result will have the form:  
+// {  
+//     data: [  
+//         [ // node ID, auxProperties of first matching node  
+//             220,  
+//             {  
+//                 'metadata.auxProperties.pmiType': 'ModelView',  
+//                 'metadata.auxProperties.someNumber': 42,  
+//                 ...  
+//             }  
+//         ],  
+//         [ // node ID, auxProperties of second matching node  
+//             234,  
+//             {  
+//                 'metadata.auxProperties.pmiType': 'ModelView',  
+//                 'metadata.auxProperties.someNumber': 7,  
+//                 ...  
+//             }  
+//         ],  
+//         ...  
+//     ],  
+//     errors: []  
+// }
+```
+
+### Examples
+
+Querying a specific metadata value of a structure node:
+
+```ts
+const queryResult = await context.query({  
+    select: ['metadata.someKey'],  
+    conditions: [  
+       {nodeType: 'structure'},  
+       {nodeId: 123}  
+    ]  
+});  
+  
+// The query result will have the form:  
+// {  
+//     data: [  
+//         ['someValue'] // value of metadata entry 'someKey' for node with ID 123  
+//     ],  
+//     errors: []  
+// }
+```
+
+Querying the labels of all ancestors for each node that has a specific metadata entry:
+
+```ts
+const queryResult = await context.query({  
+    select: ['nodeId', 'ancestors.label'],  
+    conditions: [  
+        {nodeType: 'structure'},  
+        {metadata: 'someKey', contains: 'someValue'}  
+    ]  
+});  
+  
+// The query result will have the form:  
+// {  
+//     data: [  
+//         [123, ['Root', 'Subassembly_A']], // node ID, array of ancestor labels for first matching node  
+//         [456, ['Root', 'Subassembly_B']], // node ID, array of ancestor labels for second matching node  
+//         ...  
+//     ],  
+//     errors: []  
+// }
+```
+
+Query with complex nested conditions:
+
+```ts
+const queryResult = await context.query({  
+    select: ['nodeId', 'label'],  
+    conditions: [  
+        {nodeType: 'aux'},  
+        {or: [  
+            {and: [  
+                {metadata: 'auxProperties.pmiType', equals: 'ModelView'},  
+                {metadata: 'label', contains: 'View'}  
+            ]},  
+            {and: [  
+                {metadata: 'auxProperties.pmiType', equals: 'Part'},  
+                {metadata: 'label', contains: 'Part'}  
+            ]}  
+        ]},  
+        {not: [  
+            {metadata: 'auxProperties.someFlag', equals: 'someValue'}  
+        ]}  
+    ],  
+    linkDepth: 2  
+});
+```
+
+Query with subquery as condition value. The subquery must return exactly one value:
+
+```ts
+const queryResult = await context.query({  
+    select: ['nodeId', 'label'],  
+    conditions: [  
+        {nodeType: 'aux'},  
+        {metadata: 'auxProperties.pmiType', equals: 'ModelView'},  
+        {metadata: 'label', equals: {  
+            select: ['metadata.auxProperties.someKey'],  
+            conditions: [  
+                {nodeType: 'aux'},  
+                {nodeId: 123}  
+            ]  
+        }}  
+    ]  
+});
+```
+
+#### See
+
+* Query
+* QueryCondition
+* QueryResult
+
+## Methods
+
+### query
+
+* query(query: string | Query, nodeID?: number): Promise\<QueryResult>
+
+  Executes a query for metadata of structure or aux nodes. For an explanation of the query format, see the
+  [QueryAPI](#).
+
+  #### Parameters
+
+  + query: string | Query
+
+    The query to execute. Can be either a query object or a JSON string.
+  + `Optional`nodeID: number
+
+    Optional node ID specifying a subtree to which the query should be scoped. If not provided,
+    the query is scoped to the whole space.
+
+  #### Returns Promise\<QueryResult>
+
+  A promise that resolves to an object containing the result data and any errors that have occurred
+  during query execution. If one or more errors have occurred, the result data must be considered incomplete.

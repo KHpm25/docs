@@ -1,0 +1,78 @@
+---
+title: "instant3Dhub: Stream and Visualize CAD Data at Web Scale"
+sidebarTitle: "Introduction to instant3Dhub"
+description: "instant3Dhub streams massive CAD assemblies directly to any browser — no installs, no format conversions, and no waiting. Visual computing as a service."
+---
+
+instant3Dhub is a web-scale 3D visualization and streaming platform built by Threedy GmbH. It connects directly to your PLM and PDM systems and streams even the largest CAD assemblies to any modern browser in real time — no file downloads, no format conversions, and no client software to install. Whether you are an engineer reviewing a complex assembly, a developer building a custom 3D application, or an IT integrator rolling out 3D capabilities across an enterprise, instant3Dhub gives you a single, unified platform to work from.
+
+## What instant3Dhub Does
+
+Traditional 3D visualization workflows require exporting files, converting formats, downloading large packages, and installing desktop software. instant3Dhub eliminates every one of those steps. Your 3D data stays in your PLM or PDM system — the single source of truth — and the platform streams only what is needed for the current viewport, on demand, to any connected device.
+
+Key platform capabilities include:
+
+- **Real-time 3D streaming** with up to 99% faster initial load compared to conventional download-and-render approaches
+- **Zero client footprint** — any modern browser works without plugins or extensions
+- **Direct PLM/PDM integration** with Siemens Teamcenter, PTC Windchill, Azure Blob Store, and SharePoint
+- **3DSpaces** for persistent, collaborative sessions with shared annotations, measurements, and clip planes
+- **Terabyte-scale data handling** through spatial caching that reuses computed fragments across users and sessions
+- **webvisAPI** JavaScript library for embedding 3D visualization in custom web applications
+- **Hub Mesh** for distributing 3D data across multiple platform instances
+- **AI Platform / MCP Server** for connecting AI assistants directly to 3D engineering data
+- **Unreal Engine plugin** for immersive VR and AR experiences
+
+## Who instant3Dhub Is For
+
+<CardGroup cols={3}>
+  <Card title="End Users" icon="users">
+    Engineering, sales, and service teams who need to view, annotate, measure, and share 3D models directly in the browser — with no software to install and no files to download.
+  </Card>
+  <Card title="App Developers" icon="code">
+    Frontend and full-stack developers who want to embed interactive 3D visualization into custom web applications using the **webvisAPI** JavaScript library.
+  </Card>
+  <Card title="Integrators" icon="server">
+    IT architects and DevOps engineers deploying instant3Dhub on Kubernetes or single-node infrastructure and connecting it to enterprise PLM/PDM data sources.
+  </Card>
+</CardGroup>
+
+## Supported 3D Formats
+
+instant3Dhub ingests a wide range of industry-standard CAD and 3D formats without requiring any pre-conversion step. The platform processes geometry server-side and streams the result directly to the browser.
+
+| Format | File Extensions | Typical Use Case |
+|---|---|---|
+| CATIA V5 | `.CATPart`, `.CATProduct` | Mechanical CAD assemblies |
+| STEP | `.stp`, `.step` | Neutral exchange format for CAD geometry |
+| IFC | `.ifc` | Building and construction (BIM) models |
+| GLTF-Binary | `.glb` | Web-optimized 3D scenes and assets |
+| VRML | `.wrl` | Legacy 3D interchange format |
+
+<Note>
+  instant3Dhub processes all formats server-side, so your users never need format-specific software on their devices. New format support is added at the server layer without any client update.
+</Note>
+
+## Key Differentiators
+
+**No conversion pipeline.** Most enterprise 3D tools require a dedicated conversion step that creates derivative copies of your data. instant3Dhub reads directly from your authoritative PLM/PDM source, so there is never a question of which version is current.
+
+**Spatial caching.** The platform breaks large assemblies into addressable spatial fragments and caches them after the first load. Subsequent users — or subsequent sessions — reuse those cached fragments immediately, making shared review workflows dramatically faster over time.
+
+**Terabyte-scale assemblies.** instant3Dhub is designed from the ground up to handle the largest real-world CAD datasets. Spatial partitioning and server-side culling mean that streaming cost scales with what is visible, not with total assembly size.
+
+## Explore the Platform
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/v3.14/quickstart">
+    Load and visualize your first 3D model in minutes. Includes browser steps and a webvisAPI code example.
+  </Card>
+  <Card title="Architecture & Core Concepts" icon="layer-group" href="/v3.14/concepts/overview">
+    Understand the InstanceGraph, 3DSpaces, Data Gateway, Hub Mesh, and spatial caching before you build.
+  </Card>
+  <Card title="How 3D Streaming Works" icon="wifi" href="/v3.14/concepts/3d-streaming">
+    Learn how instant3Dhub streams only what is visible, why initial loads are up to 99% faster, and how spatial caching scales.
+  </Card>
+  <Card title="webvisAPI Reference" icon="book" href="/v3.14/api/webvis-api">
+    Full JavaScript API reference for building custom 3D applications on top of instant3Dhub.
+  </Card>
+</CardGroup>

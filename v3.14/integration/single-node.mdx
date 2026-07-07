@@ -1,0 +1,171 @@
+---
+title: "Quick Start: Run instant3Dhub on a Single Linux Node"
+sidebarTitle: "Single Node"
+description: "Run instant3Dhub on a single Linux machine with microk8s. Covers hardware requirements, add-on setup, Helm install steps, and optional GPU rendering."
+---
+
+The single-node deployment lets you run a fully functional instant3Dhub instance on one machine without managing a multi-node cluster. It is the fastest path to a working environment and is well-suited for development, proof-of-concept evaluations, and small teams that do not need high availability. Under the hood, single-node still uses Kubernetes — provided by [microk8s](https://microk8s.io/) — so the same Helm chart and configuration patterns apply.
+
+## Supported Operating Systems
+
+- **CentOS 8** (or equivalent RHEL 8-based distribution)
+- **Ubuntu 20.04 LTS** or later
+- **Windows** — a separate Windows single-node guide is available from Threedy support (see note below)
+
+## Hardware Requirements
+
+Choose your hardware profile based on whether you need GPU-accelerated rendering:
+
+| Setup | CPU | RAM | GPU |
+|-------|-----|-----|-----|
+| CPU-only | 4 cores | 16 GB | None |
+| GPU-accelerated | 8 cores | 32 GB | 1× NVIDIA GPU |
+
+<Note>
+  For GPU-accelerated rendering on a single node, install the NVIDIA drivers and the NVIDIA container toolkit before proceeding. Verify the GPU is visible with `nvidia-smi`.
+</Note>
+
+<Note>
+  **Windows users**: A dedicated Windows single-node deployment guide, including PowerShell scripts and pre-configured manifests, is available through the Threedy support portal at [support.threedy.io](https://support.threedy.io). The steps below cover Linux only.
+</Note>
+
+## Installation
+
+<Steps>
+  <Step title="Install microk8s">
+    Install microk8s using snap (available by default on Ubuntu; install snap on CentOS first if needed):
+
+    ```bash
+    sudo snap install microk8s --classic --channel=1.28/stable
+    ```
+
+    Add your user to the `microk8s` group so you can run commands without `sudo`:
+
+    ```bash
+    sudo usermod -aG microk8s $USER
+    newgrp microk8s
+    ```
+
+    Wait for microk8s to finish initializing:
+
+    ```bash
+    microk8s status --wait-ready
+    ```
+
+    Once ready, alias `kubectl` to the microk8s-bundled binary for convenience:
+
+    ```bash
+    sudo snap alias microk8s.kubectl kubectl
+    ```
+  </Step>
+
+  <Step title="Enable required add-ons">
+    instant3Dhub needs DNS resolution, persistent storage, and an Ingress controller. Enable all three with a single command:
+
+    ```bash
+    microk8s enable dns storage ingress
+    ```
+
+    If you are using a GPU, also enable the NVIDIA GPU operator add-on:
+
+    ```bash
+    microk8s enable gpu
+    ```
+
+    Confirm every add-on shows `enabled` in the status output:
+
+    ```bash
+    microk8s status
+    ```
+  </Step>
+
+  <Step title="Add the Threedy Helm repository">
+    Helm is bundled with microk8s. Use it to register the Threedy chart repository:
+
+    ```bash
+    microk8s helm3 repo add threedy https://repo.threedy.io/helm
+    microk8s helm3 repo update
+    ```
+  </Step>
+
+  <Step title="Configure your values.yaml">
+    Create a `values.yaml` file tailored for a single-node setup. Use the `microk8s-hostpath` storage class that the microk8s storage add-on provides:
+
+    ```yaml
+    licenseServer:
+      url: https://your-license-server.example.com
+
+    storage:
+      class: microk8s-hostpath
+
+    entrypoints:
+      - host: localhost
+        tls: false
+
+    registry:
+      server: repo.threedy.io
+      username: YOUR_USERNAME
+      password: YOUR_PASSWORD
+    ```
+
+    <Tip>
+      For local development you can set `host: localhost` and disable TLS. For a shared team server, use a real hostname and enable TLS with a self-signed or Let's Encrypt certificate.
+    </Tip>
+  </Step>
+
+  <Step title="Install instant3Dhub">
+    Create a namespace and run the Helm install:
+
+    ```bash
+    kubectl create namespace instant3dhub
+
+    microk8s helm3 install instant3dhub threedy/instant3dhub \
+      --namespace instant3dhub \
+      -f values.yaml
+    ```
+  </Step>
+
+  <Step title="Verify the deployment">
+    Check that all pods reach the `Running` state:
+
+    ```bash
+    kubectl get pods -n instant3dhub
+    ```
+
+    On a single node this typically completes within two to five minutes, depending on image pull speed. If a pod is slow to start, watch its events:
+
+    ```bash
+    kubectl describe pod -n instant3dhub <pod-name>
+    ```
+  </Step>
+
+  <Step title="Access instant3Dhub">
+    Open a browser on the same machine and navigate to `http://localhost` (or the hostname you configured). The instant3Dhub interface loads and confirms your license is active.
+
+    <Tip>
+      To access instant3Dhub from another machine on your network, replace `localhost` with the server's IP address or hostname in `values.yaml` and reinstall or upgrade the chart.
+    </Tip>
+  </Step>
+</Steps>
+
+## Stopping and Restarting
+
+To stop microk8s (and all running pods) without uninstalling:
+
+```bash
+microk8s stop
+```
+
+To start it again:
+
+```bash
+microk8s start
+```
+
+## Uninstalling
+
+```bash
+microk8s helm3 uninstall instant3dhub --namespace instant3dhub
+microk8s disable gpu ingress storage dns
+sudo snap remove microk8s
+```

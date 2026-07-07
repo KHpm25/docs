@@ -1,0 +1,145 @@
+---
+title: "Integrate instant3Dhub into Unreal Engine Projects"
+sidebarTitle: "Unreal Plugin"
+description: "Install and use the instant3Dhub Unreal Engine plugin to stream CAD data into VR/AR experiences using both C++ and Blueprint APIs."
+---
+
+The instant3Dhub Unreal Engine plugin lets you stream high-fidelity CAD and 3D data directly into Unreal Engine scenes, enabling immersive VR and AR applications without baking or converting your source geometry. You get full access to instant3Dhub's selection, clipping, snapshot, and hierarchy APIs through both C++ and Blueprints.
+
+<Note>
+  The plugin package is available exclusively through the [Threedy customer portal](https://portal.threedy.ai). Contact your Threedy account manager if you do not yet have portal access.
+</Note>
+
+## System Requirements
+
+Before you install, verify that your development machine meets the following requirements:
+
+| Component   | Minimum Specification                                           |
+|-------------|------------------------------------------------------------------|
+| **OS**      | 64-bit Windows 10 or Windows 11                                  |
+| **CPU**     | Intel Core i7-11700K or AMD Ryzen 7 5800X                        |
+| **RAM**     | 64 GB                                                            |
+| **GPU**     | NVIDIA GeForce RTX 3070 (8 GB) or AMD Radeon RX 6700 XT (12 GB) |
+| **DirectX** | DirectX 11 or DirectX 12                                         |
+
+## Installation
+
+<Steps>
+  <Step title="Download the plugin package">
+    Log in to the Threedy customer portal and download the latest instant3Dhub Unreal Engine plugin archive (v1.3.0).
+  </Step>
+  <Step title="Copy to your Plugins directory">
+    Extract the archive and copy the `Instant3DHub` folder to one of the following locations:
+
+    - **Engine-wide** (available in all projects): `<UnrealEngineRoot>/Engine/Plugins/Marketplace/Instant3DHub`
+    - **Project-only** (recommended): `<YourProject>/Plugins/Instant3DHub`
+  </Step>
+  <Step title="Enable the plugin in Unreal Engine">
+    Open your project in the Unreal Editor. Navigate to **Edit → Plugins**, search for **instant3Dhub**, and toggle it on. Restart the editor when prompted.
+  </Step>
+  <Step title="Add the module to Build.cs">
+    Open your project's `Build.cs` file and add `Instant3DHub` to the `PublicDependencyModuleNames` list:
+
+    ```csharp
+    PublicDependencyModuleNames.AddRange(new string[] {
+        "Core",
+        "CoreUObject",
+        "Engine",
+        "Instant3DHub"
+    });
+    ```
+  </Step>
+</Steps>
+
+## Connecting to a Hub
+
+Once the plugin is installed, you establish a connection to your instant3Dhub instance using the Connector API.
+
+<Tabs>
+  <Tab title="C++">
+    Include the connector header and call `ConnectToHub` during actor initialization:
+
+    ```cpp
+    #include "Instant3DHub/Connector.h"
+
+    void AMyActor::BeginPlay()
+    {
+        Super::BeginPlay();
+        UInstant3DHubConnector::ConnectToHub(
+            TEXT("https://your-hub.example.com"),
+            Credentials
+        );
+    }
+    ```
+
+    To check connection state at runtime, use `IsConnectedToHub`:
+
+    ```cpp
+    if (UInstant3DHubConnector::IsConnectedToHub())
+    {
+        UE_LOG(LogTemp, Log, TEXT("Connected to instant3Dhub."));
+    }
+    ```
+  </Tab>
+  <Tab title="Blueprint">
+    In any Blueprint actor or component, right-click the Event Graph and search for **Connect To Hub**. Wire up a **Hub URL** string and a **Credentials** struct, then connect the execution pin to **BeginPlay** or your preferred startup event.
+
+    To disconnect gracefully (for example, on level unload), add a **Disconnect** node to your **EndPlay** event.
+  </Tab>
+</Tabs>
+
+## Blueprint Node Reference
+
+The following Blueprint node groups are available after the plugin is enabled. All nodes mirror their C++ counterparts and appear in the Blueprint context menu under the **instant3Dhub** category.
+
+<CardGroup cols={2}>
+  <Card title="Connector" icon="plug">
+    **ConnectToHub**, **Disconnect**, and **IsConnectedToHub** — manage the lifecycle of your hub connection.
+  </Card>
+  <Card title="Selection" icon="arrow-pointer">
+    Get and set the currently selected nodes in the scene. Useful for driving UI panels or triggering contextual actions when a user picks a part.
+  </Card>
+  <Card title="ClipPlanes" icon="scissors">
+    Create and delete clip planes to expose internal structure. Clip planes are defined in Unreal world-space and synchronized with the streamed model.
+  </Card>
+  <Card title="Snapshots" icon="camera">
+    Save named viewpoints and restore them on demand — ideal for guided walkthroughs or preset inspection positions.
+  </Card>
+  <Card title="Drawings" icon="file-lines">
+    Access 2D drawing views derived from the CAD data, so you can display technical documentation alongside the 3D scene.
+  </Card>
+  <Card title="InstanceGraph" icon="sitemap">
+    Traverse and modify the node hierarchy of the loaded model. Useful for driving visibility, LOD logic, or custom metadata lookups.
+  </Card>
+</CardGroup>
+
+## Traversing the InstanceGraph in Blueprints
+
+The InstanceGraph interface lets you walk the assembly tree and act on individual nodes without writing C++.
+
+<Steps>
+  <Step title="Get the root node">
+    Call **Get Root Node** to retrieve the top-level node of the currently loaded model.
+  </Step>
+  <Step title="Iterate children">
+    Use **Get Children** in a **For Each Loop** to recurse through the hierarchy. Each node exposes its **Name**, **ID**, and **Metadata Map**.
+  </Step>
+  <Step title="Apply changes">
+    Call **Set Node Visible**, **Set Node Selected**, or **Set Node Property** on any node reference to update the scene in real time.
+  </Step>
+</Steps>
+
+<Tip>
+  If you are building a mixed-reality application where physical and virtual objects must stay aligned, enable the **TransformAuthority** interface on your `Instant3DHub` component. TransformAuthority lets you designate whether Unreal Engine or the instant3Dhub session controls object transforms, preventing conflicts when tracking updates from external sensors or motion systems.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="JxVis Java SDK" href="/v3.14/sdks/jxvis" icon="java">
+    Need a desktop Java integration? See the JxVis SDK for Swing and SWT support.
+  </Card>
+  <Card title="MCP Server" href="/v3.14/sdks/mcp-server" icon="robot">
+    Connect AI assistants to your 3D data using the instant3Dhub MCP Server.
+  </Card>
+</CardGroup>

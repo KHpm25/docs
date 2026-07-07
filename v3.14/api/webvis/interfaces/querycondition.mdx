@@ -1,0 +1,97 @@
+---
+title: "Interface QueryCondition"
+sidebarTitle: "QueryCondition"
+description: "A condition of aQuery. For an explanation of the available conditions, see theQueryAPI."
+---
+
+A condition of a Query. For an explanation of the available conditions, see the QueryAPI.
+
+#### See
+
+QueryAPI
+
+## Properties
+
+### `Optional`ancestors
+
+ancestors?: QueryCondition[]
+
+### `Optional`and
+
+and?: QueryCondition[]
+
+### `Optional`caseSensitive
+
+caseSensitive?: boolean
+
+### `Optional`contains
+
+contains?: string
+
+### `Optional`equals
+
+equals?: string | number | Query
+
+### `Optional`equalsAny
+
+equalsAny?: (string | number)[]
+
+### `Optional`extFaceLink
+
+extFaceLink?: string
+
+### `Optional`faceHandle
+
+faceHandle?: TopologyHandle
+
+### `Optional`greaterOrEqualThan
+
+greaterOrEqualThan?: number
+
+### `Optional`greaterThan
+
+greaterThan?: number
+
+### `Optional`lessOrEqualThan
+
+lessOrEqualThan?: number
+
+### `Optional`lessThan
+
+lessThan?: number
+
+### `Optional`linkDepth
+
+linkDepth?: number
+
+### `Optional`metadata
+
+metadata?: string
+
+### `Optional`nodeId
+
+nodeId?: number
+
+### `Optional`nodeType
+
+nodeType?: "structure" | "aux"
+
+### `Optional`not
+
+not?: QueryCondition[]
+
+### `Optional`or
+
+or?: QueryCondition[]
+
+### `Optional`originalFaceID
+
+originalFaceID?: number
+
+### `Optional`pointsTo
+
+pointsTo?: number
+
+### `Optional`property
+
+property?: string

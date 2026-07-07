@@ -1,0 +1,299 @@
+---
+title: "Interface ViewerPointsOfInterestAPI"
+sidebarTitle: "ViewerPointsOfInterestAPI"
+description: "This interface serves as control point for the creation, management and visualization state of an individual set ofPointOfInterests for a viewer."
+---
+
+This interface serves as control point for the creation, management and visualization state of
+an individual set of PointOfInterests for a viewer.
+
+Currently supported features:
+
+* POI placement in world space
+* rendering as colored points
+* rendering as sprites
+* occlusion checking
+* POI set events, e.g. hover/click
+* custom style for visible/occluded/hovered POIs
+* POI size definition in screen or world space
+
+## Methods
+
+### addPointsToSet
+
+* addPointsToSet(id: number, pois: PointOfInterest[]): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Adds points to an existing POI set.
+
+  Triggers a [ViewerPOISetPointsAddedEvent](/api/webvis/classes/viewerpoisetpointsaddedevent) event if the points were added successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set
+  + pois: PointOfInterest[]
+
+    The list of PointOfInterests to add.
+
+  #### Returns number[]
+
+  The IDs of the newly added POIs.
+
+### changePointsInSet
+
+* changePointsInSet(  
+      poiSetId: number,  
+      poiIds: number[],  
+      pois: PointOfInterest[],  
+  ): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes points in an existing POI set.
+
+  Triggers a [ViewerPOISetPointsChangedEvent](/api/webvis/classes/viewerpoisetpointschangedevent) event if the points were changed successfully.
+
+  #### Parameters
+
+  + poiSetId: number
+
+    The ID of the POI set
+  + poiIds: number[]
+
+    The IDs of the POIs to change.
+  + pois: PointOfInterest[]
+
+    The new PointOfInterest data. The length of this array must match the length of the poiIds array.
+
+  #### Returns void
+
+### changePOISet
+
+* changePOISet(id: number, properties: POISetProperties): POISetProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Sets the properties for the POI set.
+
+  Triggers a [ViewerPOISetChangedEvent](/api/webvis/classes/viewerpoisetchangedevent) event if the properties were changed.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to change.
+  + properties: POISetProperties
+
+    The new properties of the POI set.
+
+  #### Returns POISetProperties
+
+### changePOIStyle
+
+* changePOIStyle(  
+      poiStyleId: number,  
+      properties: POIStyleProperties,  
+  ): POIStyleProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Sets the properties for the POI style.
+
+  Triggers a [ViewerPOIStyleChangedEvent](/api/webvis/classes/viewerpoistylechangedevent) event if the properties were changed.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to change.
+  + properties: POIStyleProperties
+
+    The new properties of the POI style.
+
+  #### Returns POIStyleProperties
+
+### createPOISet
+
+* createPOISet(properties?: POISetProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new POI set.
+
+  Triggers a [ViewerPOISetCreatedEvent](/api/webvis/classes/viewerpoisetcreatedevent) event if the set was created successfully.
+
+  #### Parameters
+
+  + `Optional`properties: POISetProperties
+
+    Initial properties of the created POI set.
+
+  #### Returns number
+
+  The ID the newly created set.
+
+### createPOIStyle
+
+* createPOIStyle(properties?: POIStyleProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new POI style.
+
+  Triggers a [ViewerPOIStyleCreatedEvent](/api/webvis/classes/viewerpoistylecreatedevent) event if the style was created successfully.
+
+  #### Parameters
+
+  + `Optional`properties: POIStyleProperties
+
+    Initial properties of the created POI style.
+
+  #### Returns number
+
+  The ID the newly created style.
+
+### getPOISetData
+
+* getPOISetData(id: number): POISetProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Queries the properties of a POI set.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to query.
+
+  #### Returns POISetProperties
+
+  The properties of the queried POI set.
+
+### getPOISets
+
+* getPOISets(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all existing POI sets.
+
+  #### Returns number[]
+
+  A number array representing the IDs of all POI sets.
+
+### getPOIStyleData
+
+* getPOIStyleData(poiStyleId: number): POIStyleProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Queries the properties of a POI style.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to query.
+
+  #### Returns POIStyleProperties
+
+  The properties of the queried POI style.
+
+### getPOIStyles
+
+* getPOIStyles(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all existing POI styles.
+
+  #### Returns number[]
+
+  A number array representing the IDs of all POI styles.
+
+### removePointsFromSet
+
+* removePointsFromSet(id: number, poiIds: number[]): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes points from an existing POI set.
+
+  Triggers a [ViewerPOISetPointsRemovedEvent](/api/webvis/classes/viewerpoisetpointsremovedevent) event if the points were removed successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set
+  + poiIds: number[]
+
+    The IDs of the POIs to remove.
+
+  #### Returns void
+
+### removePOISet
+
+* removePOISet(id: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the POI set with the given identifier.
+
+  Triggers a [ViewerPOISetRemovedEvent](/api/webvis/classes/viewerpoisetremovedevent) event if the set was removed successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to be removed.
+
+  #### Returns void
+
+### removePOIStyle
+
+* removePOIStyle(poiStyleId: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the POI style with the given identifier.
+
+  Triggers a [ViewerPOIStyleRemovedEvent](/api/webvis/classes/viewerpoistyleremovedevent) event if the style was removed successfully.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to be removed.
+
+  #### Returns void

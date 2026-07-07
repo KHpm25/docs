@@ -1,0 +1,123 @@
+---
+title: "Augmented Reality: Overlaying CAD Models in instant3Dhub"
+sidebarTitle: "AR"
+description: "How to set up and use instant3Dhub AR mode for marker and object tracking, real-world CAD overlay, and live PLM metadata on mobile devices."
+---
+
+instant3Dhub's AR mode overlays your CAD model directly onto the physical world through your device's camera. Using object tracking technology, the platform anchors the 3D model to a real-world reference — a printed marker or the physical object itself — so the digital twin stays locked in place as you move around it. This is useful for assembly verification, service training, design reviews on the shop floor, and spatial planning. This page explains the requirements, setup process, and tips for getting the best tracking results.
+
+## How AR Mode Works
+
+When you activate AR mode, instant3Dhub switches to your device's rear-facing camera and uses computer-vision tracking to determine the position and orientation of the physical reference point. The CAD model is then rendered on top of the live camera feed, aligned to match the real object's position in 3D space. As you walk around, the model moves with the physical object, maintaining accurate registration from any viewing angle.
+
+You can interact with the model in AR the same way you would in the standard viewer — tap to select parts, access the context menu, and display metadata from your PLM system — all while looking at the real environment through your screen.
+
+## Requirements
+
+Before using AR mode, confirm your setup meets the following requirements:
+
+<CardGroup cols={2}>
+  <Card title="Device" icon="mobile">
+    A smartphone or tablet with a rear-facing camera running iOS 14+ (Safari) or Android 9+ (Chrome). Devices with LiDAR sensors (iPhone Pro, iPad Pro) provide improved tracking accuracy.
+  </Card>
+  <Card title="Browser or App" icon="globe">
+    Use Safari on iOS or Chrome on Android for browser-based AR. For the best performance, use the native instant3Dhub mobile app if available for your platform.
+  </Card>
+  <Card title="Network" icon="wifi">
+    A stable Wi-Fi or 5G connection is recommended. AR streaming requires bandwidth to load model geometry in real time. Minimum recommended: 10 Mbps.
+  </Card>
+  <Card title="Reference Target" icon="crosshairs">
+    A printed AR marker (QR-code style target provided by your instant3Dhub administrator) or a physical object for markerless tracking. Good ambient lighting is essential.
+  </Card>
+</CardGroup>
+
+## Quick Start: Setting Up AR
+
+<Steps>
+  <Step title="Open your model in instant3Dhub on your mobile device">
+    Navigate to your instant3Dhub instance in your mobile browser and load the model you want to view in AR. You can use any of the standard loading methods — drag-and-drop, URL, or Data Gateway.
+  </Step>
+  <Step title="Tap the AR button in the toolbar">
+    Look for the **AR** icon in the toolbar (shown as a cube overlaid on a camera outline). Tap it to enter AR setup mode. The app requests camera permission if not already granted — tap **Allow**.
+  </Step>
+  <Step title="Choose your tracking method">
+    Select either **Marker Tracking** (scan a printed target) or **Object Tracking** (align to a physical object). If you are unsure, start with Marker Tracking for the most reliable initial experience.
+  </Step>
+  <Step title="Position your device and scan the reference">
+    Point your camera at the AR marker or the physical reference object. Hold the device steady and wait for the tracking indicator to turn green — this confirms that the tracking system has successfully detected and locked onto the reference.
+  </Step>
+  <Step title="Confirm alignment">
+    The CAD model appears overlaid on the real world, aligned to the reference. If the alignment looks offset, use the on-screen adjustment handles to fine-tune the position, rotation, and scale of the model.
+  </Step>
+  <Step title="Start your AR review">
+    Walk around the physical object while the CAD model stays anchored in place. Tap parts to select them and view metadata, or use the context menu to hide or isolate components just as in the standard viewer.
+  </Step>
+</Steps>
+
+## Object Tracking in Detail
+
+Object tracking anchors the 3D model to a recognizable physical object without requiring a printed marker. This works best for objects with distinctive geometry, visible surface texture, or strong edge contrast.
+
+<Steps>
+  <Step title="Select Object Tracking mode">
+    In the AR setup screen, tap **Object Tracking**. The camera feed activates with an alignment overlay.
+  </Step>
+  <Step title="Load the reference model">
+    instant3Dhub uses the CAD model itself as the tracking reference. The system extracts a visual fingerprint from the model's silhouette and surface features. No separate reference file is needed.
+  </Step>
+  <Step title="Align the on-screen model to the physical object">
+    Move your device so that the on-screen model outline aligns with the physical object. Adjust distance and angle until the outlines match as closely as possible.
+  </Step>
+  <Step title="Confirm and lock tracking">
+    Tap **Lock** or the check icon. The tracking system takes a snapshot of the current alignment and begins continuous tracking from that point. The model snaps into place over the physical object.
+  </Step>
+</Steps>
+
+## Configuring the AR Connection
+
+For enterprise deployments, AR mode can connect directly to your Data Gateway to pull live revision data and metadata. To configure this:
+
+<Steps>
+  <Step title="Open AR Settings">
+    While in AR mode, tap the **Settings** icon (gear symbol) in the AR toolbar.
+  </Step>
+  <Step title="Select Data Source">
+    Under **Data Source**, choose **Data Gateway** and enter the endpoint URL provided by your administrator. Optionally configure authentication credentials if required by your organization.
+  </Step>
+  <Step title="Enable Live Metadata">
+    Toggle on **Live Metadata** to pull real-time part attributes (revision, status, assembly instructions) from your PLM system and display them as overlays on the AR model.
+  </Step>
+  <Step title="Save and apply">
+    Tap **Save**. The AR session reconnects to the Data Gateway and begins streaming live metadata alongside the geometry.
+  </Step>
+</Steps>
+
+## Advanced Tracking Options
+
+<Accordion title="Scale Adjustment">
+  If the AR model appears at the wrong scale relative to the physical object, open **AR Settings → Scale** and adjust the scale factor manually. For 1:1 real-world overlays, the scale should be set to match the actual dimensions of the physical part as defined in the CAD model (usually 1.0 for models authored in millimetres with a 1 mm = 1 mm mapping).
+</Accordion>
+
+<Accordion title="Persistence Mode">
+  Persistence mode saves the tracked anchor between sessions. When you reopen the AR view in the same physical space, the model snaps back to the saved anchor without requiring you to rescan. Enable this in **AR Settings → Save Anchor**. Anchors are stored locally on the device.
+</Accordion>
+
+<Accordion title="Multi-Model AR">
+  You can load multiple models into a single AR scene — for example, displaying both a housing and its internal components as separate trackable objects. Add additional models via the **+ Add Model** button in the AR panel. Each model can be independently positioned, scaled, and shown or hidden.
+</Accordion>
+
+<Accordion title="Shared AR Sessions (3DSpace in AR)">
+  If you are already in a 3DSpace collaboration session, AR mode inherits the shared session. Other users on desktop see your AR camera position represented as a viewpoint in their 3D scene, and any annotations or selections you make in AR are instantly visible to all participants.
+</Accordion>
+
+## Tips for Best Tracking Accuracy
+
+- **Use even, diffuse lighting.** Harsh direct light or deep shadows reduce the contrast of surface features the tracker relies on.
+- **Avoid highly reflective surfaces.** Shiny metallic or painted surfaces cause specular highlights that confuse the tracker. A matte reference marker performs better than the bare part surface in such cases.
+- **Keep the reference in frame.** If the tracking target moves out of the camera view, tracking is lost. Move slowly and keep the physical object visible while walking around it.
+- **Steady the device during initial lock.** The initial scan requires the device to be held still for 1–2 seconds. Use both hands or brace against a surface when scanning.
+- **Use a physical marker on reflective parts.** For highly polished components, printing and attaching a temporary adhesive AR marker to a flat face on the part gives the tracker a reliable reference regardless of surface finish.
+
+<Warning>
+  Poor lighting conditions — including direct sunlight glare, flickering fluorescent lights, or low-light environments — significantly degrade tracking accuracy and can cause the model to drift or lose registration. For best results, conduct AR reviews in a well-lit, stable lighting environment. If tracking is lost, re-scan the reference target to re-establish the anchor.
+</Warning>

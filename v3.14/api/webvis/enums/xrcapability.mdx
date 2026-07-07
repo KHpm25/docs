@@ -1,0 +1,66 @@
+---
+title: "Enumeration XRCapability"
+sidebarTitle: "XRCapability"
+description: "The capabilities of the XR system. The capabilities are used to determine which functionalities are supported by the XR system."
+---
+
+The capabilities of the XR system. The capabilities are used to determine which functionalities are supported by the XR system.
+
+## Enumeration Members
+
+### SUPPORTS\_DEVICE\_IMAGE\_SOURCE
+
+SUPPORTS\_DEVICE\_IMAGE\_SOURCE: "supportsDeviceImageSource"
+
+The XR system supports streaming XR images from the local device.
+
+#### See
+
+* [XRConfiguration.imageSourceConfig](/v3.14/api/webvis/interfaces/xrconfiguration#imagesourceconfig)
+* [XRImageSourceConfigDevice](/v3.14/api/webvis/interfaces/xrimagesourceconfigdevice)
+
+### SUPPORTS\_DEVICE\_SCREENSHOTS
+
+SUPPORTS\_DEVICE\_SCREENSHOTS: "supportsDeviceScreenshots"
+
+The XR system is capable of providing device screenshots.
+
+#### See
+
+* [XRConfiguration.deviceScreenshotsEnabled](/v3.14/api/webvis/interfaces/xrconfiguration#devicescreenshotsenabled)
+* [RealityAPI.requestXRDeviceScreenshot](/v3.14/api/webvis/interfaces/realityapi#requestxrdevicescreenshot)
+
+### SUPPORTS\_MODEL\_TRACKING
+
+SUPPORTS\_MODEL\_TRACKING: "supportsModelTracking"
+
+The XR system supports modeltracking.
+
+#### See
+
+* [XRConfiguration.modelTrackingEnabled](/v3.14/api/webvis/interfaces/xrconfiguration#modeltrackingenabled)
+* [RealityAPI.enterXRInitMode](/v3.14/api/webvis/interfaces/realityapi#enterxrinitmode)
+
+### SUPPORTS\_PLAYBACK
+
+SUPPORTS\_PLAYBACK: "supportsPlayback"
+
+The XR system supports playback of recorded XR images.
+
+#### See
+
+* [XRConfiguration.imageSourceConfig](/v3.14/api/webvis/interfaces/xrconfiguration#imagesourceconfig)
+* [XRImageSourceConfigPlayback](/v3.14/api/webvis/interfaces/xrimagesourceconfigplayback)
+* [RealityAPI.setXRPlaybackSource](/v3.14/api/webvis/interfaces/realityapi#setxrplaybacksource)
+* [RealityAPI.startXRPlayback](/v3.14/api/webvis/interfaces/realityapi#startxrplayback)
+
+### SUPPORTS\_RAY\_CASTING
+
+SUPPORTS\_RAY\_CASTING: "supportsRayCasting"
+
+The XR system is capable of generating ray casts.
+
+#### See
+
+* [XRConfiguration.rayCastingEnabled](/v3.14/api/webvis/interfaces/xrconfiguration#raycastingenabled)
+* [RealityAPI.anchorXR](/v3.14/api/webvis/interfaces/realityapi#anchorxr)

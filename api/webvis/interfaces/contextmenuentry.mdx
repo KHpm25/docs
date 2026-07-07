@@ -1,0 +1,44 @@
+---
+title: "Interface ContextMenuEntry"
+sidebarTitle: "ContextMenuEntry"
+description: "Defines the properties of an entry of a requested context menu."
+---
+
+Defines the properties of an entry of a requested context menu.
+
+This type is only used internally by the [RequestContextMenuEvent](/api/webvis/classes/requestcontextmenuevent) event to request a context menu from the UI.
+To modify the context menu, use the related functions provided by the webvisUI API.
+
+## Properties
+
+### `Optional`command
+
+command?: (nodeID: number, pointerInfo: PointerInfo) => void
+
+### condition
+
+condition: (nodeID: number, pointerInfo: PointerInfo) => boolean
+
+### `Optional`description
+
+description?: string
+
+### `Optional`highlight
+
+highlight?: (nodeID: number, pointerInfo: PointerInfo) => void
+
+### `Optional`iconID
+
+iconID?: string
+
+### `Optional`id
+
+id?: string
+
+### `Optional`label
+
+label?: string
+
+### `Optional`subEntries
+
+subEntries?: ContextMenuEntry[]

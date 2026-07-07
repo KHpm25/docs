@@ -1,0 +1,41 @@
+---
+title: "Enumeration NodeStateCategory"
+sidebarTitle: "NodeStateCategory"
+description: "The NodeStateCategory is used to categorize aNodeStateinto a specific class. The category can be determined by dividing the state by 1000 and rounding down. For example, the catego"
+---
+
+The NodeStateCategory is used to categorize a NodeState into a specific class. The category can be determined by
+dividing the state by 1000 and rounding down. For example, the category [INITIALIZATION](#initialization) contains all node states between
+1000 and 1999.
+
+## Enumeration Members
+
+### FINISHED\_SUCCESSFUL
+
+FINISHED\_SUCCESSFUL: 3
+
+Contains all successful states.
+
+### FINISHED\_WITH\_ERROR
+
+FINISHED\_WITH\_ERROR: 5
+
+Contains all error related states.
+
+### FINISHED\_WITH\_WARNING
+
+FINISHED\_WITH\_WARNING: 4
+
+Contains all warning related states.
+
+### INITIALIZATION
+
+INITIALIZATION: 1
+
+Contains all initialization related states.
+
+### PROCESSING
+
+PROCESSING: 2
+
+Contains all processing related states.

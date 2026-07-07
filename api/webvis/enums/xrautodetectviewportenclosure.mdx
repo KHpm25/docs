@@ -1,0 +1,33 @@
+---
+title: "Enumeration XRAutoDetectViewportEnclosure"
+sidebarTitle: "XRAutoDetectViewportEnclosure"
+description: "Indicates if the requested node's screen rectangle was visible in the current viewport when the score was calculated."
+---
+
+Indicates if the requested node's screen rectangle was visible in the current viewport when the score was calculated.
+
+#### See
+
+* [ViewerXREdgeCompareAPI](/api/webvis/interfaces/viewerxredgecompareapi)
+* [ViewerXREdgeCompareAPI.requestXRAutoDetectScores](/api/webvis/interfaces/viewerxredgecompareapi#requestxrautodetectscores)
+* [XRAutoDetectScore](/api/webvis/interfaces/xrautodetectscore)
+
+## Enumeration Members
+
+### INSIDE
+
+INSIDE: 0
+
+Fully inside viewport.
+
+### OUTSIDE
+
+OUTSIDE: 1
+
+Not inside viewport. The node did not produce any pixel on screen.
+
+### PARTIAL
+
+PARTIAL: 2
+
+Parts of the node have been inside the viewport.

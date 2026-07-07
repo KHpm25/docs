@@ -1,0 +1,88 @@
+---
+title: "Interface XREdgeComparePropertiesExperimental"
+sidebarTitle: "XREdgeCompareProperties"
+description: "XREdgeCompareProperties is experimental and may be changed in the future without notice! The XR Edge compare properties"
+---
+
+XREdgeCompareProperties is experimental and may be changed in the future without notice!
+The XR Edge compare properties
+
+#### See
+
+* ViewerXREdgeCompareAPI
+* ViewerXREdgeCompareAPI.changeXREdgeCompare
+* [XREdgeCompareMode](/api/webvis/enums/xredgecomparemode)
+
+## Properties
+
+### `Optional` `Experimental`edgeDetectionThreshold
+
+edgeDetectionThreshold?: number
+
+The threshold for detecting camera edges. Must be a value between 0 and 1. The greater the value the more likely a pixel in the camera image is considered an edge pixel.
+
+#### Default
+
+```ts
+0.5
+```
+
+### `Optional` `Experimental`forceEdgesBetweenParts
+
+forceEdgesBetweenParts?: boolean
+
+Specifies if edges in the rendered scene should be generated between two connected parts even when the angle between their surfaces is not above the edge generation threshold.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional` `Experimental`matchColor
+
+matchColor?: [number, number, number, number]
+
+The color for matching edge pixels.
+
+#### Default
+
+```ts
+[0, 1, 0, 1]
+```
+
+### `Optional` `Experimental`mode
+
+mode?: [XREdgeCompareMode](/api/webvis/enums/xredgecomparemode)
+
+Specifies the way edge pixels are matched.
+
+#### Default
+
+```ts
+XREdgeCompareMode.SCENE_WITH_CAMERA
+```
+
+### `Optional` `Experimental`noMatchColor
+
+noMatchColor?: [number, number, number, number]
+
+The color for non-matching edge pixels.
+
+#### Default
+
+```ts
+[1, 0, 0, 1]
+```
+
+### `Optional` `Experimental`searchRadius
+
+searchRadius?: number
+
+The search radius for matching edges in pixel. The greater the value the more surrounding pixels will be checked for matches.
+
+#### Default
+
+```ts
+5
+```

@@ -1,0 +1,69 @@
+---
+title: "Interface SnapshotCreationOptions"
+sidebarTitle: "SnapshotCreationOptions"
+description: "Options used for the creation of a snapshot. These options allow customization of the snapshot creation process."
+---
+
+Options used for the creation of a snapshot.
+These options allow customization of the snapshot creation process.
+
+### Use Case
+
+Use this type to configure the snapshot creation process. For example, you can specify whether a thumbnail should be created
+and define its dimensions if needed.
+
+#### See
+
+SessionStorageAPI
+
+## Properties
+
+### `Optional`storeBackground
+
+storeBackground?: boolean
+
+Specifies whether the viewer's background should be stored in the snapshot.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`thumbnail
+
+thumbnail?: boolean
+
+Specifies whether a thumbnail should be created for the snapshot.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`thumbnailHeight
+
+thumbnailHeight?: number
+
+Specifies the height of the thumbnail in pixels.
+If neither `thumbnailHeight` nor `thumbnailWidth` is set, the current viewer size will be used.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`thumbnailWidth
+
+thumbnailWidth?: number
+
+Specifies the width of the thumbnail in pixels.
+If neither `thumbnailHeight` nor `thumbnailWidth` is set, the current viewer size will be used.
+
+#### Default
+
+```ts
+undefined
+```

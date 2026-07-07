@@ -1,0 +1,495 @@
+---
+title: "Interface TopologyAPI"
+sidebarTitle: "TopologyAPI"
+description: "The TopologyAPI provides access to low-level topological entities within a 3D model. A topological entity can be a point, some kind of edge or face, or a shape that groups several "
+---
+
+## TopologyAPI
+
+### Overview
+
+The TopologyAPI provides access to low-level topological entities within a 3D model.
+A topological entity can be a point, some kind of edge or face, or a shape that groups
+several of these entities together.
+
+A topological entity is usually represented by a TopologyHandle. Each topological
+entity has a general [type](/v3.14/api/webvis/enums/topologytype) and a more specific [subtype](/v3.14/api/webvis/enums/topologysubtype).
+
+Given a TopologyHandle, a more detailed descriptor can be requested via the
+[requestTopologyDescriptor](#requesttopologydescriptor) function. This
+descriptor contains the subtype and an object with a series of known attributes of the
+topological entity. For example, a descriptor for a circle includes the center and
+radius of the circle.
+
+### Quick Start
+
+A topology handle can be obtained via [mapOriginalToInternalTopologyHandles](#maporiginaltointernaltopologyhandles)
+by providing the identifier of the entity in the original CAD file.
+
+Alternatively, you can use a click event listener to obtain a handle for the topological
+entity under the mouse cursor:
+
+```ts
+const context = webvis.getContext();  
+const viewer = context.getViewer();  
+  
+// Disable node selection on click and enable interaction  
+// with topological entities  
+context.setInteractionMode(webvis.InteractionMode.NONE);  
+viewer.setInteractionLevel(webvis.ViewerInteractionLevel.TOPOLOGY);  
+viewer.forceRenderMode(webvis.RenderMode.FacesTopology);  
+viewer.enableSnapping(true);  
+  
+const listenerId = context.registerListener([webvis.EventType.NODE_CLICKED], async (event) => {  
+    const pointerInfo = event.pointerInfo;  
+    const topologyHandle = await pointerInfo.requestTopologyHandle();  
+  
+    await context.addTopologyToSelection(topologyHandle);  
+  
+    const topologyDescriptor = await context.requestTopologyDescriptor(topologyHandle);  
+    console.log("Descriptor: ", topologyDescriptor);  
+  
+    const [originalIdentifier] = await context.mapInternalToOriginalTopologyHandles([topologyHandle]);  
+    console.log("Identifier in original CAD file: ", originalIdentifier);  
+}, 0, true); // Set option 'observeSubTree' to true to observe all entities
+```
+
+### Combination With Other APIs
+
+When the viewer interaction level is set to [TOPOLOGY](/v3.14/api/webvis/enums/viewerinteractionlevel#topology)
+via the function ViewerInteractionAPI.setInteractionLevel, webvis will emit
+[TopologyPointerEnterEvent](/v3.14/api/webvis/classes/topologypointerenterevent)s and [TopologyPointerOutEvent](/v3.14/api/webvis/classes/topologypointeroutevent)s when the mouse
+cursor enters or leaves a topological entity:
+
+```ts
+// Setup as shown in the previous example, including setting  
+// the viewer interaction level to TOPOLOGY  
+  
+const listenerId = context.registerListener([webvis.EventType.TOPOLOGY_POINTER_ENTER], (event) => {  
+    const topologyHandle = event.topologyHandle;  
+    viewer.highlightEntity(topologyHandle, {color: [1, 0.8, 0, 0.5]});  
+}, 0, true); // Set option 'observeSubTree' to true to observe all entities
+```
+
+As demonstrated in the example above, you can use the function ViewerHighlightAPI.highlightEntity
+to highlight a topological entity.
+
+In addition to that, the MeasurementAPI can be used to perform different kinds of
+measurements with topological entities. Examples include distance, angle, and thickness
+measurements, as well as tangent calculations.
+
+## Methods
+
+### addTopologyToSelection
+
+* addTopologyToSelection(handle: TopologyHandle | TopologyHandle[]): Promise\<void>
+
+  Adds one or more topological entities to the current selection.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological entities which
+    should be added to the current selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + [setTopologySelection](#settopologyselection)
+  + [removeTopologyFromSelection](#removetopologyfromselection)
+  + [clearTopologySelection](#cleartopologyselection)
+  + [getSelectedTopologyHandles](#getselectedtopologyhandles)
+
+### clearTopologySelection
+
+* clearTopologySelection(): Promise\<void>
+
+  Clears the current topological entity selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + [setTopologySelection](#settopologyselection)
+  + [addTopologyToSelection](#addtopologytoselection)
+  + [removeTopologyFromSelection](#removetopologyfromselection)
+  + [getSelectedTopologyHandles](#getselectedtopologyhandles)
+
+### createCircularArcDescriptor
+
+* createCircularArcDescriptor(  
+      point0: [number, number, number],  
+      point1: [number, number, number],  
+      point2: [number, number, number],  
+  ): \{ descriptor: TopologyCircularArcDescriptor; type: [CIRCULAR\_ARC](/v3.14/api/webvis/enums/topologysubtype#circular_arc) \}
+
+  Creates a circular arc descriptor based on three points.
+
+  #### Parameters
+
+  + point0: [number, number, number]
+
+    The first point.
+  + point1: [number, number, number]
+
+    The second point.
+  + point2: [number, number, number]
+
+    The third point.
+
+  #### Returns \{ descriptor: TopologyCircularArcDescriptor; type: [CIRCULAR\_ARC](/v3.14/api/webvis/enums/topologysubtype#circular_arc) \}
+
+  A circular arc descriptor.
+
+  + ##### descriptor: TopologyCircularArcDescriptor
+
+    The attributes of the topological entity.
+  + ##### type: [CIRCULAR\_ARC](/v3.14/api/webvis/enums/topologysubtype#circular_arc)
+
+    The subtype of the topological entity.
+
+### createPointDescriptor
+
+* createPointDescriptor(  
+      point: [number, number, number],  
+  ): \{ descriptor: TopologyPointDescriptor; type: [POINT](/v3.14/api/webvis/enums/topologysubtype#point) \}
+
+  Creates a point descriptor for the specified point.
+
+  #### Parameters
+
+  + point: [number, number, number]
+
+    The point.
+
+  #### Returns \{ descriptor: TopologyPointDescriptor; type: [POINT](/v3.14/api/webvis/enums/topologysubtype#point) \}
+
+  A point descriptor.
+
+  + ##### descriptor: TopologyPointDescriptor
+
+    The attributes of the topological entity.
+  + ##### type: [POINT](/v3.14/api/webvis/enums/topologysubtype#point)
+
+    The subtype of the topological entity.
+
+### getSelectedTopologyHandles
+
+* getSelectedTopologyHandles(): TopologyHandle[]
+
+  Returns all selected topological entities.
+
+  #### Returns TopologyHandle[]
+
+  All selected topological entities.
+
+  #### See
+
+  + [isTopologySelected](#istopologyselected)
+  + [setTopologySelection](#settopologyselection)
+
+### getShapeHandle
+
+* getShapeHandle(handle: TopologyHandle): TopologyHandle
+
+  Returns a handle for the shape that contains the given topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns TopologyHandle
+
+  A handle for the shape that contains the given topological entity.
+
+### getTopologyType
+
+* getTopologyType(handle: TopologyHandle): [TopologyType](/v3.14/api/webvis/enums/topologytype)
+
+  Returns the type of the given topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns [TopologyType](/v3.14/api/webvis/enums/topologytype)
+
+  The type of the given topological entity.
+
+### isTopologySelected
+
+* isTopologySelected(handle: TopologyHandle): boolean
+
+  Returns true if the specified topological entity is selected, false otherwise.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns boolean
+
+  True if the specified topological entity is selected, false otherwise.
+
+  #### See
+
+  + [getSelectedTopologyHandles](#getselectedtopologyhandles)
+  + [setTopologySelection](#settopologyselection)
+
+### mapInternalToOriginalTopologyHandles
+
+* mapInternalToOriginalTopologyHandles(  
+      handles: TopologyHandle[],  
+  ): Promise\<OriginalTopologyHandle[]>
+
+  Maps the given webvis topology handles to the corresponding original topology
+  handles.
+
+  #### Parameters
+
+  + handles: TopologyHandle[]
+
+    The webvis topology handles to be mapped.
+
+  #### Returns Promise\<OriginalTopologyHandle[]>
+
+  The corresponding original topology handles.
+
+  #### See
+
+  [mapOriginalToInternalTopologyHandles](#maporiginaltointernaltopologyhandles)
+
+### mapOriginalToInternalTopologyHandles
+
+* mapOriginalToInternalTopologyHandles(  
+      nodeID: number,  
+      handles: OriginalTopologyHandle[],  
+  ): Promise\<TopologyHandle[]>
+
+  Maps the given original topology handles to the corresponding webvis topology
+  handles.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The node which represents the part that contains the
+    topological entities.
+  + handles: OriginalTopologyHandle[]
+
+    The original topology handles to be mapped.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The corresponding webvis topology handles.
+
+  #### See
+
+  [mapInternalToOriginalTopologyHandles](#mapinternaltooriginaltopologyhandles)
+
+### removeTopologyFromSelection
+
+* removeTopologyFromSelection(  
+      handle: TopologyHandle | TopologyHandle[],  
+  ): Promise\<void>
+
+  Removes one or more topological entities from the current selection.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological entities which
+    should be removed from the current selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + [setTopologySelection](#settopologyselection)
+  + [addTopologyToSelection](#addtopologytoselection)
+  + [clearTopologySelection](#cleartopologyselection)
+  + [getSelectedTopologyHandles](#getselectedtopologyhandles)
+
+### requestBoxDescriptor
+
+* requestBoxDescriptor(  
+      nodeIds: number[],  
+  ): Promise<\{ descriptor: TopologyBoxDescriptor; type: [BOX](/v3.14/api/webvis/enums/topologysubtype#box) \}>
+
+  Returns a box descriptor for the combined bounding box of the
+  specified nodes.
+
+  #### Parameters
+
+  + nodeIds: number[]
+
+    The nodes for which the box descriptor should
+    be created.
+
+  #### Returns Promise<\{ descriptor: TopologyBoxDescriptor; type: [BOX](/v3.14/api/webvis/enums/topologysubtype#box) \}>
+
+  The box descriptor for the combined bounding box of
+  the specified nodes.
+
+### requestNeighboringEdges
+
+* requestNeighboringEdges(handle: TopologyHandle): Promise\<TopologyHandle[]>
+
+  Returns the neighboring edges of the specified topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity for which the neighboring edges should be requested.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The neighboring edges of the specified topological entity.
+
+### requestNeighboringFaces
+
+* requestNeighboringFaces(handle: TopologyHandle): Promise\<TopologyHandle[]>
+
+  Returns the neighboring faces of the specified topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity for which the neighboring faces should be requested.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The neighboring faces of the specified topological entity.
+
+### requestShapeHandles
+
+* requestShapeHandles(nodeId: number): Promise\<TopologyHandle[]>
+
+  Returns a list of shape handles for the specified node or subtree.
+
+  #### Parameters
+
+  + nodeId: number
+
+    The node ID which is used to collect the shape handles.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The list of shape handles for the specified node or subtree
+
+### requestTopologyDescriptor
+
+* requestTopologyDescriptor(handle: TopologyHandle): Promise<[TopologyDescriptor](/v3.14/api/webvis/types/topologydescriptor)>
+
+  Returns a detailed descriptor for the specified topological entity.
+  The descriptor contains the [subtype](/v3.14/api/webvis/enums/topologysubtype) and an
+  object with a series of known attributes of the topological entity.
+  For example, a descriptor for a circle includes the center and
+  radius of the circle.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity.
+
+  #### Returns Promise<[TopologyDescriptor](/v3.14/api/webvis/types/topologydescriptor)>
+
+  A detailed descriptor for the specified topological entity.
+
+### requestTopologyHandles
+
+* requestTopologyHandles(  
+      nodeId: number,  
+      types?: [TopologyType](/v3.14/api/webvis/enums/topologytype)[],  
+  ): Promise\<TopologyHandle[]>
+
+  `Experimental`
+
+  Returns a list of topology handles for the specified node or subtree.
+
+  #### Parameters
+
+  + nodeId: number
+
+    The node ID that is used to collect the topology handles.
+  + `Optional`types: [TopologyType](/v3.14/api/webvis/enums/topologytype)[]
+
+    The types of the topology handles that should be collected.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The list of topology handles for the specified node or subtree
+
+### setTopologyProperty
+
+* setTopologyProperty<[T](#settopologypropertyt) extends keyof TopologyPropertyTypeMap>(  
+      handle: TopologyHandle | TopologyHandle[],  
+      property: T,  
+      value: TopologyPropertyTypeMap[T],  
+  ): Promise\<PromiseSettledResult\<void>[]>
+
+  Sets a [property](/v3.14/api/webvis/enums/topologyproperty) of one or more topological
+  entities.
+
+  #### Type Parameters
+
+  + T extends keyof TopologyPropertyTypeMap
+
+    The property which should be set.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological
+    entities which should be modified.
+  + property: T
+
+    The property which should be set.
+  + value: TopologyPropertyTypeMap[T]
+
+    The new value of the property.
+
+  #### Returns Promise\<PromiseSettledResult\<void>[]>
+
+  A promise which resolves when the operation is completed.
+
+### setTopologySelection
+
+* setTopologySelection(handle: TopologyHandle | TopologyHandle[]): Promise\<void>
+
+  Sets the current selection to the specified topological entities.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    One or more topological entities that should be selected.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + [addTopologyToSelection](#addtopologytoselection)
+  + [removeTopologyFromSelection](#removetopologyfromselection)
+  + [clearTopologySelection](#cleartopologyselection)
+  + [getSelectedTopologyHandles](#getselectedtopologyhandles)

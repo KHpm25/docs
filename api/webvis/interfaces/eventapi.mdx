@@ -1,0 +1,129 @@
+---
+title: "Interface EventAPI"
+sidebarTitle: "EventAPI"
+description: "The EventAPI provides the functionsregisterListenerandunregisterListenerfor managing event listeners. Examples of event triggers are the addition and removal of nodes, changes to n"
+---
+
+## EventAPI
+
+### Overview
+
+The EventAPI provides the functions [registerListener](#registerlistener) and
+[unregisterListener](#unregisterlistener) for managing event listeners. Examples of event triggers
+are the addition and removal of nodes, changes to node properties, and user interactions with the visualization.
+
+* The [EventType](/api/webvis/enums/eventtype) enum lists all available event types.
+* An event listener is registered for a set of event types and must implement the
+  IEventListener interface.
+* An event's [type](/api/webvis/classes/webvisevent#type) property specifies its [EventType](/api/webvis/enums/eventtype) and determines its structure.
+
+### Quick Start
+
+The example below demonstrates how to register a listener for [NODE\_ADDED](/api/webvis/enums/eventtype#node_added) events.
+Registering an event listener returns a listener ID, which can be used to unregister the listener later.
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Register a listener for NODE_ADDED events  
+const listenerId = context.registerListener([webvis.EventType.NODE_ADDED], (event) => {  
+   // Print the ID of the added node.  
+   console.log(event.targetNodeID);  
+});  
+  
+// ...  
+  
+// Later: unregister the listener  
+context.unregisterListener(listenerId);
+```
+
+### Scoping listeners in the node hierarchy
+
+Several events are linked to a specific node in the hierarchy, e.g. [NodeClickedEvent](/api/webvis/classes/nodeclickedevent)s. When
+registering a listener for the corresponding event types, a listening scope must be specified in the node
+hierarchy. For more information, see the [registerListener](#registerlistener) function.
+
+## Methods
+
+### registerListener
+
+* registerListener<[T](#registerlistenert) extends [WebVisEvent](/api/webvis/classes/webvisevent) = [WebVisEvent](/api/webvis/classes/webvisevent)>(  
+      eventTypes: [EventType](/api/webvis/enums/eventtype)[],  
+      listener: IEventListener\<T>,  
+      nodeID?: number,  
+      observeSubTree?: boolean,  
+  ): number
+
+  Registers a listener for a set of [EventType](/api/webvis/enums/eventtype)s. If the given event types array is empty, the
+  listener will react to all event types. The listener must implement the IEventListener
+  interface. It will be called with events that extend the [WebVisEvent](/api/webvis/classes/webvisevent) base class. An event's
+  `type` property specifies its [EventType](/api/webvis/enums/eventtype) and determines its structure.
+
+  ### Scoping listeners in the node hierarchy
+
+  Several [EventType](/api/webvis/enums/eventtype)s are linked to a specific node in the hierarchy. These include all that
+  have a `NODE_` or `TOPOLOGY_` prefix, as well as several animation-related event types.
+
+  When registering a listener for these event types, a listening scope must be specified in the node
+  hierarchy. This is done by setting the optional parameters `nodeID` and `observeSubTree`. The
+  `observeSubTree` flag determines whether the listener is scoped to only the specified node or the
+  entire subtree under the node.
+
+  By default, listeners are scoped to the global root node and `observeSubTree` is `false`, such that
+  listeners do not receive any events linked to added nodes. To listen to events from all nodes, set
+  `nodeID` to `0` and `observeSubTree` to `true`.
+
+  There are a few things to note when scoping listeners:
+
+  + [NODE\_ADDED](/api/webvis/enums/eventtype#node_added) events are linked to the parent node of the added node.
+  + [NODE\_CHANGED](/api/webvis/enums/eventtype#node_changed) events behave differently depending on the node property
+    that has changed. When the node property is recursive, the event is passed to all listeners in the
+    subtree. When the change to the node property affects the node's ancestors, events will also be
+    triggered for the ancestors.
+
+  #### Type Parameters
+
+  + T extends [WebVisEvent](/api/webvis/classes/webvisevent) = [WebVisEvent](/api/webvis/classes/webvisevent)
+
+    The type of event that the listener listens to. This can also be a union of multiple
+    event types.
+
+  #### Parameters
+
+  + eventTypes: [EventType](/api/webvis/enums/eventtype)[]
+
+    The types of events that the listener listens to. If an empty array is passed,
+    the listener will listen to all event types.
+  + listener: IEventListener\<T>
+
+    The event listener.
+  + `Optional`nodeID: number
+
+    The ID of the node to which the listener should be scoped. Default: `0`
+  + `Optional`observeSubTree: boolean
+
+    If set to true, the listener will be scoped to the whole subtree under the
+    specified node. Default: `false`
+
+  #### Returns number
+
+  + The ID of the event listener.
+
+### unregisterListener
+
+* unregisterListener(listenerID: number): void
+
+  Unregisters the event listener with the given ID.
+
+  #### Parameters
+
+  + listenerID: number
+
+    The ID of the event listener that should be unregistered.
+
+  #### Returns void
+
+  #### See
+
+  [EventAPI](#)

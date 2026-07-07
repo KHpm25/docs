@@ -1,0 +1,61 @@
+---
+title: "Interface POIStyleProperties"
+sidebarTitle: "POIStyleProperties"
+description: "Defines the visual appearance of a set ofPointOfInterests."
+---
+
+Defines the visual appearance of a set of PointOfInterests.
+
+## Properties
+
+### `Optional`color
+
+color?: [number, number, number, number]
+
+The color of the POIs as RGBA values in the range [0, 1].
+
+#### Default
+
+```ts
+[0, 0, 0, 1]
+```
+
+### `Optional`name
+
+name?: string
+
+Optional. Name of the POI style.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`size
+
+size?: number
+
+The size of the POIs.
+By default, this is interpreted as screen space pixels.
+See sizeMode in POISetProperties for details.
+
+#### Default
+
+```ts
+15
+```
+
+### `Optional`sprite
+
+sprite?: HTMLImageElement
+
+The sprite image to use for the POIs.
+If not set, the POIs will be rendered as circles.
+To delete a sprite from an existing style, set the sprite to null.
+
+#### Default
+
+```ts
+undefined
+```

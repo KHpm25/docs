@@ -1,0 +1,97 @@
+---
+title: "Interface ContentType"
+sidebarTitle: "ContentType"
+description: "Defines the information about a content type. A content type stores information about the format which could be transcoded by the backend transcoder service."
+---
+
+Defines the information about a content type. A content type stores information about the format which could be transcoded by the backend transcoder service.
+
+#### See
+
+HubAPI.requestSupportedContentTypes
+
+## Properties
+
+### `Optional`home
+
+home?: string
+
+Homepage for more information on a contentType.
+
+#### Example
+
+```ts
+"http://www.web3d.org"
+```
+
+### id
+
+id: string
+
+The identifier of the contentType.
+
+#### Example
+
+```ts
+"x3d-xml"
+```
+
+### `Optional`isExperimental
+
+isExperimental?: boolean
+
+Information whether the contentType is experimental or not.
+
+### label
+
+label: string
+
+The full name of a contentType.
+
+#### Example
+
+```ts
+"X3D, XML Encoding"
+```
+
+### `Optional`mimeTypes
+
+mimeTypes?: string[]
+
+The mimeTypes of a contentType.
+
+#### Example
+
+```ts
+["model/x3d+xml", "model/x3d"]
+```
+
+### `Optional`spec
+
+spec?: string
+
+The specification of a contentType.
+
+#### Example
+
+```ts
+"ISO/IEC IS 19775-1:2013"
+```
+
+### `Optional`suffixes
+
+suffixes?: string[]
+
+Supported suffixes of a contentType.
+
+#### Example
+
+```ts
+["x3d", "x3dz", "x3z"]
+```
+
+### `Optional`version
+
+version?: string
+
+The version of the contentType.

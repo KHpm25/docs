@@ -1,0 +1,115 @@
+---
+title: "Interface ViewerHighlightAPI"
+sidebarTitle: "ViewerHighlightAPI"
+description: "Disable highlighting for the handle"
+---
+
+## Methods
+
+### dehighlightEntity
+
+* dehighlightEntity(highlightHandle?: number): void
+
+  Disable highlighting for the handle
+
+  #### Parameters
+
+  + `Optional`highlightHandle: number
+
+    : number
+
+  #### Returns void
+
+### highlightArc
+
+* highlightArc(  
+      pickedPt1: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      pickedPt3: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      center: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      axis: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      angle: number,  
+      measurementID: number,  
+  ): number
+
+  #### Parameters
+
+  + pickedPt1: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + pickedPt3: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + center: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + axis: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + angle: number
+  + measurementID: number
+
+  #### Returns number
+
+### highlightBBox
+
+* highlightBBox(  
+      center: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      size: Float32Array\<ArrayBufferLike> | [number, number, number],  
+  ): number
+
+  #### Parameters
+
+  + center: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + size: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  #### Returns number
+
+### highlightCircularArc
+
+* highlightCircularArc(  
+      circularArcDescriptor: TopologyCircularArcDescriptor,  
+  ): number
+
+  #### Parameters
+
+  + circularArcDescriptor: TopologyCircularArcDescriptor
+
+  #### Returns number
+
+### highlightEntity
+
+* highlightEntity(  
+      handle: TopologyHandle,  
+      highlightParameters?: ViewerHighlightParameters,  
+  ): Promise\<number>
+
+  Enable highlighting of the entity , which matches the attributes informed in the viewerDataSelector
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    : IViewerHighlightSelector
+  + `Optional`highlightParameters: ViewerHighlightParameters
+
+  #### Returns Promise\<number>
+
+  the highlightHandle, which it reqed to remove the highlighting
+
+### highlightLine
+
+* highlightLine(values: number[], scale: number, markerIndex: number): void
+
+  #### Parameters
+
+  + values: number[]
+  + scale: number
+  + markerIndex: number
+
+  #### Returns void
+
+### highlightPoint
+
+* highlightPoint(  
+      position: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      markerIndex: number,  
+  ): void
+
+  #### Parameters
+
+  + position: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + markerIndex: number
+
+  #### Returns void

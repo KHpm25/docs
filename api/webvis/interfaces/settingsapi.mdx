@@ -1,0 +1,333 @@
+---
+title: "Interface SettingsAPI"
+sidebarTitle: "SettingsAPI"
+description: "TheSettingsAPIprovides basic functionalities to configure the 3D Space."
+---
+
+The **SettingsAPI** provides basic functionalities to configure the 3D Space.
+
+## Methods
+
+### changeSetting
+
+* changeSetting<[T](#changesettingt) extends string>(  
+      setting: T,  
+      value: ContextSettingType\<T>,  
+  ): boolean
+
+  Changes the setting to the given value.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + setting: T
+
+    A name that specifies a particular setting
+  + value: ContextSettingType\<T>
+
+    The new value for the setting
+
+  #### Returns boolean
+
+  A boolean which indicates if the setting has changed
+
+### importConfig
+
+* importConfig(  
+      config: \{  
+          aaSetting?: any;  
+          additionalCookies?: any;  
+          additionalRequestHeaders?: any;  
+          additionalWSQueryParameters?: any;  
+          applicationIdentifier?: any;  
+          auxModeRecursiveSearch?: any;  
+          auxModeUncolorFacesOnLeave?: any;  
+          backgroundColor?: any;  
+          batchedQueries?: any;  
+          boosterURL?: any;  
+          budgetingMode?: any;  
+          budgetingTargetFramerate?: any;  
+          cappingEffectEdgeColor?: any;  
+          cappingEffectEnabled?: any;  
+          cappingEffectInnerColor?: any;  
+          cappingGeometryColor?: any;  
+          colorComparisonFirstColor?: any;  
+          colorComparisonMatchingColor?: any;  
+          colorComparisonSecondColor?: any;  
+          colorizeEffect?: any;  
+          contextMenuFunction?: any;  
+          coordSys?: any;  
+          defaultFieldOfView?: any;  
+          defaultQueryLinkDepth?: any;  
+          disableDefaultInteraction?: any;  
+          disableSpecularHighlights?: any;  
+          doubleClickAnimationVolumeScale?: any;  
+          doubleClickTimeWindow?: any;  
+          drawingArrowheadEnd?: any;  
+          drawingArrowheadStart?: any;  
+          drawingColor?: any;  
+          drawingMode?: any;  
+          drawingSize?: any;  
+          dynamicAuxContrastEnabled?: any;  
+          dynamicClippingDistance?: any;  
+          dynamicClippingEnabled?: any;  
+          dynamicCOREnabled?: any;  
+          expandOnViewerSelection?: any;  
+          faceHighlightColor?: any;  
+          faceSelectionColor?: any;  
+          fitViewFactor?: any;  
+          flyNavigationSpeed?: any;  
+          flyToOnDoubleClick?: any;  
+          focusOnDoubleClick?: any;  
+          frontPlaneAxis?: any;  
+          frustumCulling?: any;  
+          ghostedSceneOpacity?: any;  
+          gizmoAxisLabelsEnabled?: any;  
+          gizmoScalingFactor?: any;  
+          gizmosEnabled?: any;  
+          gpuMemoryReleaseFactor?: any;  
+          hoverColor?: any;  
+          hubURL?: any;  
+          initialFit?: any;  
+          initialFitDirection?: any;  
+          initialStateActivation?: any;  
+          initView?: any;  
+          lightingEnvironment?: any;  
+          lineHighlightColor?: any;  
+          lineSelectionColor?: any;  
+          loadRemoteConfigFile?: any;  
+          logLevel?: any;  
+          maxActiveSceneVolumeDiameter?: any;  
+          maxConcurrentDownloads?: any;  
+          maxDynamicClipDistance?: any;  
+          maxGPUMemory?: any;  
+          maxSRCCPUMemory?: any;  
+          measurementAngularTolerance?: any;  
+          measurementMaterialDensities?: any;  
+          mouseInvertZoomingDirection?: any;  
+          navigationMode?: any;  
+          navigationSampling?: any;  
+          navigationSpeedFactor?: any;  
+          navigationSpeedThrottleFactor?: any;  
+          notificationLogLevels?: any;  
+          outlineColor?: any;  
+          outlineColorOccluded?: any;  
+          outlineInnerRadius?: any;  
+          outlineOuterRadius?: any;  
+          parentSelectEnabled?: any;  
+          preferXHRWithCredentials?: any;  
+          preSelectionColor?: any;  
+          projectionType?: any;  
+          renderAuxOnTop?: any;  
+          renderMode?: any;  
+          renderSetup?: any;  
+          sceneOpacity?: any;  
+          screenSpaceCoverageCalculationMethod?: any;  
+          selectionColor?: any;  
+          showAuxOnNavigation?: any;  
+          silhouetteEffect?: any;  
+          silhouetteEffectColor?: any;  
+          silhouetteEffectExclusiveEnabled?: any;  
+          skipSslVerify?: any;  
+          smallFeatureCulling?: any;  
+          smallFeaturePixelThreshold?: any;  
+          snapshotContentSelection?: any;  
+          soc?: any;  
+          spacemouseMultiplier?: any;  
+          ssaoEnabled?: any;  
+          taaEnabled?: any;  
+          topoGeometryColor?: any;  
+          topoGeometrySecondaryColor?: any;  
+          topoPointsEnabled?: any;  
+          transparencyMode?: any;  
+          turntableLowerVerticalLimit?: any;  
+          turntableUpperVerticalLimit?: any;  
+          turntableVerticalLimitsEnabled?: any;  
+          uriMap?: any;  
+          usageGroup?: any;  
+          useDevicePixelRatio?: any;  
+          vertexColorsEnabled?: any;  
+          viewPerspective?: any;  
+          webglPreserveDrawingbuffer?: any;  
+          xrEnableDebugImages?: any;  
+          xrFusionMode?: any;  
+          xrImageCompressionQuality?: any;  
+          xrImageResolutionProfile?: any;  
+          xrModelTrackerQualityThreshold?: any;  
+          xrModelTrackerSmoothingFactor?: any;  
+      \},  
+  ): void
+
+  Applies the specified set of settings to the context.
+
+  #### Parameters
+
+  + config: \{  
+        aaSetting?: any;  
+        additionalCookies?: any;  
+        additionalRequestHeaders?: any;  
+        additionalWSQueryParameters?: any;  
+        applicationIdentifier?: any;  
+        auxModeRecursiveSearch?: any;  
+        auxModeUncolorFacesOnLeave?: any;  
+        backgroundColor?: any;  
+        batchedQueries?: any;  
+        boosterURL?: any;  
+        budgetingMode?: any;  
+        budgetingTargetFramerate?: any;  
+        cappingEffectEdgeColor?: any;  
+        cappingEffectEnabled?: any;  
+        cappingEffectInnerColor?: any;  
+        cappingGeometryColor?: any;  
+        colorComparisonFirstColor?: any;  
+        colorComparisonMatchingColor?: any;  
+        colorComparisonSecondColor?: any;  
+        colorizeEffect?: any;  
+        contextMenuFunction?: any;  
+        coordSys?: any;  
+        defaultFieldOfView?: any;  
+        defaultQueryLinkDepth?: any;  
+        disableDefaultInteraction?: any;  
+        disableSpecularHighlights?: any;  
+        doubleClickAnimationVolumeScale?: any;  
+        doubleClickTimeWindow?: any;  
+        drawingArrowheadEnd?: any;  
+        drawingArrowheadStart?: any;  
+        drawingColor?: any;  
+        drawingMode?: any;  
+        drawingSize?: any;  
+        dynamicAuxContrastEnabled?: any;  
+        dynamicClippingDistance?: any;  
+        dynamicClippingEnabled?: any;  
+        dynamicCOREnabled?: any;  
+        expandOnViewerSelection?: any;  
+        faceHighlightColor?: any;  
+        faceSelectionColor?: any;  
+        fitViewFactor?: any;  
+        flyNavigationSpeed?: any;  
+        flyToOnDoubleClick?: any;  
+        focusOnDoubleClick?: any;  
+        frontPlaneAxis?: any;  
+        frustumCulling?: any;  
+        ghostedSceneOpacity?: any;  
+        gizmoAxisLabelsEnabled?: any;  
+        gizmoScalingFactor?: any;  
+        gizmosEnabled?: any;  
+        gpuMemoryReleaseFactor?: any;  
+        hoverColor?: any;  
+        hubURL?: any;  
+        initialFit?: any;  
+        initialFitDirection?: any;  
+        initialStateActivation?: any;  
+        initView?: any;  
+        lightingEnvironment?: any;  
+        lineHighlightColor?: any;  
+        lineSelectionColor?: any;  
+        loadRemoteConfigFile?: any;  
+        logLevel?: any;  
+        maxActiveSceneVolumeDiameter?: any;  
+        maxConcurrentDownloads?: any;  
+        maxDynamicClipDistance?: any;  
+        maxGPUMemory?: any;  
+        maxSRCCPUMemory?: any;  
+        measurementAngularTolerance?: any;  
+        measurementMaterialDensities?: any;  
+        mouseInvertZoomingDirection?: any;  
+        navigationMode?: any;  
+        navigationSampling?: any;  
+        navigationSpeedFactor?: any;  
+        navigationSpeedThrottleFactor?: any;  
+        notificationLogLevels?: any;  
+        outlineColor?: any;  
+        outlineColorOccluded?: any;  
+        outlineInnerRadius?: any;  
+        outlineOuterRadius?: any;  
+        parentSelectEnabled?: any;  
+        preferXHRWithCredentials?: any;  
+        preSelectionColor?: any;  
+        projectionType?: any;  
+        renderAuxOnTop?: any;  
+        renderMode?: any;  
+        renderSetup?: any;  
+        sceneOpacity?: any;  
+        screenSpaceCoverageCalculationMethod?: any;  
+        selectionColor?: any;  
+        showAuxOnNavigation?: any;  
+        silhouetteEffect?: any;  
+        silhouetteEffectColor?: any;  
+        silhouetteEffectExclusiveEnabled?: any;  
+        skipSslVerify?: any;  
+        smallFeatureCulling?: any;  
+        smallFeaturePixelThreshold?: any;  
+        snapshotContentSelection?: any;  
+        soc?: any;  
+        spacemouseMultiplier?: any;  
+        ssaoEnabled?: any;  
+        taaEnabled?: any;  
+        topoGeometryColor?: any;  
+        topoGeometrySecondaryColor?: any;  
+        topoPointsEnabled?: any;  
+        transparencyMode?: any;  
+        turntableLowerVerticalLimit?: any;  
+        turntableUpperVerticalLimit?: any;  
+        turntableVerticalLimitsEnabled?: any;  
+        uriMap?: any;  
+        usageGroup?: any;  
+        useDevicePixelRatio?: any;  
+        vertexColorsEnabled?: any;  
+        viewPerspective?: any;  
+        webglPreserveDrawingbuffer?: any;  
+        xrEnableDebugImages?: any;  
+        xrFusionMode?: any;  
+        xrImageCompressionQuality?: any;  
+        xrImageResolutionProfile?: any;  
+        xrModelTrackerQualityThreshold?: any;  
+        xrModelTrackerSmoothingFactor?: any;  
+    \}
+
+    Settings to import
+
+  #### Returns void
+
+### readSetting
+
+* readSetting<[T](#readsettingt) extends string>(setting: T): ContextSettingType\<T>
+
+  Returns the value of a setting.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + setting: T
+
+    The name of the setting that should be read
+
+  #### Returns ContextSettingType\<T>
+
+  The value of the specified setting
+
+### resetSetting
+
+* resetSetting(setting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) | [SettingStrings](/api/webvis/enums/settingstrings)): void
+
+  Resets the value of a setting to the installation default.
+
+  #### Parameters
+
+  + setting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) | [SettingStrings](/api/webvis/enums/settingstrings)
+
+    The name of the setting that should be reset.
+
+  #### Returns void
+
+### resetUserSettings
+
+* resetUserSettings(): void
+
+  #### Returns void

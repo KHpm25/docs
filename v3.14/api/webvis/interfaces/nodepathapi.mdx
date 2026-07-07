@@ -1,0 +1,98 @@
+---
+title: "Interface NodePathAPI"
+sidebarTitle: "NodePathAPI"
+description: "NodeIDs are generated during runtime. There is no guarantee, that the nodeIDs of a loaded model are the same, if the 3D Space was reloaded in the browser."
+---
+
+NodeIDs are generated during runtime. There is no guarantee, that the nodeIDs of a loaded model
+are the same, if the 3D Space was reloaded in the browser.
+
+The NodePathAPI allows the user to handle nodes with static identifiers, which are not
+changed during runtime. This holds, if the model resource is not changed.
+
+**Example**
+
+```ts
+// Get an instance of the ContextAPI  
+const myContext = webvis.getContext( "example" )  
+  
+// add some model  
+myContext.add(someModelURI);  
+  
+// the model is currently loading in the browser and we know, that the parts which are of interest have the nodeIDds 170 and 171  
+// we execute the following code in the console to get a string that can be used to refer to the part everytime  
+const handles = await myContext.createNodePathHandles([170, 171]);  
+const nodePathStrings = await myContext.requestNodePathStrings(handles);  
+  
+// Afterwards the nodePathStrings can be used to retrieve the runtime nodeIDs by script  
+const nodePathHandleMap = await myContext.requestNodePathHandleMap(nodePathStrings);  
+for (const nodePathString of nodePathStrings) {  
+    console.log(nodePathString + " has the nodeID " + nodePathHandleMap[nodePathString].nodeID);  
+}
+```
+
+## Methods
+
+### createNodePathHandles
+
+* createNodePathHandles(targets: number[]): Promise\<NodePathHandle[]>
+
+  createNodePathHandles Creates and returns handles for the target node ids or topology selectors.
+
+  #### Parameters
+
+  + targets: number[]
+
+    \{Array\} Array of target node ids to create the handles for
+
+  #### Returns Promise\<NodePathHandle[]>
+
+  The array of handles
+
+### requestNodePathHandleMap
+
+* requestNodePathHandleMap(  
+      paths: string[],  
+      scope?: number,  
+  ): Promise\<NodePathHandleMap>
+
+  requestNodePathHandleMap Returns an object mapping from input paths to the respective handles.
+
+  #### Parameters
+
+  + paths: string[]
+
+    \{Array\<string | NodePathHandle>\} The array of node path strings or handles.
+  + `Optional`scope: number
+
+    \{number\} [scope=0] nodeID specifying the scope as starting point for the paths
+
+  #### Returns Promise\<NodePathHandleMap>
+
+  The resulting object mapping paths to handles
+
+### requestNodePathStrings
+
+* requestNodePathStrings(  
+      handles: NodePathHandle[],  
+      scope?: number,  
+      typePriorities?: [NodePathFragmentType](/v3.14/api/webvis/enums/nodepathfragmenttype)[],  
+  ): Promise\<string[]>
+
+  requestNodePathStrings Returns string representations for the respective node path handles.
+
+  #### Parameters
+
+  + handles: NodePathHandle[]
+
+    \{Array\}
+  + `Optional`scope: number
+
+    \{number\} nodeID specifying the scope as starting point for the path resolution
+  + `Optional`typePriorities: [NodePathFragmentType](/v3.14/api/webvis/enums/nodepathfragmenttype)[]
+
+    \{Array\} Array of priorities to control the fragments for the path string assembly.
+
+  #### Returns Promise\<string[]>
+
+  String representation of the node path for the respective scope.

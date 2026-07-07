@@ -1,0 +1,90 @@
+---
+title: "Enumeration NodeState"
+sidebarTitle: "NodeState"
+description: "The NodeState describes the current state of a Node and its referenced data. The NodeState is grouped by theNodeStateCategorywhich can be determined by dividing the state by 1000."
+---
+
+The NodeState describes the current state of a Node and its referenced data.
+The NodeState is grouped by the NodeStateCategory which can be determined by dividing the state by 1000.
+
+```ts
+ const category : NodeStateCategory = Math.floor(nodeState / 1000);
+```
+
+#### See
+
+[InstanceGraphAPI](/v3.14/api/webvis/interfaces/instancegraphapi)
+
+## Enumeration Members
+
+### CREATED
+
+CREATED: 1000
+
+Indicates that the node is created.
+
+### ERROR
+
+ERROR: 5000
+
+Indicates a general error that doesn't match any of the specific ones.
+
+### ERROR\_AUTHORIZATION
+
+ERROR\_AUTHORIZATION: 5001
+
+Indicates a problem with the data authorization.
+
+### ERROR\_CONNECTION
+
+ERROR\_CONNECTION: 5003
+
+Indicates a problem with the network connection.
+
+### ERROR\_LICENSE
+
+ERROR\_LICENSE: 5004
+
+Indicates a problem with the license checkout.
+
+### ERROR\_PROCESSING
+
+ERROR\_PROCESSING: 5002
+
+Indicates a problem with the data processing.
+
+### ERROR\_VALIDATION
+
+ERROR\_VALIDATION: 5005
+
+Indicates a problem with the input URI validation.
+
+### PROCESSING
+
+PROCESSING: 2001
+
+Indicates that the processing is in progress.
+
+### READY
+
+READY: 3000
+
+Indicates that the referenced data is ready to use.
+
+### REQUESTED
+
+REQUESTED: 2000
+
+Indicates that the processing is requested.
+
+### WARNING
+
+WARNING: 4000
+
+Indicates a general warning that doesn't match any of the specific ones.
+
+### WARNING\_SUBTREE
+
+WARNING\_SUBTREE: 4001
+
+Indicates that one or more nodes in the subtree have an error.

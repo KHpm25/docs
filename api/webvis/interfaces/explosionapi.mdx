@@ -1,0 +1,67 @@
+---
+title: "Interface ExplosionAPI"
+sidebarTitle: "ExplosionAPI"
+description: "TheExplosionAPIprovides a very basic explosion, which moves the parts away from a given point. The Explosion is completely circular. Overlapping parts are possible."
+---
+
+The **ExplosionAPI** provides a very basic explosion, which moves the parts away from a given point.
+The Explosion is completely circular. Overlapping parts are possible.
+
+**Example**
+
+```ts
+// Get an instance of the ContextAPI  
+const myContext : ContextAPI = webvis.getContext( "example" )  
+const nodeID : number = myContext.add("someModelURL");  
+  
+// Create a simple Explosion from the center of the node's BoxVolume.  
+myContext.createExplosion(nodeID);  
+  
+// Perform the Explosion. All parts are moved away 0.3 times their distance to the center of the node.  
+myContext.performExplosion(0.3);  
+  
+// Reset all transformations.  
+myContext.endExplosion();
+```
+
+**Restrictions**
+
+Explosions cannot be performed on monolithic models.
+
+## Methods
+
+### createExplosion
+
+* createExplosion(centerNodeID?: number): void
+
+  Creates an Explosion (around a given point).
+
+  #### Parameters
+
+  + `Optional`centerNodeID: number
+
+    The nodeID of the node around which center the explosion is created.
+
+  #### Returns void
+
+### endExplosion
+
+* endExplosion(): void
+
+  Restores the initial transformations of all exploded parts.
+
+  #### Returns void
+
+### performExplosion
+
+* performExplosion(explosionFactor: number): void
+
+  Performs the actual Explosion.
+
+  #### Parameters
+
+  + explosionFactor: number
+
+    The value by which the parts are expanded.
+
+  #### Returns void

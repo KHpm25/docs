@@ -1,0 +1,83 @@
+---
+title: "Interface XRImageSourceConfigPlayback"
+sidebarTitle: "XRImageSourceConfigPlayback"
+description: "Configuration for an XRImageSource that providesXRImages from an image source that can be played back."
+---
+
+Configuration for an XRImageSource that provides XRImages from an image source that can be played back.
+
+## Properties
+
+### `Optional`autoPlay
+
+autoPlay?: boolean
+
+Whether the playback should start pushing the XRImages automatically or not.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`endFrame
+
+endFrame?: number
+
+The index of the end frame of the playback.
+
+#### Default
+
+```ts
+<totalFrames> - 1
+```
+
+#### See
+
+XRPlaybackProperties
+
+### `Optional`speed
+
+speed?: number
+
+The speed of the playback relative of to the original FPS. Must be a value between 0 and 1.
+
+#### Default
+
+```ts
+1.0
+```
+
+### `Optional`startFrame
+
+startFrame?: number
+
+The index of the start frame of the playback.
+
+#### Default
+
+```ts
+0
+```
+
+### type
+
+type: [PLAYBACK](/api/webvis/enums/xrimagesource#playback)
+
+The type of the [XRImageSource](/api/webvis/enums/xrimagesource).
+
+### `Optional`url
+
+url?: string
+
+The URL of the image source.
+
+#### Default
+
+```ts
+<HUB_URL>/repo/webvis/data/manifest.json
+```
+
+#### See
+
+[SettingStrings.HUB\_URL](/api/webvis/enums/settingstrings#hub_url)

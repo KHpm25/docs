@@ -1,0 +1,73 @@
+---
+title: "Interface SnapshotProperties"
+sidebarTitle: "SnapshotProperties"
+description: "Represents the properties of a snapshot."
+---
+
+Represents the properties of a snapshot.
+
+These properties define the metadata and state of a snapshot, such as its name, order, thumbnail, and status.
+
+### Use Case
+
+Use this type to manage and retrieve metadata about snapshots. For example, you can use it to display snapshot details
+in the UI or to determine the consistency of a snapshot.
+
+#### See
+
+SessionStorageAPI
+
+## Properties
+
+### `Optional`name
+
+name?: string
+
+The name of the snapshot.
+This property represents the user-defined name of the snapshot.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`order
+
+order?: number
+
+The order of the snapshot in the list of all snapshots.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Readonly`status
+
+status?: [SnapshotStatus](/v3.14/api/webvis/enums/snapshotstatus)
+
+Describes the availability and integrity status of a snapshot's referenced data.
+See [SnapshotStatus](/v3.14/api/webvis/enums/snapshotstatus) for more information about the possible values.
+
+#### Default
+
+```ts
+SnapshotStatus.CONSISTENT  
+@readonly
+```
+
+### `Optional` `Readonly`thumbnail
+
+thumbnail?: string
+
+The thumbnail of the snapshot as a Base64-encoded JPG or PNG image.
+This property provides a visual representation of the snapshot.
+
+#### Default
+
+```ts
+undefined  
+@readonly
+```

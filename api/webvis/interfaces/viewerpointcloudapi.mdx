@@ -1,0 +1,154 @@
+---
+title: "Interface ViewerPointCloudAPIExperimental"
+sidebarTitle: "ViewerPointCloudAPI"
+description: "Experimental. May be changed in the future without notice."
+---
+
+*Experimental. May be changed in the future without notice.*
+
+## ViewerPointCloudAPI
+
+### Overview
+
+The **ViewerPointCloudAPI** provides functionality to visualize point clouds based on a given set of points.
+
+### Remarks
+
+This API visualizes a set of CloudPoints in the 3D space. At the moment,
+this happens without any further optimization. Thus, it may come to limitations in
+terms of performance and memory consumption when visualizing a large number of points.
+
+## Quick Start
+
+Example: Create, change and remove a point cloud.
+
+```ts
+// get an instance of the ContextAPI and the matching ViewerAPI  
+const context = webvis.getContext();  
+const viewer = context.getViewer();  
+  
+// define a list of cloud points to visualize  
+const points = [  
+  { position: [0, 1, 0], color: [1, 0, 0, 1] }, // first point  
+  { position: [0, 1, 1], color: [1, 0, 0, 1] }, // second point  
+  { position: [0, 0, 2], color: [1, 0, 0, 1] }, // third point  
+];  
+  
+// create a point cloud  
+const pointCloudId = viewer.createPointCloud(points, { enabled: true });  
+  
+// change the scale of the point cloud  
+viewer.changePointCloud(pointCloudId, { scale: 2.0 });  
+  
+// remove the point cloud  
+viewer.removePointCloud(pointCloudId);
+```
+
+### Events
+
+The following events are associated with the ViewerPointCloudAPI:
+
+* [ViewerPointCloudCreatedEvent](/api/webvis/classes/viewerpointcloudcreatedevent)
+* [ViewerPointCloudChangedEvent](/api/webvis/classes/viewerpointcloudchangedevent)
+* [ViewerPointCloudRemovedEvent](/api/webvis/classes/viewerpointcloudremovedevent)
+
+## Methods
+
+### changePointCloud
+
+* changePointCloud(pointCloudId: number, properties: PointCloudProperties): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of the point cloud with the specified ID and triggers a [ViewerPointCloudChangedEvent](/api/webvis/classes/viewerpointcloudchangedevent).
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of the point cloud to update. Obtained using [createPointCloud](#createpointcloud).
+  + properties: PointCloudProperties
+
+    The properties of the point cloud you want change.
+
+  #### Returns void
+
+### createPointCloud
+
+* createPointCloud(  
+      points: CloudPoint[],  
+      properties?: PointCloudProperties,  
+  ): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new point cloud and triggers a [ViewerPointCloudCreatedEvent](/api/webvis/classes/viewerpointcloudcreatedevent).
+
+  #### Parameters
+
+  + points: CloudPoint[]
+
+    The list of points.
+  + `Optional`properties: PointCloudProperties
+
+    Initial properties of the created point cloud.
+
+  #### Returns number
+
+  The ID of the newly created point cloud.
+
+### getPointCloudData
+
+* getPointCloudData(pointCloudId: number): PointCloudProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of a point cloud dataset.
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of point cloud to query. Obtained using [createPointCloud](#createpointcloud).
+
+  #### Returns PointCloudProperties
+
+  Properties of the point cloud.
+
+### getPointClouds
+
+* getPointClouds(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns a list of all point clouds.
+
+  #### Returns number[]
+
+  Array of point cloud IDs.
+
+### removePointCloud
+
+* removePointCloud(pointCloudId: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the point cloud with the specified ID and triggers a [ViewerPointCloudRemovedEvent](/api/webvis/classes/viewerpointcloudremovedevent).
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of point cloud to remove. Obtained using [createPointCloud](#createpointcloud).
+
+  #### Returns void

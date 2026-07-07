@@ -1,0 +1,378 @@
+---
+title: "Interface MeasurementAPI"
+sidebarTitle: "MeasurementAPI"
+description: "The MeasurementAPI provides functionality to:"
+---
+
+## MeasurementAPI
+
+### Overview
+
+The MeasurementAPI provides functionality to:
+
+* Perform different kinds of measurements between 3D objects
+* Create and manage measurements as first-class entities in the webvis context
+
+Possible measurement inputs include nodes, shapes, faces, edges, and points, as well as planes and lines.
+All available input types are defined in the [MeasurementTargetClass](/v3.14/api/webvis/enums/measurementtargetclass) enum.
+
+### Quick Start
+
+To measure the distance between a point and a plane, we need to represent them as [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s
+as follows:
+
+```ts
+const point = [0, 0, 0];  
+const plane = [1, 0, 0, 1]; // [normal_x, normal_y, normal_z, distance]  
+  
+const pointTarget = {  
+    class: webvis.MeasurementTargetClass.POINT,  
+    value: point  
+};  
+  
+const planeTarget = {  
+    class: webvis.MeasurementTargetClass.PLANE,  
+    value: plane  
+};
+```
+
+For other target types, see [MeasurementTargetClass](/v3.14/api/webvis/enums/measurementtargetclass). With these targets, we can now measure the
+distance using the [measureBetween](#measurebetween) function:
+
+```ts
+const context = webvis.getContext();  
+  
+const result = await context.measureBetween(pointTarget, planeTarget);  
+  
+const distance = result.distance;  
+const pointOnPlane = result.points[1];
+```
+
+### Measurement Functions
+
+The API contains two sets of functions. The first is used to perform a measurement and return the result
+without creating a new measurement entity in the webvis context. These include:
+
+* [measureBetween](#measurebetween) to measure distances and angles
+* [measureTangent](#measuretangent) to measure the tangent of an edge at a point
+* [measureThickness](#measurethickness) to measure the thickness of a shape at a point
+
+The second set of functions is used to create and manage measurements as first-class entities in the webvis
+context. Here, [createMeasurement](#createmeasurement) is used to perform different kinds
+of measurements and create a new measurement entity holding the result. The available measurement types for this
+scenario are defined in the [MeasurementType](/v3.14/api/webvis/enums/measurementtype) enum. Besides this function, this set also includes:
+
+* [changeMeasurement](#changemeasurement) to change the properties of a measurement entity
+* [requestMeasurementData](#requestmeasurementdata) to request the properties of a
+  measurement
+* [getMeasurements](#getmeasurements) to get all available measurements
+* [removeMeasurement](#removemeasurement) to remove a measurement
+
+### Creating a Measurement Entity
+
+If we want to perform the same measurement as in the quick start example, but also create a corresponding
+measurement entity in the webvis context, we can use the
+[createMeasurement](#createmeasurement) function:
+
+```ts
+// Define targets as in the quick start example...  
+  
+const context = webvis.getContext();  
+  
+const measurementId = context.createMeasurement(  
+    webvis.MeasurementType.MULTIPLE, // Analogous to measureBetween  
+    [pointTarget, planeTarget]  
+);  
+  
+// We can access the result of the measurement by requesting  
+// its properties  
+const measurementProperties = await context.requestMeasurementData(measurementId);  
+const result = measurementProperties.result;
+```
+
+### Working With Model Geometry
+
+In webvis, a part of a model's geometry can be referenced via a TopologyHandle. Given such a handle,
+we can create a corresponding [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget) to use in measurements:
+
+```ts
+const topologyHandle = getTopologyHandle(); // Replace with your topology handle  
+  
+const edgeMeasurementTarget = {  
+    class: webvis.MeasurementTargetClass.TOPOLOGY,  
+    value: topologyHandle  
+};
+```
+
+## Methods
+
+### changeMeasurement
+
+* changeMeasurement(  
+      measurementID: number,  
+      properties: MeasurementProperties,  
+  ): MeasurementProperties
+
+  Changes one or more properties of the measurement entity with the specified ID.
+
+  Triggers a [MeasurementChangedEvent](/v3.14/api/webvis/classes/measurementchangedevent) when the measurement entity has been changed.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity that should be changed.
+  + properties: MeasurementProperties
+
+    The properties that should be changed.
+
+  #### Returns MeasurementProperties
+
+  An object with the changed properties.
+
+  #### See
+
+  [createMeasurement](#createmeasurement)
+
+### createMeasurement
+
+* createMeasurement<[T](#createmeasurementt) extends keyof MeasurementTypeToTargetMap>(  
+      type: T,  
+      targets: MeasurementTypeToTargetMap[T],  
+      properties?: MeasurementProperties,  
+  ): number
+
+  Performs a measurement and creates a corresponding measurement entity in the webvis context.
+  The different kinds of measurements that this function can perform are defined in the
+  [MeasurementType](/v3.14/api/webvis/enums/measurementtype) enum. Depending on the measurement type, different targets are required.
+
+  Triggers a [MeasurementCreatedEvent](/v3.14/api/webvis/classes/measurementcreatedevent) when the measurement entity has been created, followed by a
+  [MeasurementChangedEvent](/v3.14/api/webvis/classes/measurementchangedevent) when processing is complete and the result is available.
+
+  #### Type Parameters
+
+  + T extends keyof MeasurementTypeToTargetMap
+
+    The [MeasurementType](/v3.14/api/webvis/enums/measurementtype).
+
+  #### Parameters
+
+  + type: T
+
+    The type of the measurement, given as a [MeasurementType](/v3.14/api/webvis/enums/measurementtype).
+  + targets: MeasurementTypeToTargetMap[T]
+
+    The [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s, as defined by the [MeasurementType](/v3.14/api/webvis/enums/measurementtype).
+  + `Optional`properties: MeasurementProperties
+
+    Additional properties of the measurement entity. These include the enabled state and
+    positioning information.
+
+  #### Returns number
+
+  The ID of the created measurement.
+
+  #### See
+
+  + [changeMeasurement](#changemeasurement)
+  + [requestMeasurementData](#requestmeasurementdata)
+
+### getMeasurements
+
+* getMeasurements(): number[]
+
+  Returns the IDs of all measurement entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all measurement entities.
+
+  #### See
+
+  [createMeasurement](#createmeasurement)
+
+### measureBetween
+
+* measureBetween(  
+      target0: [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget),  
+      target1: [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget),  
+  ): Promise\<BetweenMeasurementResult>
+
+  Measures the distance and, if applicable, the angle between two measurement targets. The result also includes
+  the corresponding closest points on the targets.
+
+  If the targets intersect, the result will contain a representation of the intersection. Note that the
+  intersection is not available for measurements involving target classes
+  [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology) or [NODE](/v3.14/api/webvis/enums/measurementtargetclass#node), except for
+  the cases plane-face and face-face.
+
+  #### Parameters
+
+  + target0: [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)
+
+    The first measurement target.
+  + target1: [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)
+
+    The second measurement target.
+
+  #### Returns Promise\<BetweenMeasurementResult>
+
+  The result of the measurement.
+
+### measureNormal
+
+* measureNormal(  
+      topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<NormalMeasurementResult>
+
+  Measures the normal of a face at a given point. The face is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the face, the closest
+  point on the face is used.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the face via a TopologyHandle.
+  + point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the normal should be measured.
+
+  #### Returns Promise\<NormalMeasurementResult>
+
+  The result of the normal measurement.
+
+### measurePointsByDistance
+
+* measurePointsByDistance(  
+      searchCurve: \{  
+          class: [CURVE](/v3.14/api/webvis/enums/measurementtargetclass#curve);  
+          value: [[number, number, number], [number, number, number]][];  
+      \},  
+      distanceCurves: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}[],  
+      distance: number,  
+  ): Promise\<DistanceConstraintMatch[]>
+
+  `Experimental`
+
+  Attention: This function is experimental and may be changed or removed
+  in future versions.
+
+  Returns points from a search space that have the specified
+  distance to a set of measurement targets. The search space is
+  defined by a measurement target. Currently only supports
+  a search space that is defined by a curve and
+  edges as distance targets.
+
+  #### Parameters
+
+  + searchCurve: \{ class: [CURVE](/v3.14/api/webvis/enums/measurementtargetclass#curve); value: [[number, number, number], [number, number, number]][] \}
+
+    The curve on which to search.
+  + distanceCurves: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}[]
+
+    The targets from which the distance is measured.
+  + distance: number
+
+    The distance.
+
+  #### Returns Promise\<DistanceConstraintMatch[]>
+
+  An array of points that match the distance constraint.
+
+### measureTangent
+
+* measureTangent(  
+      topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<TangentMeasurementResult>
+
+  Measures the tangent of an edge at a given point. The edge is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the edge, the closest
+  point on the edge is used.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the edge via a TopologyHandle.
+  + point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the tangent should be measured.
+
+  #### Returns Promise\<TangentMeasurementResult>
+
+  The result of the tangent measurement.
+
+### measureThickness
+
+* measureThickness(  
+      topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<ThicknessMeasurementResult>
+
+  Measures the thickness of a shape at a given point. The shape is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the shape, the closest
+  point on the shape is used. The thickness is measured along the line defined by the normal of the shape
+  at the given point.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/v3.14/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the shape via a TopologyHandle.
+  + point: \{ class: [POINT](/v3.14/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the thickness should be measured.
+
+  #### Returns Promise\<ThicknessMeasurementResult>
+
+  The result of the thickness measurement.
+
+### removeMeasurement
+
+* removeMeasurement(measurementID: number, safe?: boolean): [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  Removes the measurement entity with the specified ID from the webvis context and all related snapshots.
+
+  Triggers a [MeasurementRemovedEvent](/v3.14/api/webvis/classes/measurementremovedevent) when the measurement entity has been removed.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity that should be removed.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the measurement is part of one
+    or more snapshots. Default: false
+
+  #### Returns [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.
+
+  #### See
+
+  [createMeasurement](#createmeasurement)
+
+### requestMeasurementData
+
+* requestMeasurementData(measurementID: number): Promise\<MeasurementProperties>
+
+  Returns the properties of the measurement entity with the specified ID. These include the result of the
+  measurement, as well as its type and targets.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity.
+
+  #### Returns Promise\<MeasurementProperties>
+
+  The properties of the measurement entity.
+
+  #### See
+
+  [createMeasurement](#createmeasurement)

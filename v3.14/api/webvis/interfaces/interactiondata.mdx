@@ -1,0 +1,59 @@
+---
+title: "Interface InteractionData"
+sidebarTitle: "InteractionData"
+description: "Contains the properties of an interaction."
+---
+
+Contains the properties of an interaction.
+
+#### See
+
+InteractionAPI.processInteractionInput
+
+## Properties
+
+### `Optional`modifier
+
+modifier?: [InteractionModifier](/v3.14/api/webvis/enums/interactionmodifier)
+
+The interaction modifier that is applied to the interaction.
+
+### `Optional`origin
+
+origin?: any
+
+Optional property storing information about where the interaction originated from (e.g. the DOM element that triggered the interaction).
+
+### `Optional`originalEvent
+
+originalEvent?: Event
+
+The original event that triggered the interaction.
+
+### `Optional`pointerInfo
+
+pointerInfo?: PointerInfo
+
+Pointer information related to the interaction.
+
+### targetID
+
+targetID: number
+
+The ID of the target node or node collection that the interaction is applied to.
+
+#### See
+
+CollectionAPI for node collections as targetID
+
+### `Optional`targetName
+
+targetName?: string
+
+Optional property for transporting the target's name to the interaction.
+
+### `Optional`type
+
+type?: [InteractionType](/v3.14/api/webvis/enums/interactiontype)
+
+Whether the target was interacted with via picking or by ID.

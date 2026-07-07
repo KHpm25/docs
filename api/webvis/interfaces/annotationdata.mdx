@@ -1,0 +1,104 @@
+---
+title: "Interface AnnotationData"
+sidebarTitle: "AnnotationData"
+description: "AnnotationDatadefines the properties and content of an annotation."
+---
+
+**AnnotationData** defines the properties and content of an annotation.
+
+#### See
+
+AnnotationAPI
+
+## Properties
+
+### active
+
+active: boolean
+
+Determines whether the annotation is active or not.
+
+### anchorPosition
+
+anchorPosition: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+Determines the annotation's anchor position.
+
+#### Example
+
+```ts
+[0, 1, 0]
+```
+
+### explicitOffset
+
+explicitOffset: boolean
+
+Determines whether an explicit offset should be used or not.
+
+### label
+
+label: string
+
+The label of the annotation.
+
+#### Example
+
+```ts
+"This is a great annotation!"
+```
+
+### labelPosition
+
+labelPosition: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+Determines the annotation's label position.
+
+#### Example
+
+```ts
+[0, 2, 0]
+```
+
+### nodeID
+
+nodeID: number
+
+The ID of a node the annotation is linked to.
+
+### transform
+
+transform:  
+    | Float32Array\<ArrayBufferLike>  
+    | [  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+        number,  
+    ]
+
+Provides the transform of the annotation.
+
+### trustedSource
+
+trustedSource: boolean
+
+Determines whether the annotation source is trusted or not.
+
+### visible
+
+visible: boolean
+
+Determines whether the annotation is visible or not.

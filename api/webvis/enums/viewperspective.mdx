@@ -1,0 +1,41 @@
+---
+title: "Enumeration ViewPerspective"
+sidebarTitle: "ViewPerspective"
+description: "Represents the two different view perspectives available in the viewer. They determine the definition of left and right in the viewer."
+---
+
+Represents the two different view perspectives available in the viewer.
+They determine the definition of left and right in the viewer.
+
+**Example**
+
+* In the [INSIDE](#inside) view perspective, when speaking of the left wing mirror
+  of a car, it is the mirror on the left side of the car, when looking from the
+  inside of the car.
+* In the [OUTSIDE](#outside) view perspective, when speaking of the left wing mirror
+  of a car, it is the mirror on the left side of the car, when looking from the
+  outside of the car.
+
+This has an impact on the interpretation of the ViewDirection that is
+passed for instance in [ViewerAPI.fitViewToDirection](/api/webvis/interfaces/viewerapi#fitviewtodirection) or
+[ViewerAPI.fitViewToVolumeFromDirection](/api/webvis/interfaces/viewerapi#fitviewtovolumefromdirection).
+
+#### See
+
+ViewerSettingStrings.VIEW\_PERSPECTIVE
+
+## Enumeration Members
+
+### INSIDE
+
+INSIDE: "insideView"
+
+The view perspective where the left and right sides are defined from the
+inside of the object.
+
+### OUTSIDE
+
+OUTSIDE: "outsideView"
+
+The view perspective where the left and right sides are defined from the
+outside of the object.

@@ -1,0 +1,187 @@
+---
+title: "Interface AttachmentAPI"
+sidebarTitle: "AttachmentAPI"
+description: "TheAttachmentAPIprovides basic functionalities to define additional data optionally attached to a node. This data can be of any type defined inAttachmentTypeand is stored in the fo"
+---
+
+## webvis: The AttachmentAPI
+
+### Overview
+
+The **AttachmentAPI** provides basic functionalities to define additional data optionally attached to a node.
+This data can be of any type defined in [AttachmentType](/api/webvis/enums/attachmenttype) and is stored in the form of a URI.
+The AttachmentAPI provides methods to [fetch](#fetchattachmentdata), [set](#setattachmentdata) and [remove](#removeattachment) the data.
+
+### Quick Start
+
+Example: Create a new attachment with text data.
+
+```ts
+const context = webvis.getContext();  
+  
+// Create a new attachment  
+const attachmentId = context.createAttachment(webvis.AttachmentType.TEXT);  
+  
+// Set the attachment data  
+context.setAttachmentData(attachmentId, "hello world");  
+  
+// Fetch the attachment data  
+await context.fetchAttachmentData(attachmentId); // returns "hello world"
+```
+
+### Adding Attachments to nodes
+
+Attachments can be added to nodes using the setProperty method.
+
+Example: attaching an attachment to a node.
+
+```ts
+const context = webvis.getContext();  
+  
+// Create a new attachment and set data  
+const attachmentId = context.createAttachment(webvis.AttachmentType.TEXT);  
+context.setAttachmentData(attachmentId, "hello world");  
+  
+// Attach the attachment to a node  
+context.setProperty(nodeId, webvis.Property.ATTACHMENT, attachmentId);  
+  
+// Fetch the attachment data  
+await context.getProperty(nodeId, webvis.Property.ATTACHMENT); // returns "hello world"
+```
+
+### Events
+
+The following events are associated with the AttachmentAPI:
+
+* [AttachmentCreatedEvent](/api/webvis/classes/attachmentcreatedevent)
+* [AttachmentDataChangedEvent](/api/webvis/classes/attachmentdatachangedevent)
+* [AttachmentRemovedEvent](/api/webvis/classes/attachmentremovedevent)
+
+## Methods
+
+### createAttachment
+
+* createAttachment(dataType: [AttachmentType](/api/webvis/enums/attachmenttype)): number
+
+  Creates a new attachment.
+
+  Triggers an [AttachmentCreatedEvent](/api/webvis/classes/attachmentcreatedevent).
+
+  #### Parameters
+
+  + dataType: [AttachmentType](/api/webvis/enums/attachmenttype)
+
+    Specifies the attachment data type.
+
+  #### Returns number
+
+  The ID of the created attachment.
+
+### fetchAttachmentData
+
+* fetchAttachmentData(attachmentID: number): Promise<[Serializable](/api/webvis/types/serializable)>
+
+  Fetches and returns the attachment data of the specified attachment.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns Promise<[Serializable](/api/webvis/types/serializable)>
+
+  The attached data.
+
+### getAttachmentData
+
+* getAttachmentData(attachmentID: number): [Serializable](/api/webvis/types/serializable)
+
+  Returns the attachment data.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns [Serializable](/api/webvis/types/serializable)
+
+  The attached data
+
+  #### Deprecated
+
+  getAttachmentData is deprecated, please use [fetchAttachmentData](#fetchattachmentdata) instead.
+
+### getAttachmentDataURI
+
+* getAttachmentDataURI(attachmentID: number): string
+
+  Returns the attachment data URI.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns string
+
+  The attachment data URI.
+
+### removeAttachment
+
+* removeAttachment(attachmentID: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the Attachment from the scene and all related snapshots.
+
+  Triggers an [AttachmentRemovedEvent](/api/webvis/classes/attachmentremovedevent).
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the attachment is part of one or more snapshots. If no safe remove, a snapshot could link to missing data. Default: false.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The state of the removal process.
+
+### setAttachmentData
+
+* setAttachmentData(attachmentID: number, data: [Serializable](/api/webvis/types/serializable)): void
+
+  Sets the attachment data.
+
+  Triggers an [AttachmentDataChangedEvent](/api/webvis/classes/attachmentdatachangedevent).
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + data: [Serializable](/api/webvis/types/serializable)
+
+    The new attachment data.
+
+  #### Returns void
+
+### setAttachmentDataURI
+
+* setAttachmentDataURI(attachmentID: number, dataURI: string): void
+
+  Sets the attachment data URI.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + dataURI: string
+
+    The attachment data URI.
+
+  #### Returns void

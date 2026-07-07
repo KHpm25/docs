@@ -1,0 +1,101 @@
+---
+title: "Enumeration MeasurementTargetClass"
+sidebarTitle: "MeasurementTargetClass"
+description: "The available classes ofMeasurementTargets that can be used with theMeasurementAPI."
+---
+
+The available classes of [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s that can be used with the [MeasurementAPI](/v3.14/api/webvis/interfaces/measurementapi).
+
+#### See
+
+* [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)
+* MeasurementType
+* [MeasurementAPI](/v3.14/api/webvis/interfaces/measurementapi)
+
+## Enumeration Members
+
+### CURVE
+
+CURVE: 6
+
+A 3D curve given as an array of line segments. The line segments are
+given by the start and end points. The line segments are not necessarily
+ordered or connected.
+
+#### Value Type
+
+[[number, number, number], [number, number, number]][]
+
+### LINE
+
+LINE: 1
+
+A 3D line given by a point on the line and a direction. The line data is specified as a single array
+with the format:
+
+```ts
+[point_x, point_y, point_z, direction_x, direction_y, direction_z]
+```
+
+#### Value Type
+
+[number, number, number, number, number, number]
+
+### LINE\_SEGMENT
+
+LINE\_SEGMENT: 5
+
+A 3D line segment given by the start and end points. The line segment data is specified as:
+
+```ts
+[[start_x, start_y, start_z], [end_x, end_y, end_z]]
+```
+
+#### Value Type
+
+[[number, number, number], [number, number, number]]
+
+### NODE
+
+NODE: 4
+
+One or multiple nodes given by an array of node IDs.
+
+#### Value Type
+
+number[]
+
+### PLANE
+
+PLANE: 2
+
+A 3D plane given by the coefficients A, B, C, and D of the plane equation Ax + By + Cz = D.
+The plane data is specified as a single array with the format:
+
+```ts
+[A, B, C, D]
+```
+
+#### Value Type
+
+[number, number, number, number]
+
+### POINT
+
+POINT: 0
+
+A 3D point given by its x, y, and z coordinates.
+
+#### Value Type
+
+[number, number, number]
+
+### TOPOLOGY
+
+TOPOLOGY: 3
+
+A part of a geometry represented by a [TopologyHandle](/v3.14/api/webvis/interfaces/topologyhandle). This includes shapes, faces, and edges.
+
+#### Value Type
+
+[TopologyHandle](/v3.14/api/webvis/interfaces/topologyhandle)

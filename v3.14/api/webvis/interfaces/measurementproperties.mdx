@@ -1,0 +1,92 @@
+---
+title: "Interface MeasurementProperties"
+sidebarTitle: "MeasurementProperties"
+description: "The properties of a measurement entity in the webvis context."
+---
+
+The properties of a measurement entity in the webvis context.
+
+#### See
+
+MeasurementAPI
+
+## Properties
+
+### `Optional`anchorPosition
+
+anchorPosition?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The anchor position of the measurement annotation. Together with the [contentOffset](#contentoffset), this
+defines the position of the measurement annotation.
+
+#### Default
+
+```ts
+[0,0,0]
+```
+
+### `Optional` `Readonly`connectedNodeIds
+
+connectedNodeIds?: number[]
+
+The IDs of nodes that are represented by or related to the [targets](#targets) of the measurement.
+
+### `Optional`contentOffset
+
+contentOffset?: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+The offset of the measurement annotation from its [anchorPosition](#anchorposition).
+
+#### Default
+
+```ts
+[0,0,0]
+```
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Defines whether the measurement annotation is visible.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`name
+
+name?: string
+
+The name of the measurement. This is independent of and does not influence the measurement's ID.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Readonly`result
+
+result?: [MeasurementResult](/v3.14/api/webvis/types/measurementresult)
+
+The result of the measurement. The content of the result depends on the [type](#type) of the measurement.
+
+### `Optional` `Readonly`state
+
+state?: [MeasurementState](/v3.14/api/webvis/enums/measurementstate)
+
+The state of the measurement.
+
+### `Optional` `Readonly`targets
+
+targets?: [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)[]
+
+The targets of the measurement. The content of this array depends on the [type](#type) of the measurement.
+
+### `Optional` `Readonly`type
+
+type?: [MeasurementType](/v3.14/api/webvis/enums/measurementtype)
+
+The type of the measurement.

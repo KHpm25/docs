@@ -1,0 +1,99 @@
+---
+title: "Interface DrawingPlaneAPI"
+sidebarTitle: "DrawingPlaneAPI"
+description: "Changes one or more properties of a DrawingPlane with the specified ID."
+---
+
+## Methods
+
+### changeDrawingPlane
+
+* changeDrawingPlane(  
+      drawingPlaneId: number,  
+      properties: DrawingPlaneProperties,  
+  ): DrawingPlaneProperties
+
+  `Experimental`
+
+  Changes one or more properties of a DrawingPlane with the specified ID.
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the DrawingPlane you want to change.
+  + properties: DrawingPlaneProperties
+
+    The properties of the DrawingPlane you want change.
+
+  #### Returns DrawingPlaneProperties
+
+  An Object with the changed Properties.
+
+### createDrawingPlane
+
+* createDrawingPlane(properties?: DrawingPlaneProperties): number
+
+  `Experimental`
+
+  Creates a new DrawingPlane with the specified properties.
+
+  #### Parameters
+
+  + `Optional`properties: DrawingPlaneProperties
+
+    Initial properties of the created Drawing.
+
+  #### Returns number
+
+  The ID of the newly created Drawing.
+
+### getDrawingPlaneData
+
+* getDrawingPlaneData(drawingPlaneId: number): DrawingPlaneProperties
+
+  `Experimental`
+
+  Returns the DrawingPlane properties for the specified DrawingPlane ID.
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the DrawingPlane you want to get the Data for.
+
+  #### Returns DrawingPlaneProperties
+
+  The requested DrawingPlane properties.
+
+### getDrawingPlanes
+
+* getDrawingPlanes(): number[]
+
+  `Experimental`
+
+  Returns all available DrawingPlane IDs.
+
+  #### Returns number[]
+
+  An Array of all available DrawingPlane IDs.
+
+### removeDrawingPlane
+
+* removeDrawingPlane(drawingPlaneId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  `Experimental`
+
+  Removes a DrawingPlane with the specified ID.
+  If a DrawingPlane is part of a Snapshot the removal will fail with the State [RemoveState.REFERENCED\_BY\_SNAPSHOT](/api/webvis/enums/removestate#referenced_by_snapshot).
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the Drawing you want to remove.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Drawing is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)

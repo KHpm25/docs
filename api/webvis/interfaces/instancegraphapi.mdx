@@ -1,0 +1,612 @@
+---
+title: "Interface InstanceGraphAPI"
+sidebarTitle: "InstanceGraphAPI"
+description: "The InstanceGraphAPI allows for the control and manipulation of webvis content. The instance graph represents a scene graph-like tree structure of nodes, where each node can contai"
+---
+
+## InstanceGraphAPI
+
+### Overview
+
+The InstanceGraphAPI allows for the control and manipulation of webvis content. The instance graph represents a scene graph-like
+tree structure of nodes, where each node can contain links to 3D geometry and/or group other nodes.
+
+The [getProperty](#getproperty) and [setProperty](#setproperty) functions enable setting and retrieving properties of various types on the nodes.
+Properties are used to modify any node-dependent data, such as color, local transformation, etc. While there is a
+set of predefined node properties that webvis will respond to, the surrounding application can add any other custom
+properties to the nodes using [registerCustomProperty](#registercustomproperty).
+
+All properties can be persisted by the different functionalities of the SessionStorageAPI.
+
+### Quick Start
+
+```ts
+// Get the context  
+const context = webvis.getContext();  
+  
+// Add a new node to the InstanceGraph  
+const nodeId = context.add(  
+{  
+    dataURI: "urn:x-i3d:shape:box",  
+    label: "My node",  
+    initialProperties: { enabled: true }  
+});  
+  
+// Register a custom property  
+context.registerCustomProperty("myCustomProperty", 0);  
+  
+// Getting and setting properties  
+await context.setProperty(nodeId, "myCustomProperty", 42);  
+const [label, customProp] = await context.getProperties(nodeId, [webvis.Property.LABEL, "myCustomProperty"]);  
+  
+console.log(label, customProp); // My node 42
+```
+
+### Events
+
+The InstanceGraphAPI emits the following events:
+
+* [CustomPropertyRegisteredEvent](/api/webvis/classes/custompropertyregisteredevent)
+* [NodeAddedEvent](/api/webvis/classes/nodeaddedevent)
+* [NodeChangedEvent](/api/webvis/classes/nodechangedevent)
+* [NodeErrorEvent](/api/webvis/classes/nodeerrorevent)
+* [NodePropertiesResetEvent](/api/webvis/classes/nodepropertiesresetevent)
+* [NodeRemovedEvent](/api/webvis/classes/noderemovedevent)
+
+## Methods
+
+### add
+
+* add(options: AddNodeOptions): number
+
+  Adds a new node to the instance graph.
+
+  #### Parameters
+
+  + options: AddNodeOptions
+
+    Specifies the options for the new Node.
+
+  #### Returns number
+
+  The ID of the added node
+* add(  
+      dataURI: string,  
+      parentID?: number,  
+      usage?: [UsageString](/api/webvis/types/usagestring),  
+      label?: string,  
+      contentType?: string,  
+      initialProperties?: InitialNodeProperties,  
+      cacheStrategy?: [CacheStrategy](/api/webvis/enums/cachestrategy),  
+  ): number
+
+  #### Parameters
+
+  + dataURI: string
+
+    Specifies the URI to the data resource.
+  + `Optional`parentID: number
+
+    Specifies the parent Node ID of the added Node.
+  + `Optional`usage: [UsageString](/api/webvis/types/usagestring)
+
+    The usage parameter allows to define how the resource should be inserted in the InstanceGraph.
+  + `Optional`label: string
+
+    Specifies a custom label for the added Node.
+  + `Optional`contentType: string
+
+    Specifies the MimeType of the data resource.
+  + `Optional`initialProperties: InitialNodeProperties
+
+    Specifies initialProperties of the added Node.
+  + `Optional`cacheStrategy: [CacheStrategy](/api/webvis/enums/cachestrategy)
+
+    Specifies the strategy which is used when a data cache is requested from the Hub.
+
+  #### Returns number
+
+  The ID of added node
+
+  #### Deprecated
+
+  This function will no longer be available in future webvis releases. Please use the add function with AddNodeOptions instead.
+
+  Adds a new Node to the InstanceGraph.
+
+  Triggers a [NodeAddedEvent](/api/webvis/classes/nodeaddedevent). In case of an error, a [NodeErrorEvent](/api/webvis/classes/nodeerrorevent) is triggered.
+
+### addCustomNode
+
+* addCustomNode(  
+      customNodeType: string,  
+      data: any,  
+      dataType?: [AttachmentType](/api/webvis/enums/attachmenttype),  
+  ): number
+
+  Creates a custom node along with custom data which is stored in an attachment.
+
+  The attached data can be accessed via the [Property.ATTACHMENT](/api/webvis/enums/property#attachment) property of the node.
+
+  Triggers a [NodeAddedEvent](/api/webvis/classes/nodeaddedevent). In case of an error, a [NodeErrorEvent](/api/webvis/classes/nodeerrorevent) is triggered.
+
+  #### Parameters
+
+  + customNodeType: string
+
+    Specifies the custom node type.
+  + data: any
+
+    Specifies the data of the custom node.
+  + `Optional`dataType: [AttachmentType](/api/webvis/enums/attachmenttype)
+
+    Specifies the type of the data. Default: "json".
+
+  #### Returns number
+
+  The ID of the newly created custom node.
+
+  #### See
+
+  AttachmentAPI
+
+### collectRuntimeNodesOfType
+
+* collectRuntimeNodesOfType(nodeType: [NodeType](/api/webvis/enums/nodetype), subType?: string): number[]
+
+  Returns a list of all existing runtime node IDs of a specified type.
+
+  #### Parameters
+
+  + nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+    The node type to collect.
+  + `Optional`subType: string
+
+    The sub type to collect. Only used for custom nodes. See [Property.SUBTYPE](/api/webvis/enums/property#subtype).
+
+  #### Returns number[]
+
+  A list of runtime node IDs of the specified type.
+
+### getEnabledAuxNodes
+
+* getEnabledAuxNodes(nodeID: number): Promise\<number[]>
+
+  #### Parameters
+
+  + nodeID: number
+
+    Specifies the entry point of the subtree traversal. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  An Array of all enabled aux node IDs
+
+  #### Deprecated
+
+  This function will no longer be available in future webvis releases. Use the QueryAPI instead.
+
+  Traverses the subtree of a given node ID and collects all enabled aux nodes.
+
+### getMetadata
+
+* getMetadata(nodeID: number): Promise<\{ [key: string]: string \}>
+
+  Returns a JSON object containing the metadata for the given node ID.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of a node.
+
+  #### Returns Promise<\{ [key: string]: string \}>
+
+  A JSON object containing the requested metadata.
+
+### getProperties
+
+* getProperties<[T](#getpropertiest) extends string>(  
+      nodeID: number,  
+      properties: T[],  
+  ): Promise<[PropertyType](/api/webvis/types/propertytype)\<T>[]>
+
+  Returns the values of the specified properties of the given node.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose properties should be read.
+  + properties: T[]
+
+    The names of the [Properties](/api/webvis/enums/property) whose values should be read.
+
+  #### Returns Promise<[PropertyType](/api/webvis/types/propertytype)\<T>[]>
+
+  The retrieved values of the node's properties.
+
+### getProperty
+
+* getProperty<[T](#getpropertyt) extends string>(  
+      nodeID: number,  
+      property: T,  
+  ): Promise<[PropertyType](/api/webvis/types/propertytype)\<T>>
+
+  Returns the value of the specified property of the given node.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID(s) of the node(s) whose property should be read.
+  + property: T
+
+    The name of the [Property](/api/webvis/enums/property) whose value should be read.
+
+  #### Returns Promise<[PropertyType](/api/webvis/types/propertytype)\<T>>
+
+  The retrieved value of the node property.
+
+### getRootNodeId
+
+* getRootNodeId(target: number | TopologyHandle, includeTarget?: boolean): number
+
+  Returns the root node ID of the given node or topology element.
+
+  #### Parameters
+
+  + target: number | TopologyHandle
+
+    Specifies the target node or topology element.
+  + `Optional`includeTarget: boolean
+
+    Controls if the target node itself can be returned as root node. If set to false and a
+    root node ID is passed in, it returns the next higher root node ID. Default: true
+
+  #### Returns number
+
+  The root node ID of the given node ID or topology handle.
+
+### getStatistics
+
+* getStatistics(  
+      nodeType?: [NodeType](/api/webvis/enums/nodetype),  
+      nodeID?: number,  
+      recursive?: boolean,  
+  ): Promise\<any>
+
+  Traverses the subtree of a given node ID and collects all statistics (currently only available for AUX nodes).
+
+  #### Parameters
+
+  + `Optional`nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+    Specifies the target node type. Default: [NodeType.ALL](/api/webvis/enums/nodetype#all)
+  + `Optional`nodeID: number
+
+    Specifies the node ID as the entry point of the subtree traversal. Default: 0
+  + `Optional`recursive: boolean
+
+  #### Returns Promise\<any>
+
+  An object of type/count pairs.
+
+### invertEnabledStates
+
+* invertEnabledStates(): void
+
+  Inverts all enabled states.
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Returns void
+
+### isNodeDeletable
+
+* isNodeDeletable(nodeID: number): boolean
+
+  Checks if a node is deletable.
+
+  #### Parameters
+
+  + nodeID: number
+
+  #### Returns boolean
+
+  true if the node is deletable.
+
+### isNodeType
+
+* isNodeType(nodeID: number, nodeType: [NodeType](/api/webvis/enums/nodetype)): boolean
+
+  Checks if a node is a specific type.
+
+  #### Parameters
+
+  + nodeID: number
+  + nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+  #### Returns boolean
+
+  true if the node is of the specified type, otherwise false.
+
+### registerCustomProperty
+
+* registerCustomProperty(  
+      name: string,  
+      defaultValue: any,  
+      recursive?: boolean,  
+  ): void
+
+  Registers a new custom node property.
+
+  Custom properties allow developers to hook into the node hierarchy with custom data. This enables the creation
+  of custom behaviors and interactions that can benefit from the NODE\_\* events, like the [NodeChangedEvent](/api/webvis/classes/nodechangedevent),
+  emitted by the InstanceGraphAPI.
+
+  Triggers a [CustomPropertyRegisteredEvent](/api/webvis/classes/custompropertyregisteredevent)
+
+  #### Parameters
+
+  + name: string
+
+    The name of the new property.
+  + defaultValue: any
+
+    Specifies the default value.
+  + `Optional`recursive: boolean
+
+    Defines whether the property is recursive. Default: false
+
+  #### Returns void
+
+### remove
+
+* remove(nodeID?: number | number[], safe?: boolean): Promise<[RemoveState](/api/webvis/enums/removestate)>
+
+  Removes the node for the given node ID from the scene and all related snapshots. If no node ID is supplied, all nodes are deleted.
+
+  Triggers a [NodeRemovedEvent](/api/webvis/classes/noderemovedevent).
+
+  #### Parameters
+
+  + `Optional`nodeID: number | number[]
+
+    The ID of the node that should be removed or undefined to remove all nodes.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the node is part of one or more snapshots.
+    Default: false.
+
+  #### Returns Promise<[RemoveState](/api/webvis/enums/removestate)>
+
+  A promise that resolves with the [RemoveState](/api/webvis/enums/removestate) once the operation is complete.
+
+  #### See
+
+  SessionStorageAPI
+
+### requestActiveSceneVolume
+
+* requestActiveSceneVolume(): Promise\<BoxVolume>
+
+  Returns the active volume of the current scene. It is the smallest volume that contains all nodes of the scene
+  that are enabled.
+
+  #### Returns Promise\<BoxVolume>
+
+  #### See
+
+  [Property.ENABLED](/api/webvis/enums/property#enabled)
+
+### requestAuxRootNodeIds
+
+* requestAuxRootNodeIds(scopeNodeId?: number): Promise\<number[]>
+
+  Returns a list of all existing AUX root node IDs below the specified subtree.
+
+  #### Parameters
+
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  A list of AUX root node IDs.
+
+### requestFullSceneVolume
+
+* requestFullSceneVolume(): Promise\<BoxVolume>
+
+  Returns the full volume of the current scene. It is the smallest volume that contains all nodes of the scene,
+  regardless of their [Property.ENABLED](/api/webvis/enums/property#enabled) state.
+
+  #### Returns Promise\<BoxVolume>
+
+### requestL3DInformation
+
+* requestL3DInformation(targetNodeId: number): Promise\<any>
+
+  Returns the L3D information of the specified node.
+
+  #### Parameters
+
+  + targetNodeId: number
+
+    Specifies the target node ID.
+
+  #### Returns Promise\<any>
+
+  The L3D information of the specified node
+
+### requestNodeIdsByBoxVolume
+
+* requestNodeIdsByBoxVolume(  
+      boxVolume: BoxVolume,  
+      includeOverlappingNodes?: boolean,  
+      includeDisabledNodes?: boolean,  
+      forceExpand?: boolean,  
+      scopeNodeId?: number,  
+  ): Promise\<number[]>
+
+  Returns a list of all node IDs that are included in or overlapped by the specified bounding volume.
+
+  #### Parameters
+
+  + boxVolume: BoxVolume
+
+    Specifies the bounding volume.
+  + `Optional`includeOverlappingNodes: boolean
+
+    Specifies whether the result should include nodes which overlap the specified bounding volume as well. Default: false
+  + `Optional`includeDisabledNodes: boolean
+
+    Specifies whether the result should include nodes which are disabled as well. Default: false
+  + `Optional`forceExpand: boolean
+
+    If set to true, L3D instances may be expanded to find their leaf nodes. Default: false
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  List of all node IDs which are included or overlapped by the specified bounding volume.
+
+### requestRootNodeIds
+
+* requestRootNodeIds(scopeNodeId?: number, recursive?: boolean): Promise\<number[]>
+
+  Returns a list of all existing root node IDs below the specified subtree.
+
+  #### Parameters
+
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+  + `Optional`recursive: boolean
+
+    Specifies if the subtree is traversed recursively. Default: false
+
+  #### Returns Promise\<number[]>
+
+  A list of root node IDs.
+
+### resetProperties
+
+* resetProperties(  
+      nodeID: number,  
+      properties: string[],  
+      recursive?: boolean,  
+  ): Promise\<void>
+
+  Resets the value of the specified properties of the given node.
+
+  Triggers a [NodePropertiesResetEvent](/api/webvis/classes/nodepropertiesresetevent). If the property has changed,
+  this will additionally trigger a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose [Property](/api/webvis/enums/property) should be reset.
+  + properties: string[]
+
+    List of [properties](/api/webvis/enums/property) which should be reset.
+  + `Optional`recursive: boolean
+
+    If set to true, the [properties](/api/webvis/enums/property) are reset recursively. Default: false
+
+  #### Returns Promise\<void>
+
+### resetProperty
+
+* resetProperty(  
+      nodeID: number,  
+      property: string,  
+      recursive?: boolean,  
+  ): Promise\<void>
+
+  Resets the value of the specified property of the given node.
+
+  Triggers a [NodePropertiesResetEvent](/api/webvis/classes/nodepropertiesresetevent). If the property has changed,
+  this will additionally trigger a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose [Property](/api/webvis/enums/property) should be reset.
+  + property: string
+
+    The [Property](/api/webvis/enums/property) that should be reset.
+  + `Optional`recursive: boolean
+
+    If set to true, the [properties](/api/webvis/enums/property) are reset recursively. Default: false
+
+  #### Returns Promise\<void>
+
+### setParent
+
+* setParent(nodeID: number, newParentID: number): void
+
+  Sets a new parent for a given node ID.
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose parent should be set.
+  + newParentID: number
+
+    The ID of the new parent node.
+
+  #### Returns void
+
+### setProperty
+
+* setProperty<[T](#setpropertyt) extends string>(  
+      nodeID: number | number[],  
+      property: T,  
+      value: [PropertyType](/api/webvis/types/propertytype)\<T>,  
+      silent?: boolean,  
+  ): Promise\<void>
+
+  Sets the specified property to the given value on the node(s) with the specified ID(s).
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent). Depending on the property it can trigger additional events,
+  e.g. [ActiveSceneVolumeChangedEvent](/api/webvis/classes/activescenevolumechangedevent).
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID(s) of the node(s) whose property has to be set.
+  + property: T
+
+    The name of the [Property](/api/webvis/enums/property) that has to be set.
+  + value: [PropertyType](/api/webvis/types/propertytype)\<T>
+
+    The new value of the specified property.
+  + `Optional`silent: boolean
+
+    The silent flag indicates that no NODE\_CHANGED event is fired. Default: false
+
+  #### Returns Promise\<void>

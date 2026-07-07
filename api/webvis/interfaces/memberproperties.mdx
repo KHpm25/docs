@@ -1,0 +1,46 @@
+---
+title: "Interface MemberProperties"
+sidebarTitle: "MemberProperties"
+description: "Data associated with amember."
+---
+
+Data associated with a member.
+
+Can be requested via MemberAPI.requestMemberProperties.
+
+## Properties
+
+### `Optional`name
+
+name?: string
+
+The name of the member.
+
+Use MemberAPI.setMemberName to change the name.
+
+### `Optional`profile
+
+profile?: MemberProfile
+
+Custom data associated with the member.
+
+#### See
+
+MemberAPI.setMemberProfileEntry and MemberAPI.deleteMemberProfileEntry
+for modifying profile entries.
+
+### `Optional`role
+
+role?: [MemberRole](/api/webvis/enums/memberrole)
+
+The role of the member in the space.
+
+#### See
+
+[MemberAction.PROMOTE](/api/webvis/enums/memberaction#promote) and [MemberAction.DEMOTE](/api/webvis/enums/memberaction#demote) for changing the role of a member.
+
+### `Optional`state
+
+state?: [MemberState](/api/webvis/enums/memberstate)
+
+The state of the member.

@@ -1,0 +1,33 @@
+---
+title: "Enumeration XREdgeCompareModeExperimental"
+sidebarTitle: "XREdgeCompareMode"
+description: "XREdgeCompareMode is experimental and may be changed in the future without notice! Available XR Edge Compare modes."
+---
+
+XREdgeCompareMode is experimental and may be changed in the future without notice!
+Available XR Edge Compare modes.
+
+#### See
+
+* [ViewerXREdgeCompareAPI.changeXREdgeCompare](/v3.14/api/webvis/interfaces/viewerxredgecompareapi#changexredgecompare)
+* [XREdgeCompareProperties](/v3.14/api/webvis/interfaces/xredgecompareproperties)
+
+## Enumeration Members
+
+### `Experimental`CAMERA\_WITH\_SCENE
+
+CAMERA\_WITH\_SCENE: 1
+
+Use edge pixels from camera image as reference and compare with edge pixels from scene. The color of each pixel is determined by whether a matching pixel was found or not using `matchColor` and `noMatchColor` from [XREdgeCompareProperties](/v3.14/api/webvis/interfaces/xredgecompareproperties).
+
+### `Experimental`MUTUAL\_UNMATCHED
+
+MUTUAL\_UNMATCHED: 2
+
+Render only edge differences (unmatched pixels) but in both compare directions, "scene with camera" and "camera with scene". The color of each edge pixel is determined by the compare direction using `matchColor` for "camera with scene" and `noMatchColor` for "scene with camera" from [XREdgeCompareProperties](/v3.14/api/webvis/interfaces/xredgecompareproperties).
+
+### `Experimental`SCENE\_WITH\_CAMERA
+
+SCENE\_WITH\_CAMERA: 0
+
+Use edge pixels from scene as reference and compare with edge pixels from camera image. The color of each pixel is determined by whether a matching pixel was found or not using `matchColor` and `noMatchColor` from [XREdgeCompareProperties](/v3.14/api/webvis/interfaces/xredgecompareproperties).

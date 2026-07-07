@@ -1,0 +1,277 @@
+---
+title: "Interface ViewerGizmoAPI"
+sidebarTitle: "ViewerGizmoAPI"
+description: "Returns the properties of the BoxGizmo"
+---
+
+## Methods
+
+### createCollectionFromGizmo
+
+* createCollectionFromGizmo(includeOverlappingNodes: boolean): Promise\<number>
+
+  #### Parameters
+
+  + includeOverlappingNodes: boolean
+
+  #### Returns Promise\<number>
+
+### getActiveItem
+
+* getActiveItem(): ActiveItemInfo
+
+  #### Returns ActiveItemInfo
+
+### getAvailableGizmoTransformationModes
+
+* getAvailableGizmoTransformationModes(): number
+
+  #### Returns number
+
+### getBoxGizmoProperties
+
+* getBoxGizmoProperties(): BoxGizmoProperties
+
+  Returns the properties of the BoxGizmo
+
+  #### Returns BoxGizmoProperties
+
+  The properties of the BoxGizmo
+
+### getCurrentGizmoType
+
+* getCurrentGizmoType(): [GizmoType](/api/webvis/enums/gizmotype)
+
+  #### Returns [GizmoType](/api/webvis/enums/gizmotype)
+
+### getGizmoSize
+
+* getGizmoSize(): Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+### getGizmoTransform
+
+* getGizmoTransform(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+### getGizmoTransformationMode
+
+* getGizmoTransformationMode(): [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+  #### Returns [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+### hideAllLineMarkers
+
+* hideAllLineMarkers(): void
+
+  #### Returns void
+
+### hideAllMarkers
+
+* hideAllMarkers(): void
+
+  #### Returns void
+
+### hideAllPointMarkers
+
+* hideAllPointMarkers(): void
+
+  #### Returns void
+
+### hideGizmo
+
+* hideGizmo(): void
+
+  Hides the currently visible Gizmo
+
+  #### Returns void
+
+### hidePointMarker
+
+* hidePointMarker(index?: number): void
+
+  #### Parameters
+
+  + `Optional`index: number
+
+  #### Returns void
+
+### setActiveItem
+
+* setActiveItem(id: number, type: [ActiveItemType](/api/webvis/enums/activeitemtype)): void
+
+  #### Parameters
+
+  + id: number
+  + type: [ActiveItemType](/api/webvis/enums/activeitemtype)
+
+  #### Returns void
+
+### setCORGizmoVisible
+
+* setCORGizmoVisible(flag: boolean): void
+
+  #### Parameters
+
+  + flag: boolean
+
+  #### Returns void
+
+### setGizmoTransformationMode
+
+* setGizmoTransformationMode(mode: [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)): void
+
+  #### Parameters
+
+  + mode: [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+  #### Returns void
+
+### showAxisMarker
+
+* showAxisMarker(  
+      values:  
+          | Float32Array\<ArrayBufferLike>  
+          | [number, number, number, number, number, number],  
+      scale?: number,  
+      index?: number,  
+  ): void
+
+  #### Parameters
+
+  + values: Float32Array\<ArrayBufferLike> | [number, number, number, number, number, number]
+  + `Optional`scale: number
+  + `Optional`index: number
+
+  #### Returns void
+
+### showBoxGizmo
+
+* showBoxGizmo(properties?: BoxGizmoProperties): void
+
+  Shows the BoxGizmo based on the specified properties.
+  If the BoxGizmo is already visible the specified properties will be updated.
+
+  #### Parameters
+
+  + `Optional`properties: BoxGizmoProperties
+
+    The properties of the BoxGizmo.
+
+  #### Returns void
+
+### showClippingBoxGizmo
+
+* showClippingBoxGizmo(clipRoomID: number): void
+
+  #### Parameters
+
+  + clipRoomID: number
+
+  #### Returns void
+
+### showPointMarker
+
+* showPointMarker(  
+      position: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      index?: number,  
+  ): void
+
+  #### Parameters
+
+  + position: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + `Optional`index: number
+
+  #### Returns void
+
+### showSelectionBoxGizmo
+
+* showSelectionBoxGizmo(  
+      size?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transform?:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+  ): void
+
+  #### Parameters
+
+  + `Optional`size: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + `Optional`transform:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+  #### Returns void
+
+### showSelectionBoxGizmoFromVolume
+
+* showSelectionBoxGizmoFromVolume(volume?: BoxVolume): void
+
+  #### Parameters
+
+  + `Optional`volume: BoxVolume
+
+  #### Returns void
+
+### showSelectionTransformationGizmo
+
+* showSelectionTransformationGizmo(nodeIds: number[]): void
+
+  #### Parameters
+
+  + nodeIds: number[]
+
+  #### Returns void

@@ -1,0 +1,27 @@
+---
+title: "Enumeration CacheStrategy"
+sidebarTitle: "CacheStrategy"
+description: "Defines the strategy which is used when a data cache is requested from the Hub."
+---
+
+Defines the strategy which is used when a data cache is requested from the Hub.
+
+## Enumeration Members
+
+### REGENERATE
+
+REGENERATE: 1
+
+Ignores previously generated cache results and forces the cache regeneration for the input data.
+
+### REGENERATE\_RECURSIVE
+
+REGENERATE\_RECURSIVE: 2
+
+Ignores previously generated cache results and forces the cache regeneration for the input data and linked data below.
+
+### REUSE
+
+REUSE: 0
+
+Reuses previously generated cache results if available.

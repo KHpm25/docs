@@ -1,0 +1,148 @@
+---
+title: "Interface AppearancePatternAPI"
+sidebarTitle: "AppearancePatternAPI"
+description: "TheAppearancePatternAPIprovides a set of methods for creating and managing appearance pattern in a webvis context. It allows you to:"
+---
+
+## AppearancePatternAPI
+
+### Overview
+
+The **AppearancePatternAPI** provides a set of methods for creating and managing appearance pattern in a webvis context. It allows you to:
+
+* Create appearance patterns and assign them to specific nodes in a scene.
+* Edit and update existing appearance patterns.
+* Retrieve all appearance patterns at once.
+* Request detailed appearance patterns data for a specific appearance pattern.
+* Remove appearance patterns when they are no longer needed.
+
+### Quick Start
+
+The fastest way to get familiar with the AppearancePatternAPI is by creating an appearance pattern and assigning it to a node. The appearance pattern can then be updated later and removed when it is no longer necessary:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a node to assign the appearance pattern to and enable the resource to make it visible  
+const nodeId = context.add({dataURI: "urn:x-i3d:shape:box", initialProperties: {enabled: true}});  
+  
+// Create an appearance pattern  
+const patternId = context.createAppearancePattern({  
+     type: webvis.AppearancePatternType.STRIPES,  
+     foregroundColor: [1, 0, 0, 1],  
+     scale : 0.005,  
+     rotation: 0.785,  
+     name: "Red Stripes",  
+});  
+  
+// Assign the appearance pattern to the previously added node via the APPEARANCE_PATTERN property  
+await context.setProperty(nodeId, webvis.Property.APPEARANCE_PATTERN, patternId);  
+  
+ // Change the base color and the name of the material  
+context.changeAppearancePattern(patternId, {  
+     foregroundColor: [0, 1, 0, 1],  
+     name: "Green Stripes",  
+ });  
+  
+// Unassign the material from the node  
+await context.setProperty(nodeId, webvis.Property.APPEARANCE_PATTERN, null);  
+  
+// Remove the material if no longer required  
+context.removeAppearancePattern(patternId);
+```
+
+### Events
+
+The following events are associated with the MaterialAPI:
+
+* [AppearancePatternCreatedEvent](/api/webvis/classes/appearancepatterncreatedevent)
+* [AppearancePatternChangedEvent](/api/webvis/classes/appearancepatternchangedevent)
+* [AppearancePatternRemovedEvent](/api/webvis/classes/appearancepatternremovedevent)
+
+## Methods
+
+### changeAppearancePattern
+
+* changeAppearancePattern(  
+      patternId: number,  
+      properties: AppearancePatternProperties,  
+  ): AppearancePatternProperties
+
+  Changes one or more properties of an appearance pattern with the specified ID and triggers a [AppearancePatternChangedEvent](/api/webvis/classes/appearancepatternchangedevent).
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern you want to change.
+  + properties: AppearancePatternProperties
+
+    The properties of the appearance pattern you want change.
+
+  #### Returns AppearancePatternProperties
+
+  An object with the changed properties.
+
+### createAppearancePattern
+
+* createAppearancePattern(properties?: AppearancePatternProperties): number
+
+  Creates a new appearance pattern and triggers a [AppearancePatternCreatedEvent](/api/webvis/classes/appearancepatterncreatedevent).
+  The current limit for concurrently defined appearance patterns is 31.
+
+  #### Parameters
+
+  + `Optional`properties: AppearancePatternProperties
+
+    Initial properties of the created appearance pattern.
+
+  #### Returns number
+
+  The ID of the newly created appearance pattern or undefined if the maximum number of appearance patterns has been reached.
+
+### getAppearancePatternData
+
+* getAppearancePatternData(patternId: number): AppearancePatternProperties
+
+  Returns the properties of the appearance pattern entity with the specified ID.
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern entity.
+
+  #### Returns AppearancePatternProperties
+
+  The properties of the appearance pattern entity.
+
+### getAppearancePatterns
+
+* getAppearancePatterns(): number[]
+
+  Returns the IDs of all appearance pattern entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all available appearance patterns
+
+### removeAppearancePattern
+
+* removeAppearancePattern(patternId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the appearance pattern from the scene and all related snapshots and triggers a [AppearancePatternRemovedEvent](/api/webvis/classes/appearancepatternremovedevent).
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the appearance pattern is part of
+    one or more snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.

@@ -1,0 +1,155 @@
+---
+title: "Deploy instant3Dhub on Kubernetes Using Helm Chart"
+sidebarTitle: "Kubernetes"
+description: "Install instant3Dhub on Kubernetes using the Helm chart from repo.threedy.io. Covers cluster requirements, values.yaml, GPU rendering, and chart upgrades."
+---
+
+Kubernetes is the recommended deployment target for instant3Dhub in production. The official Helm chart from `repo.threedy.io` handles all resource definitions, service wiring, and configuration in a single install command. This guide takes you from a bare Kubernetes cluster to a running instant3Dhub instance.
+
+## Requirements
+
+Before you begin, confirm your environment meets the following minimums:
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| Kubernetes | 1.24 | 1.28+ |
+| Helm | 3.10 | Latest stable |
+| CPU (per node) | 4 cores | 8+ cores |
+| RAM (per node) | 16 GB | 32 GB |
+| Storage | 50 GB (block) | 200 GB SSD |
+| GPU (optional) | — | 1× NVIDIA GPU per rendering node |
+
+<Note>
+  GPU-accelerated rendering requires NVIDIA GPU Operator installed on your cluster and nodes labeled with `nvidia.com/gpu.present=true`. Without a GPU, instant3Dhub falls back to CPU-based rendering automatically.
+</Note>
+
+## Installation
+
+<Steps>
+  <Step title="Confirm prerequisites">
+    Make sure the following are in place before you run any commands:
+
+    - A running Kubernetes cluster with `kubectl` access (verify with `kubectl cluster-info`)
+    - Helm 3 installed locally (`helm version`)
+    - Credentials for `repo.threedy.io` (provided by Threedy when you receive your license)
+    - Your License Server URL — contact [support@threedy.io](mailto:support@threedy.io) if you have not set one up yet
+  </Step>
+
+  <Step title="Add the Threedy Helm repository">
+    Register the Threedy chart repository and pull the latest index:
+
+    ```bash
+    helm repo add threedy https://repo.threedy.io/helm
+    helm repo update
+    ```
+
+    Verify the repository is available:
+
+    ```bash
+    helm search repo threedy
+    ```
+
+    You should see `threedy/instant3dhub` listed with the current chart version.
+  </Step>
+
+  <Step title="Create your values.yaml">
+    Create a `values.yaml` file that describes your environment. At minimum, provide your License Server URL, a storage class, at least one entrypoint, and your registry credentials:
+
+    ```yaml
+    licenseServer:
+      url: https://your-license-server.example.com
+
+    storage:
+      class: standard
+
+    entrypoints:
+      - host: hub.example.com
+        tls: true
+
+    registry:
+      server: repo.threedy.io
+      username: YOUR_USERNAME
+      password: YOUR_PASSWORD
+    ```
+
+    <Tip>
+      Replace `standard` with the storage class available in your cluster. Run `kubectl get storageclass` to list available classes. For production, prefer an SSD-backed class.
+    </Tip>
+
+    If you want GPU-accelerated rendering, add a node selector to your `values.yaml` so the renderer pods are scheduled onto GPU-equipped nodes. Contact [support@threedy.io](mailto:support@threedy.io) or consult the support portal at [support.threedy.io](https://support.threedy.io) for the exact chart values required for your instant3Dhub version.
+  </Step>
+
+  <Step title="Create the target namespace">
+    It is best practice to deploy instant3Dhub into its own namespace:
+
+    ```bash
+    kubectl create namespace instant3dhub
+    ```
+  </Step>
+
+  <Step title="Install the Helm chart">
+    Run the install command, targeting the namespace you just created:
+
+    ```bash
+    helm install instant3dhub threedy/instant3dhub \
+      --namespace instant3dhub \
+      -f values.yaml
+    ```
+
+    Helm will create all Kubernetes resources — Deployments, Services, ConfigMaps, Secrets, and Ingress — in a single operation. The output confirms the release name and status.
+  </Step>
+
+  <Step title="Verify the pods are running">
+    Wait for all pods to reach the `Running` state. This typically takes one to three minutes on a healthy cluster:
+
+    ```bash
+    kubectl get pods -n instant3dhub
+    ```
+
+    Expected output (pod names will include a generated suffix):
+
+    ```text
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    instant3dhub-core-7d9f6b8c4-xk2lp        1/1     Running   0          2m
+    instant3dhub-gateway-5c8b7d6f9-p9rnv      1/1     Running   0          2m
+    instant3dhub-renderer-6b4c9d7e2-q3mwt     1/1     Running   0          2m
+    ```
+
+    If any pod is stuck in `Pending` or `CrashLoopBackOff`, inspect its logs:
+
+    ```bash
+    kubectl logs -n instant3dhub <pod-name>
+    ```
+  </Step>
+
+  <Step title="Access the hub">
+    Open a browser and navigate to the host you set in `entrypoints`, for example `https://hub.example.com`. The instant3Dhub web interface loads and prompts for your license validation.
+
+    <Note>
+      If you enabled TLS in `entrypoints`, make sure your Ingress controller has a valid TLS certificate for the hostname. You can use cert-manager with Let's Encrypt for automated certificate provisioning.
+    </Note>
+  </Step>
+</Steps>
+
+## Upgrading
+
+To upgrade to a newer chart version, update the repo index and run `helm upgrade`:
+
+```bash
+helm repo update
+helm upgrade instant3dhub threedy/instant3dhub \
+  --namespace instant3dhub \
+  -f values.yaml
+```
+
+## Uninstalling
+
+To remove the deployment and all associated Kubernetes resources:
+
+```bash
+helm uninstall instant3dhub --namespace instant3dhub
+```
+
+<Warning>
+  This removes all instant3Dhub Kubernetes resources but does not delete PersistentVolumeClaims. Delete them manually if you want to reclaim storage.
+</Warning>

@@ -1,0 +1,88 @@
+---
+title: "Interface FrameAPI"
+sidebarTitle: "FrameAPI"
+description: "The FrameAPI provides functions for registering and unregisteringframe listenerswhich are executed on every tick of the internal update loop of the webvis context."
+---
+
+## FrameAPI
+
+### Overview
+
+The FrameAPI provides functions for registering and unregistering
+[frame listeners](/api/webvis/types/framelistener) which are executed on every tick
+of the internal update loop of the webvis context.
+
+The FrameAPI might be used to:
+
+* process events that have been collected between frames in a batched manner
+* perform complex animations that cannot be implemented using the AnimationAPI
+* record properties of the scene, like the camera position and orientation
+
+### Quick Start
+
+To get started with the FrameAPI, you can register a listener via the webvis context:
+
+```ts
+const context = webvis.getContext();  
+  
+// Define your frame listener  
+const myFrameListener = (time, elapsed) =>  
+{  
+    console.log(`Time of current tick: ${time} ms. Time since last tick: ${elapsed} ms.`);  
+};  
+  
+// Register your frame listener  
+context.registerFrameListener(myFrameListener);  
+  
+// Later unregister your frame listener  
+context.unregisterFrameListener(myFrameListener);
+```
+
+### Execution Behavior
+
+The execution frequency of a frame listener will usually match the refresh rate
+of the display, which is typically around 60 Hz. Frame listener execution might
+be throttled when the document is not visible (e.g., when the browser tab is in
+the background).
+
+When executed, a listener receives the timestamp of the current tick of the
+internal update loop and the elapsed time since the last tick. Custom logic
+should never assume a specific update rate, but instead be based on the provided
+timing information.
+
+#### See
+
+* [FrameListener](/api/webvis/types/framelistener)
+* AnimationAPI
+
+## Methods
+
+### registerFrameListener
+
+* registerFrameListener(listener: [FrameListener](/api/webvis/types/framelistener)): void
+
+  Registers a frame listener which is executed on every tick of the
+  internal update loop of the webvis context.
+
+  #### Parameters
+
+  + listener: [FrameListener](/api/webvis/types/framelistener)
+
+    The listener to register.
+
+  #### Returns void
+
+### unregisterFrameListener
+
+* unregisterFrameListener(listener: [FrameListener](/api/webvis/types/framelistener)): void
+
+  Unregisters a frame listener which has previously been registered via
+  [registerFrameListener](#registerframelistener).
+
+  #### Parameters
+
+  + listener: [FrameListener](/api/webvis/types/framelistener)
+
+    The listener to unregister.
+
+  #### Returns void

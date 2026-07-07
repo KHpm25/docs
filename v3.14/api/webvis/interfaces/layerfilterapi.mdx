@@ -1,0 +1,117 @@
+---
+title: "Interface LayerFilterAPI"
+sidebarTitle: "LayerFilterAPI"
+description: "The LayerFilterAPI is used to manage the visibility of layers and filter them. These are additional metadata information from input data and are not always provided."
+---
+
+## LayerFilterAPI
+
+### Overview
+
+The LayerFilterAPI is used to manage the visibility of layers and filter them.
+These are additional metadata information from input data and are not always provided.
+
+The LayerFilterAPI provides methods to:
+
+* Retrieve the list of available layer filters and their states.
+* Enable or disable specific layer filters.
+* Check if a specific node is part of an enabled layer filter.
+
+This functionality is particularly useful for managing the visualization of complex models
+by toggling the visibility of specific layer filters based on user preferences or application logic.
+
+### Quick Start
+
+To use the LayerFilterAPI, layer filters can be accessed via the context:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+context.getRegisteredLayerFilters();  
+// -> example: {DEFAULT: false, LAYER1: false}  
+  
+// Enable a layer filter  
+context.setLayerFilterEnabled('LAYER1', true);  
+// -> example: {layerFilterName: 'LAYER1', value: true, hasChanged: true}  
+  
+context.getEnabledLayerFilters();  
+// -> example: ['LAYER1']  
+  
+context.getRegisteredLayerFilters();  
+// -> example: {DEFAULT: false, LAYER1: true}  
+  
+// Check if a node is part of an enabled layer  
+await context.isNodePartOfEnabledLayers(nodeID);  
+// -> example: true
+```
+
+### Events
+
+The following events are associated with the LayerFilterAPI:
+
+* [LayerFilterChangedEvent](/v3.14/api/webvis/classes/layerfilterchangedevent)
+* [LayerFilterRegisteredEvent](/v3.14/api/webvis/classes/layerfilterregisteredevent)
+* [LayerFilterUnregisteredEvent](/v3.14/api/webvis/classes/layerfilterunregisteredevent)
+
+## Methods
+
+### getEnabledLayerFilters
+
+* getEnabledLayerFilters(): string[]
+
+  Returns the currently defined list of enabled layer filters.
+
+  #### Returns string[]
+
+  An array of strings representing the names of the enabled layer filters.
+
+### getRegisteredLayerFilters
+
+* getRegisteredLayerFilters(): \{ [key: string]: boolean \}
+
+  Returns the currently defined list of layer filters with their current state.
+
+  #### Returns \{ [key: string]: boolean \}
+
+  Returns a map of the registered layer filters and their states.
+
+### isNodePartOfEnabledLayers
+
+* isNodePartOfEnabledLayers(nodeID: number): Promise\<boolean>
+
+  Returns true if the specified node ID is part of an enabled layer.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The node ID which should be checked.
+
+  #### Returns Promise\<boolean>
+
+  Returns a promise that resolves to true if the node is part of an enabled layer, false otherwise.
+
+### setLayerFilterEnabled
+
+* setLayerFilterEnabled(  
+      name: string,  
+      enabled: boolean,  
+  ): SetLayerFilterEnabledResult
+
+  Sets the enabled state of a single layer filter.
+
+  Triggers a [LayerFilterChangedEvent](/v3.14/api/webvis/classes/layerfilterchangedevent).
+
+  #### Parameters
+
+  + name: string
+
+    The name of the layer filter
+  + enabled: boolean
+
+    The new enabled state.
+
+  #### Returns SetLayerFilterEnabledResult
+
+  The result of the operation.

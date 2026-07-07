@@ -1,0 +1,46 @@
+---
+title: "Interface BetweenMeasurementResult"
+sidebarTitle: "BetweenMeasurementResult"
+description: "The result of a distance and angle measurement between twoMeasurementTargets."
+---
+
+The result of a distance and angle measurement between two [MeasurementTarget](/api/webvis/types/measurementtarget)s.
+
+#### See
+
+* MeasurementAPI.measureBetween
+* [MeasurementType.MULTIPLE](/api/webvis/enums/measurementtype#multiple)
+
+## Properties
+
+### `Optional`angle
+
+angle?: number
+
+The angle between the two measurement targets if applicable.
+
+### distance
+
+distance: number
+
+The distance between the two measurement targets.
+
+* If the two measurement targets intersect the distance is zero.
+
+### `Optional`intersection
+
+intersection?: [MeasurementTarget](/api/webvis/types/measurementtarget)[]
+
+The intersection of the two measurement targets, if existent. Note
+that the intersection is not available for all [MeasurementTargetClass](/api/webvis/enums/measurementtargetclass)
+combinations. For details, see the documentation of
+measureBetween.
+
+### points
+
+points: [[number, number, number], [number, number, number]]
+
+The two 3D points used to calculate the distance.
+
+* If the two measurement targets intersect the two points are equal.
+* If the two measurement targets intersect and both are from the class [MeasurementTargetClass.PLANE](/api/webvis/enums/measurementtargetclass#plane) the two points are used to describe the intersection line.

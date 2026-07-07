@@ -1,0 +1,56 @@
+---
+title: "Interface XRInitOptions"
+sidebarTitle: "XRInitOptions"
+description: "Defines the behavior of the initialization mode for modeltracking."
+---
+
+Defines the behavior of the initialization mode for modeltracking.
+
+#### See
+
+RealityAPI.enterXRInitMode
+
+## Properties
+
+### `Optional`fitView
+
+fitView?: boolean
+
+Specify if a view fitting should be performed. If set to true the model will
+be fitted to the current view volume. Otherwise it will stay at its current position.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`resetHard
+
+resetHard?: boolean
+
+Specify if a reset hard should be executed. If set to true all runtime data
+learned during tracking will be omitted.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`resetInitTemplate
+
+resetInitTemplate?: boolean
+
+Specify if a reset should also reset Init data. InitTemplates can be imported via
+the function RealityAPI.importXRInitTemplate.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+RealityAPI.importXRInitTemplate

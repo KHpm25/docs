@@ -1,0 +1,187 @@
+---
+title: "3DSpaces: Persistent, URL-Addressable Collaboration Sessions"
+sidebarTitle: "3DSpaces"
+description: "Learn what 3DSpaces are and how they enable real-time collaboration with shared annotations, measurements, clipping planes, and persistent session state."
+---
+
+A **3DSpace** is the core collaboration primitive in instant3Dhub. It gives your team a persistent, URL-addressable environment where you can load 3D CAD geometry, annotate models, take measurements, and work together in real time — all without installing any software. Because a 3DSpace is a web resource, anyone with the URL and the right permissions can join the same live session from any browser.
+
+## What Is a 3DSpace?
+
+A 3DSpace is built on instant3Dhub's **InstanceGraph** — the scene graph layer that streams and renders large-scale 3D data efficiently in the browser. When you create a 3DSpace, the platform provisions a persistent resource at a unique URL. That URL represents the space itself: it carries the loaded geometry references, all collaborative state, and the list of members — and it continues to exist even after every participant disconnects.
+
+<Note>
+  You do not need to keep the browser tab open to preserve a 3DSpace. All mutable state is saved automatically on the server. When you return, the space is exactly as you left it.
+</Note>
+
+## Two Categories of Data
+
+Every 3DSpace contains two distinct types of data with different ownership and mutability semantics.
+
+| Category | Ownership | Mutability | Examples |
+|---|---|---|---|
+| **Resource Data** | External (PLM/PDM system) | Immutable | CAD geometry, product structures, PMI data — linked via HTTP |
+| **3DSpace Data** | The 3DSpace itself | Mutable | Clip planes, measurements, annotations, drawings, snapshots, member list |
+
+**Resource Data** is never copied into the 3DSpace. Instead, the space holds an external HTTP reference to the authoritative source in your PLM or PDM system. This means geometry always reflects the linked version, and storage overhead stays minimal.
+
+**3DSpace Data** is owned and persisted by the space. Every annotation you pin, every measurement you save, and every snapshot you name becomes part of the space's durable state, accessible to all members.
+
+## Collaboration Features
+
+<CardGroup cols={2}>
+  <Card title="Shared Viewport" icon="video">
+    Follow another participant's camera in real time. Enable **follow mode** to lock your view to a colleague's perspective — useful during guided walkthroughs and design reviews.
+  </Card>
+  <Card title="Annotations" icon="comment">
+    Pin text notes directly to 3D geometry. Annotations remain anchored to their target face or edge and are visible to all members as soon as you save them.
+  </Card>
+  <Card title="Drawings & Markups" icon="pen">
+    Sketch 2D markup on top of the current 3D view. Drawings are attached to the active viewpoint and stored in the space so reviewers can see exactly what you highlighted.
+  </Card>
+  <Card title="Measurements" icon="ruler">
+    Create and save point-to-point distances and angle measurements. Saved measurements persist in the space and can be reviewed by any member at any time.
+  </Card>
+  <Card title="Clipping Planes" icon="scissors">
+    Define shared slice planes to expose internal geometry. All members in the session see the same clipping state, making it easy to discuss internal structures together.
+  </Card>
+  <Card title="Snapshots" icon="camera">
+    Capture named viewpoints — camera position, active clip planes, and visibility state — that any team member can jump back to with a single click.
+  </Card>
+</CardGroup>
+
+## Creating a 3DSpace
+
+<Tabs>
+  <Tab title="From the UI">
+    <Steps>
+      <Step title="Open the instant3Dhub portal">
+        Navigate to your instant3Dhub instance and sign in with your SSO credentials.
+      </Step>
+      <Step title="Create a new space">
+        Click **New 3DSpace** in the dashboard. Give the space a descriptive name — this name appears in the shared URL and in the members' browser tabs.
+      </Step>
+      <Step title="Link your geometry">
+        Paste the HTTP URL of your CAD resource (for example, a JT or STEP file served from your PLM system) into the **Resource URL** field. instant3Dhub streams the model directly from the source; no upload is required.
+      </Step>
+      <Step title="Configure access">
+        Choose an access policy: **Private** (invite-only), **Organization** (visible to all SSO users in your tenant), or **Link** (anyone with the URL). You can change this setting later.
+      </Step>
+      <Step title="Open the space">
+        Click **Create**. The platform generates a unique URL and opens the space in the 3D viewer. Copy the URL from the address bar to share it with collaborators.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Via the REST API">
+    Use the experimental 3DSpaces REST API to create a space programmatically — for example, from a PLM workflow integration or a custom application.
+
+    ```bash
+    curl --request POST \
+      --url https://your-hub.example.com/api/v1/spaces \
+      --header "Authorization: Bearer <access_token>" \
+      --header "Content-Type: application/json" \
+      --data '{
+        "name": "Wing Assembly Review — Sprint 42",
+        "resourceUrl": "https://plm.example.com/models/wing-assembly-v4.jt",
+        "accessPolicy": "organization"
+      }'
+    ```
+
+    A successful response returns the new space's `id` and `url`:
+
+    ```json
+    {
+      "id": "spc_01hxyz4abcdef",
+      "name": "Wing Assembly Review — Sprint 42",
+      "url": "https://your-hub.example.com/spaces/spc_01hxyz4abcdef",
+      "accessPolicy": "organization",
+      "createdAt": "2024-06-10T09:15:00Z"
+    }
+    ```
+
+    <Note>
+      The 3DSpaces REST API is currently **experimental**. Endpoints and response shapes may change between releases. Pin your integration to a specific API version and monitor the changelog before upgrading.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Sharing and Joining a 3DSpace
+
+Once a 3DSpace exists, sharing it is as simple as sharing a URL.
+
+1. **Copy the URL** from your browser's address bar or from the space's **Share** panel inside the viewer.
+2. **Send it** to collaborators via email, chat, or your project management tool.
+3. Recipients click the link and are taken directly into the live session — no plugins or downloads required.
+
+<Tip>
+  Use the **Share** panel to generate a URL that opens the space at a specific saved snapshot. This lets you direct reviewers straight to the viewpoint that matters most.
+</Tip>
+
+When a new member opens the URL, instant3Dhub authenticates them (via SSO if configured), adds them to the member list, and streams the current scene state. Members who join mid-session immediately see all existing annotations, measurements, and clip planes.
+
+## Session Persistence
+
+3DSpaces are designed to outlive individual sessions. The table below clarifies what survives a full disconnect and what does not.
+
+| State | Persists after disconnect? | Notes |
+|---|---|---|
+| Annotations | ✅ Yes | Saved to 3DSpace Data immediately on creation |
+| Drawings & markups | ✅ Yes | Stored with the viewpoint they were created in |
+| Measurements | ✅ Yes | Saved on confirmation |
+| Snapshots | ✅ Yes | Named and stored indefinitely |
+| Clipping planes | ✅ Yes | Last saved state is restored on rejoin |
+| Member list | ✅ Yes | Persisted; active/inactive status updates on connect |
+| Live camera position | ❌ No | Per-user viewport state is not saved between sessions |
+| Follow mode | ❌ No | Resets when participants disconnect |
+| Unsaved drawings | ❌ No | Discard any markup you have not explicitly saved before closing |
+
+<Warning>
+  Unsaved drawings and in-progress annotations are lost if you close the browser tab before saving. Always confirm or save your work before leaving a session.
+</Warning>
+
+## Access Control and Member Roles
+
+instant3Dhub integrates with your organisation's **SSO provider** (OIDC/SAML) so that authentication is handled centrally. Role-based access control (RBAC) governs what each member can do inside a 3DSpace.
+
+<Accordion title="Access policies">
+  | Policy | Who can join |
+  |---|---|
+  | **Private** | Only explicitly invited members |
+  | **Organization** | Any authenticated user in your SSO tenant |
+  | **Link** | Anyone who has the URL (no authentication required) |
+</Accordion>
+
+<Accordion title="Member roles">
+  | Role | Permissions |
+  |---|---|
+  | **Owner** | Full control: edit, delete the space, manage members, change access policy |
+  | **Editor** | Create and edit annotations, measurements, drawings, and snapshots |
+  | **Viewer** | Read-only access; can navigate the model but cannot create or modify 3DSpace Data |
+</Accordion>
+
+You manage members from the **Members** panel inside the viewer or through the 3DSpaces REST API. Roles can be updated at any time without interrupting an active session.
+
+## Programmatic Management with the 3DSpaces API
+
+The experimental **3DSpaces REST API** lets you integrate space lifecycle management into your existing tooling — PLM systems, automation workflows, or custom dashboards.
+
+Key operations available through the API:
+
+- **Create** a space and link a CAD resource
+- **List** all spaces accessible to a service account
+- **Update** space metadata and access policy
+- **Add or remove members** and assign roles
+- **Delete** a space when a project is closed
+
+```bash
+# List all spaces visible to the authenticated service account
+curl --request GET \
+  --url https://your-hub.example.com/api/v1/spaces \
+  --header "Authorization: Bearer <access_token>"
+```
+
+<Note>
+  The 3DSpaces API is intended for service-to-service use cases. For end-user collaboration, the instant3Dhub web viewer provides the full feature set described on this page.
+</Note>
+
+Refer to the [3DSpaces API Reference](/v3.14/api/3dspaces-api) for the full endpoint documentation, authentication requirements, and rate limits.

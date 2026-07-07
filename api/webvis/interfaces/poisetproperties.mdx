@@ -1,0 +1,83 @@
+---
+title: "Interface POISetProperties"
+sidebarTitle: "POISetProperties"
+description: "Whether the POI set is enabled or not."
+---
+
+## Properties
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Whether the POI set is enabled or not.
+
+#### Default
+
+```ts
+true
+```
+
+### `Optional`labelColor
+
+labelColor?: [number, number, number]
+
+The color of the POI labels in the set as [R, G, B], each value in the range 0-1.
+
+### `Optional`labelOutlineColor
+
+labelOutlineColor?: [number, number, number]
+
+The outline color of the labels in the set as [R, G, B], each value in the range 0-1.
+
+### `Optional`name
+
+name?: string
+
+Optional. Name of the POS set.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`points
+
+points?: PointOfInterest[]
+
+The list of PointOfInterests to visualize.
+
+### `Optional`styleHovered
+
+styleHovered?: number
+
+The style of the POIs in the set that are hovered.
+
+### `Optional`styleOccluded
+
+styleOccluded?: number
+
+The style of the POIs in the set that are occluded.
+
+### `Optional`styleVisible
+
+styleVisible?: number
+
+The style of the POIs in the set that are visible.
+
+### `Optional`useWorldUnits
+
+useWorldUnits?: boolean
+
+Specifies how the size specified in the POI set's style is interpreted (see POIStyleProperties).
+If set to true, the values are interpreted in world space (meters), otherwise in screen space (pixels).
+
+For pixel size on screen typical size values are in the range 15-30.
+For world unit size typical size values depend on the model.
+
+#### Default
+
+```ts
+false
+```

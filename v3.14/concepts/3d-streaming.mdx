@@ -1,0 +1,122 @@
+---
+title: "How instant3Dhub Streams 3D Data Directly to Browsers"
+sidebarTitle: "3D Streaming"
+description: "Learn how instant3Dhub streams only what is visible, how spatial caching achieves up to 99% faster loads, and which 3D formats are supported and why."
+---
+
+instant3Dhub does not send your entire CAD assembly to the browser. Instead, it streams only the geometry that is visible in the current viewport, at the level of detail appropriate for the current zoom level — and it does this continuously as you navigate. The result is that even terabyte-scale assemblies feel responsive from the first moment, because the platform never asks your browser to process more than it needs to render what you see right now.
+
+## Server-Side and Client-Side Computation
+
+3D streaming in instant3Dhub splits rendering work across two sides of the connection in a way that plays to each side's strengths.
+
+**On the server**, instant3Dhub performs the computationally expensive tasks:
+
+- Parsing and processing raw CAD geometry (B-Rep surfaces, assembly hierarchies, metadata)
+- Performing spatial partitioning and level-of-detail (LOD) generation
+- Determining which spatial fragments are relevant to the client's current view frustum
+- Compressing and encoding geometry for efficient network transmission
+
+**On the client** (in the browser), instant3Dhub handles:
+
+- Receiving and decoding the streamed geometry fragments
+- Compositing them into the rendered scene using WebGL
+- Tracking camera movement and sending viewport updates back to the server
+- Applying collaborative overlays: annotations, measurements, clip planes from the 3DSpace
+
+This division of labor means the browser does not need a powerful GPU or large amounts of RAM to view a complex assembly. The heavy lifting stays on the server, and the browser renders only what it has received so far — which is always exactly what is visible.
+
+## Up to 99% Faster Initial Load
+
+Conventional 3D visualization workflows require downloading an entire model file before anything can be rendered. For large assemblies, this means waiting minutes (or longer) before seeing anything on screen.
+
+instant3Dhub's streaming approach inverts this: the first visible fragments arrive in the browser within seconds of opening a scene, regardless of total assembly size. The platform streams the top-level structure and the highest-priority visible geometry first, then progressively refines detail as more fragments arrive.
+
+The result is an initial load time that can be up to **99% faster** than download-and-render approaches — a difference that is especially pronounced for assemblies with tens of thousands of components.
+
+<Note>
+  The 99% figure reflects the time to first meaningful render (the moment when assembly structure and primary geometry are visible in the viewport), compared to a conventional workflow where rendering cannot begin until the full file is downloaded and parsed.
+</Note>
+
+## Spatial Caching: Google Maps for 3D
+
+Spatial caching is the mechanism that makes streaming fast not just for the first user, but for every user after that.
+
+When instant3Dhub processes a 3D resource for the first time, it partitions the geometry into **spatial fragments** — bounding-volume-aligned chunks of geometry at multiple levels of detail. Each fragment is assigned a stable, content-addressed cache key and stored server-side.
+
+The next time any user views that resource (or any overlapping region of it), instant3Dhub serves the cached fragments directly without re-reading or reprocessing the source file. This means:
+
+- **Cold load (first user):** The server reads the source, generates fragments, caches them, and begins streaming. This takes the longest.
+- **Warm load (subsequent users):** The server serves fragments from cache immediately. Load times drop dramatically.
+- **Partial navigation:** If a user pans to a region that was already viewed in a previous session, those fragments are already cached and stream instantly.
+
+Think of it as the same principle that makes Google Maps fast: tiles are pre-rendered at each zoom level and cached globally, so the map never has to redraw the same region from scratch. instant3Dhub applies the same idea to 3D geometry, but with on-demand fragment generation rather than a pre-bake step.
+
+### Cache Invalidation
+
+When a component is updated in your PLM or PDM system, only the spatial fragments that contain geometry from that component are invalidated. Unchanged parts of the assembly retain their cached fragments. This means large assemblies with incremental design changes reload almost as fast as a fully cached scene.
+
+## B-Rep vs. Tessellated Geometry
+
+instant3Dhub handles both major representations of 3D geometry that appear in engineering workflows:
+
+<Accordion title="B-Rep (Boundary Representation)">
+  B-Rep geometry defines surfaces mathematically as parametric curves and surfaces (NURBS, splines). It is the native format of most mechanical CAD systems — CATIA V5 and STEP files, for example, typically contain B-Rep data.
+
+  instant3Dhub processes B-Rep geometry **server-side**: it tessellates the surfaces into triangle meshes at the level of detail appropriate for the current viewport and zoom level, then streams the resulting mesh fragments to the browser. This means the browser never has to interpret raw B-Rep data — it only receives efficient, render-ready geometry.
+
+  B-Rep processing is computationally expensive, which is why server-side execution and spatial caching are especially valuable for this geometry type.
+</Accordion>
+
+<Accordion title="Tessellated Geometry">
+  Tessellated formats (like GLTF-Binary and VRML) already represent surfaces as triangle meshes. instant3Dhub can ingest these directly, apply spatial partitioning, and stream the resulting fragments without an additional tessellation step.
+
+  Tessellated geometry streams faster on first load because the conversion step is skipped, but it lacks the mathematical precision of B-Rep and cannot be re-tessellated at higher quality on demand.
+</Accordion>
+
+## Supported Formats
+
+instant3Dhub supports the following 3D formats natively. All processing — including format parsing, tessellation where needed, and spatial partitioning — happens server-side, so clients never need format-specific software.
+
+| Format | File Extensions | Notes |
+|---|---|---|
+| CATIA V5 | `.CATPart`, `.CATProduct` | Full B-Rep support including assembly hierarchies and metadata. Requires no CATIA license on the server. |
+| STEP | `.stp`, `.step` | Widely supported neutral exchange format. B-Rep geometry is tessellated server-side. |
+| IFC | `.ifc` | Industry Foundation Classes for building and construction (BIM). Well suited for architectural review workflows. |
+| GLTF-Binary | `.glb` | Web-optimized binary 3D format. Already tessellated; streams with minimal processing overhead. |
+| VRML | `.wrl` | Legacy 3D interchange format. Tessellated; supported for compatibility with older datasets. |
+
+<Note>
+  Format support is added at the server layer. When Threedy releases support for a new format, your deployment gains it through a server update — no client-side changes are required, and existing browser integrations continue to work without modification.
+</Note>
+
+## Handling Terabyte-Scale Assemblies
+
+Large assemblies present two distinct challenges for conventional visualization tools: they take too long to load, and they require too much memory to hold in a single process. instant3Dhub addresses both:
+
+**Load time** is solved by streaming. Because only visible fragments are transmitted, opening a terabyte-scale assembly takes no longer than opening a gigabyte-scale assembly when both are viewed at the top level. Load time scales with viewport complexity, not total dataset size.
+
+**Memory** is solved by spatial partitioning and LOD management. The server never loads the entire assembly into memory at once. It reads and processes only the fragments needed for the current set of active client viewports. Cached fragments that have not been requested recently are evicted from hot storage.
+
+**Concurrency** is solved by Hub Mesh. When many users view different subsets of a large assembly simultaneously, Hub Mesh distributes fragment requests across multiple instances, preventing any single node from becoming a bottleneck.
+
+<Tip>
+  For best streaming performance, use the latest stable release of Chrome, Edge, Firefox, or Safari. Modern browsers benefit from hardware-accelerated WebGL rendering and efficient ArrayBuffer handling, both of which directly improve the quality and frame rate of streamed geometry. No plugins or extensions are required.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture & Core Concepts" icon="layer-group" href="/v3.14/concepts/overview">
+    Learn how the InstanceGraph, 3DSpaces, and Data Gateway work together to deliver the streaming experience.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/v3.14/quickstart">
+    Experience 3D streaming firsthand by loading your first model in the browser.
+  </Card>
+  <Card title="Connect a PLM Data Source" icon="database" href="/v3.14/integration/data-gateway">
+    Stream directly from Siemens Teamcenter, PTC Windchill, or Azure Blob Store using the Data Gateway.
+  </Card>
+  <Card title="webvisAPI Reference" icon="book" href="/v3.14/api/webvis-api">
+    Control the streaming pipeline programmatically from your own JavaScript application.
+  </Card>
+</CardGroup>

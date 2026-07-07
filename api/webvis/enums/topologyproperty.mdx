@@ -1,0 +1,67 @@
+---
+title: "Enumeration TopologyProperty"
+sidebarTitle: "TopologyProperty"
+description: "The properties of a topological entity that can be set via theTopologyAPI."
+---
+
+The properties of a topological entity that can be set via the
+[TopologyAPI](/api/webvis/interfaces/topologyapi).
+
+#### See
+
+* [TopologyAPI](/api/webvis/interfaces/topologyapi)
+* [TopologyAPI.setTopologyProperty](/api/webvis/interfaces/topologyapi#settopologyproperty)
+
+## Enumeration Members
+
+### COLOR
+
+COLOR: "color"
+
+The color of the topological entity. The value is an
+array of four numbers in the range from 0 to 1,
+representing the red, green, blue, and alpha components
+of the color. If the color is set to undefined, it will
+be reset to the default color.
+
+#### Value Type
+
+[number, number, number, number] | undefined
+
+#### Default
+
+```ts
+undefined
+```
+
+### HIGHLIGHTED
+
+HIGHLIGHTED: "highlighted"
+
+The highlighted state of the topological entity.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### SELECTED
+
+SELECTED: "selected"
+
+The selected state of the topological entity.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```

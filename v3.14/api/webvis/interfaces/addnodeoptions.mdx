@@ -1,0 +1,106 @@
+---
+title: "Interface AddNodeOptions"
+sidebarTitle: "AddNodeOptions"
+description: "Options for adding a new node to the scene."
+---
+
+Options for adding a new node to the scene.
+
+#### See
+
+InstanceGraphAPI.add
+
+## Properties
+
+### `Optional`autoExpand
+
+autoExpand?: boolean
+
+The `autoExpand` flag can be used to automatically expand the added node to allow direct interaction with the underlying data.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[NodeRepresentation.EXPANDED\_ASSEMBLY](/v3.14/api/webvis/enums/noderepresentation#expanded_assembly)
+
+### `Optional`cacheStrategy
+
+cacheStrategy?: [CacheStrategy](/v3.14/api/webvis/enums/cachestrategy)
+
+Specifies the strategy which is used when a data cache is requested from the instant3Dhub.
+
+#### Default
+
+```ts
+CacheStrategy.REUSE
+```
+
+### `Optional`dataURI
+
+dataURI?: string
+
+Specifies the URI to the data resource.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`initialProperties
+
+initialProperties?: InitialNodeProperties
+
+Specifies initial properties of the added node.
+These become the default values for this node, i.e. InstanceGraphAPI.resetProperty and
+InstanceGraphAPI.resetProperties will reset to these values.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`label
+
+label?: string
+
+Specifies a custom label for the added node.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`mimeType
+
+mimeType?: string
+
+Specifies the mime type of the data resource.
+
+Per default the mime type is automatically detected and an override is only necessary in special cases.
+Valid mime types can be retrieved from the HubAPI.requestSupportedContentTypes method.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional`parentId
+
+parentId?: number
+
+Specifies the parent node ID of the added node.
+
+#### Default
+
+```ts
+0
+```

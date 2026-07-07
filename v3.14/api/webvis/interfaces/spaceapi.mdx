@@ -1,0 +1,196 @@
+---
+title: "Interface SpaceAPIExperimental"
+sidebarTitle: "SpaceAPI"
+description: "The Space API provides methods to interact with a 3D space."
+---
+
+## Space API
+
+The Space API provides methods to interact with a 3D space.
+
+### Overview
+
+The Space API allows you to open existing 3D spaces, create new ones, and obtain shareable handles for spaces.
+
+### Quick Start
+
+```ts
+// User A: Gets a shareable handle for the current space  
+const spaceHandle = await webvis.getContext().requestSpaceHandle();  
+  
+// User B: Opens an existing space using the handle of user A  
+await webvis.getContext().openSpace(spaceHandle); // You're now in the existing space  
+  
+// You can also create a new, empty space  
+await webvis.getContext().openSpace(); // You're now in a new, empty space
+```
+
+### General Concepts
+
+A 3D space is a spatial workspace that contains 3D data resources and context layered entities.
+Every member always exists within a space and can connect to other spaces. When two or more members connect to the same space, they share the same data and can collaborate in real time.
+
+To enable this, members can exchange space handles, which are shareable references that allow others to join a specific space.
+
+### Space Handles
+
+A space handle is a shareable reference to a 3D space that enables collaboration between users.
+One user requests a handle for their current space and shares it with others, who can then use it to join the same
+space.
+
+Every space handle contains the space ID associated with the space it was requested in. Additionally, a role key can be
+included by specifying a member role when requesting the handle. Users who open a space via a handle with a role key
+are automatically assigned the corresponding member role upon joining. If no role is specified when requesting a
+handle, users who open the space via the handle are assigned the [VIEWER](/v3.14/api/webvis/enums/memberrole#viewer) role by default.
+
+Use the [requestSpaceHandle](#requestspacehandle) method to obtain a handle for the current space.
+
+```ts
+// Get the webvis context  
+const context = await webvis.getContext();  
+  
+// Get a space handle for the current space with the default role (VIEWER)  
+const viewerHandle = await context.requestSpaceHandle();  
+  
+// Get a space handle for the current space with a certain role  
+const editorHandle = await context.requestSpaceHandle(MemberRole.EDITOR);
+```
+
+### Opening Spaces
+
+Use the [openSpace](#openspace) method to open a space by its handle or to create a new, empty space.
+
+```ts
+// Get the webvis context  
+const context = await webvis.getContext();  
+  
+// Open an existing space using a handle  
+await context.openSpace(viewerHandle); // You're now in the existing space as a viewer  
+  
+// Open a new, empty space  
+await context.openSpace(); // You're now in a new, empty space  
+  
+// Open a space with a specified space ID  
+await context.openSpace("my-namespace/my-name"); // You're now in the space with the ID "my-namespace/my-name"
+```
+
+### Cloning Spaces
+
+You can create a new 3D space by cloning the current space using the [cloneIntoNewSpace](#cloneintonewspace) method.
+This creates a new space with the same content as the current one, allowing you to make changes
+without affecting the original space.
+
+```ts
+// Clone the current space into a new space  
+await context.cloneIntoNewSpace(); // You're now in the cloned space  
+  
+// Clone the current space into a new space with the specified space ID  
+await context.cloneIntoNewSpace("my-namespace/my-clone"); // You're now in the cloned space with the ID "my-namespace/my-clone"
+```
+
+### Space ID Format
+
+Every space has a unique ID. This ID contains two parts: a namespace and a name, which are separated by a slash
+('/'). Both namespace and name adhere to the following rules:
+
+* *Allowed characters*: lowercase letters (a-z), digits (0-9), hyphens (-), and underscores (\_)
+* *Length*: 2-64 characters
+* *Start/end characters*: must be alphanumeric (i.e., no leading/trailing hyphens or underscores)
+
+When opening or cloning a space with a predefined ID, the provided ID must adhere to these format rules. Furthermore,
+the following side-effects can occur:
+
+* *Default namespace*: If the provided parameter doesn't contain a slash, it is treated as the name part of the ID.
+  In this case, the namespace defaults to "default", resulting in a space ID of `default/<NAME>`.
+* *Normalization*: Uppercase letters are silently converted to lowercase.
+* *Validation*: Whitespaces and all other illegal characters cause an error.
+
+### Events
+
+The Space API emits the following events:
+
+* [SpaceChangedEvent](/v3.14/api/webvis/classes/spacechangedevent)
+
+## Methods
+
+### cloneIntoNewSpace
+
+* cloneIntoNewSpace(spaceId?: string): Promise\<void>
+
+  `Experimental`
+
+  Opens a new space by cloning the current space.
+
+  #### Parameters
+
+  + `Optional`spaceId: string
+
+    An optional predefined ID for the new space. Must satisfy the format rules for space IDs and might
+    cause side-effects as described in the [Space ID Format section](#space-id-format). If a space with this ID already exists,
+    an error will be thrown. If not provided, the new space will be cloned without an ID assigned.
+    Call [requestSpaceHandle](#requestspacehandle) to get a handle for the new space, which contains a generated space ID.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the new space has been opened. If a space ID was provided and a space with
+  that ID already exists, the promise will be rejected with an error.
+
+### openSpace
+
+* openSpace(spaceHandle?: string | SpaceHandle): Promise\<void>
+
+  `Experimental`
+
+  Opens a 3D space, depending on the provided parameter:
+
+  + If a parameter is specified and a space with the referenced ID exists, switches to to that space.
+  + If a parameter is specified and no space with the referenced ID exists,
+    creates a new, empty space with that ID and switches to it.
+  + If no parameter is specified, creates a new, empty space and switches to it.
+    This space doesn't have an ID assigned (yet). Call [requestSpaceHandle](#requestspacehandle) to get a handle for this space,
+    which contains a generated space ID.
+
+  In any of the above cases, the current space will be left and the current content will be overwritten by the
+  content of the opened space.
+
+  #### Parameters
+
+  + `Optional`spaceHandle: string | SpaceHandle
+
+    The handle of the space to open. Following formats are supported:
+
+    - A string representing a space URL.
+    - A string representing a space ID of the space to open.
+      Must satisfy the format rules for space IDs and might cause side-effects as described in the
+      [Space ID Format section](#space-id-format).
+    - A space handle object obtained from a previous call to [requestSpaceHandle](#requestspacehandle).
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the space has been opened. If a space ID was provided that violates the
+  format rules for space IDs, the promise will be rejected with an error.
+
+  #### See
+
+  [requestSpaceHandle](#requestspacehandle) to get a space handle.
+
+### requestSpaceHandle
+
+* requestSpaceHandle(role?: [OWNER](/v3.14/api/webvis/enums/memberrole#owner) | [EDITOR](/v3.14/api/webvis/enums/memberrole#editor) | [VIEWER](/v3.14/api/webvis/enums/memberrole#viewer)): Promise\<SpaceHandle>
+
+  `Experimental`
+
+  Requests a shareable space handle for the current space.
+
+  Note that after calling this method, the current space will definitely have an ID assigned to it.
+
+  #### Parameters
+
+  + `Optional`role: [OWNER](/v3.14/api/webvis/enums/memberrole#owner) | [EDITOR](/v3.14/api/webvis/enums/memberrole#editor) | [VIEWER](/v3.14/api/webvis/enums/memberrole#viewer)
+
+    The role to assign when the space is [opened](#openspace) via the handle. If undefined, the
+    [MemberRole.VIEWER](/v3.14/api/webvis/enums/memberrole#viewer) role will be assigned when opening the space via the handle.
+
+  #### Returns Promise\<SpaceHandle>
+
+  A promise that resolves to the space handle.

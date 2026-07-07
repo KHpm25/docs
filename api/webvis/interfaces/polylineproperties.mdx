@@ -1,0 +1,99 @@
+---
+title: "Interface PolylineProperties"
+sidebarTitle: "PolylineProperties"
+description: "Specifies the color of the Polyline."
+---
+
+## Properties
+
+### `Optional`color
+
+color?: [number, number, number, number]
+
+Specifies the color of the Polyline.
+
+#### Default
+
+```ts
+[0,0,0,1]
+```
+
+### `Optional`enabled
+
+enabled?: boolean
+
+Specifies the enabled state of the Polyline.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`sequence
+
+sequence?: [number, number, number, number]
+
+Specifies a dash-gap sequence of the Polyline as [dash, gap, dash, gap], to allow line styles (dotted, dashed, etc.).
+If [useWorldUnits](#useworldunits) is set to true, the values are interpreted in world space (meters), otherwise in screen space (pixels).
+
+#### Default
+
+```ts
+[0,0,0,0]
+```
+
+### `Optional`transform
+
+transform?: [  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+    number,  
+]
+
+Specifies the transform matrix of the Polyline.
+
+#### Default
+
+```ts
+identity
+```
+
+### `Optional`useWorldUnits
+
+useWorldUnits?: boolean
+
+Specifies how the width and sequence values are interpreted.
+If set to true, the values are interpreted in world space (meters), otherwise in screen space (pixels).
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional`width
+
+width?: number
+
+Specifies the width of the Polyline.
+If [useWorldUnits](#useworldunits) is set to true, the value is interpreted in world space (meters), otherwise in screen space (pixels).
+
+#### Default
+
+```ts
+1
+```

@@ -1,0 +1,285 @@
+---
+title: "Interface ViewerHeatmapAPI"
+sidebarTitle: "ViewerHeatmapAPI"
+description: "TheViewerHeatmapAPIprovides functionality to visualize a heatmap based on a given set of points."
+---
+
+## ViewerHeatmapAPI
+
+### Overview
+
+The **ViewerHeatmapAPI** provides functionality to visualize a heatmap based on a given set of points.
+
+### Quick Start
+
+Example: Adding heatmap data and configuring the heatmap:
+
+```ts
+// get an instance of the ContextAPI and the matching ViewerAPI  
+const context = webvis.getContext();  
+const viewer = context.getViewer();  
+  
+// add the model  
+const model = context.add({ dataURI: MODEL, initialProperties: { enabled: true } });  
+  
+// add matching heatmap data  
+const heatmapPositions = [  
+  0, 1, 0, // first point  
+  0, 1, 1, // second point  
+  0, 0, 2, // third point  
+];  
+const heatmapDataId = viewer.createHeatmap({ position: heatmapPositions });  
+  
+// configure the heatmap  
+viewer.changeGlobalHeatmapConfig({  
+  // set a color scheme  
+  colorScheme: "Blackbody",  
+  // calculated density is normalized, upper end of color scheme is mapped to maxValue  
+  maxValue: 100,  
+}
+```
+
+### Events
+
+The following events are associated with the ViewerHeatmapAPI:
+
+* [ViewerHeatmapCreatedEvent](/v3.14/api/webvis/classes/viewerheatmapcreatedevent)
+* [ViewerHeatmapChangedEvent](/v3.14/api/webvis/classes/viewerheatmapchangedevent)
+* [ViewerHeatmapRemovedEvent](/v3.14/api/webvis/classes/viewerheatmapremovedevent)
+* [ViewerHeatmapConfigChangedEvent](/v3.14/api/webvis/classes/viewerheatmapconfigchangedevent)
+
+## Methods
+
+### changeGlobalHeatmapConfig
+
+* changeGlobalHeatmapConfig(config: HeatmapConfig): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Configures global heatmap settings and triggers a [ViewerHeatmapConfigChangedEvent](/v3.14/api/webvis/classes/viewerheatmapconfigchangedevent).
+
+  #### Parameters
+
+  + config: HeatmapConfig
+
+    Settings to configure.
+
+  #### Returns void
+
+  #### Example: Configuring the heatmap:
+
+  ```ts
+  viewer.changeGlobalHeatmapConfig({  
+    // set a color scheme  
+    colorScheme: webvis.HeatmapColorScheme.BLACKBODY,  
+    // calculated density is normalized, upper end of color scheme is mapped to maxValue  
+    maxValue: 100,  
+    // configure heatmap to be had 5 separated bands of colors (smooth gradient by default)  
+    colorBands: true,  
+    colorResolution: 5,  
+    // kernel defines the falloff from a point's center to its edge  
+    // this defaults to a gaussian curve, but other options are available  
+    kernel: webvis.HeatmapKernal.LINEAR,  
+    // scale all points' size uniformly for more/less overlap  
+    sizeFactor: 2,  
+    // scale all point's strength uniformly  
+    // this has the same effect as adjusting maxValue by the inverse factor  
+    strengthFactor: 1.5,  
+  });
+  ```
+
+### changeHeatmap
+
+* changeHeatmap(id: number, properties: HeatmapProperties): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of the heatmap with the specified ID and triggers a [ViewerHeatmapCreatedEvent](/v3.14/api/webvis/classes/viewerheatmapcreatedevent).
+
+  #### Parameters
+
+  + id: number
+
+    ID of dataset to update. Obtained using [createHeatmap](#createheatmap).
+  + properties: HeatmapProperties
+
+    The properties of the Heatmap you want change.
+
+  #### Returns void
+
+  #### Example: Adding points to an existing heatmap dataset:
+
+  ```ts
+  // [continued createHeatmapData example]  
+    
+  // add points  
+  heatmapPositions.push(  
+    1, 3, 0, // fourth point  
+    3, 0, 1, // fifth point  
+  )  
+    
+  // update data by passing id and data to override  
+  viewer.changeHeatmap(heatmapDataId, { position: heatmapPositions });
+  ```
+
+### createHeatmap
+
+* createHeatmap(properties: HeatmapProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new heatmap and triggers a [ViewerHeatmapCreatedEvent](/v3.14/api/webvis/classes/viewerheatmapcreatedevent).
+
+  #### Parameters
+
+  + properties: HeatmapProperties
+
+    Initial properties of the created Heatmap.
+
+  #### Returns number
+
+  ID of dataset or -1 if an error occurred.
+
+  #### Example: Adding heatmap data:
+
+  ```ts
+  // positions are stored in a flat array  
+  const heatmapPositions = [  
+    0, 1, 0, // first point  
+    0, 1, 1, // second point  
+    0, 0, 2, // third point  
+  ];  
+  const heatmapDataId = viewer.createHeatmap({ position: heatmapPositions });
+  ```
+
+  #### Example: Adding heatmap data with varying size/strength:
+
+  By specifying per-point size and/or strength, you can tweak ther influence on the heatmap. This example defines two points:
+
+  + Small radius and high strength. Represents a precisely located but highly important issue.
+  + High radius and low strength. Represents a low-priority issue affecting a larger area.
+
+  Note: The number of points defined by position, size and strength must match. Since position contains the coordinates, its length must be three times that of size and strength.
+
+  ```ts
+  const position = [  
+    0, 0, 0, // first point  
+    1, 0, 0, // second point  
+  ];  
+  const size = [  
+    0.2, // first point has small radius  
+    3, // second point has large radius  
+  ];  
+  const strength = [  
+    2, // first point has a high impact  
+    0.5, // second point has a low impact  
+  ];  
+  const heatmapDataId = viewer.createHeatmap({ position, size, strength });
+  ```
+
+### getGlobalHeatmapConfig
+
+* getGlobalHeatmapConfig(): HeatmapConfig
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Return the current global heatmap configuration.
+
+  #### Returns HeatmapConfig
+
+  Current global heatmap configuration.
+
+### getHeatmapColorSchemeLegend
+
+* getHeatmapColorSchemeLegend(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns data which can be used to create a legend.
+  The data has 4 color channels (RGBA) each in a range between 0 and 255 packed into an Array.
+
+  #### Returns number[]
+
+  Color scheme legend data.
+
+  #### Example: Creating a legend:
+
+  Note: Canvas can be resized using CSS width/height settings to achieve desired display size.
+
+  ```ts
+  const legend = document.createElement("canvas");  
+  // fetch data  
+  const legendData = viewer.getHeatmapColorSchemeLegend();  
+  // width matches colorResolution set using changeGlobalHeatmapConfig  
+  const width = legendData.length / 4;  
+  // canvas requires ImageData as source  
+  const img = new ImageData(new Uint8ClampedArray(legendData), width, 1);  
+  // resize canvas render resolution  
+  legend.width = width;  
+  legend.height = 1;  
+  // get canvas 2d context and fill canvas with data  
+  const ctx = legend.getContext("2d");  
+  ctx.putImageData(img, 0, 0);
+  ```
+
+### getHeatmapData
+
+* getHeatmapData(id: number): HeatmapProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of a heatmap dataset.
+
+  #### Parameters
+
+  + id: number
+
+    ID of dataset to query. Obtained using [createHeatmap](#createheatmap).
+
+  #### Returns HeatmapProperties
+
+  Properties of the heatmap dataset.
+
+### getHeatmaps
+
+* getHeatmaps(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns a list of all heatmap datasets.
+
+  #### Returns number[]
+
+  Array of heatmap dataset IDs.
+
+### removeHeatmap
+
+* removeHeatmap(id: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the heatmap with the specified ID and triggers a [ViewerHeatmapRemovedEvent](/v3.14/api/webvis/classes/viewerheatmapremovedevent).
+
+  #### Parameters
+
+  + id: number
+
+    The ID of heatmap to remove. Obtained using [createHeatmap](#createheatmap).
+
+  #### Returns void

@@ -1,0 +1,666 @@
+---
+title: "Enumeration Property"
+sidebarTitle: "Property"
+description: "The properties a node can have. Node properties can be set and retrieved using theInstanceGraphAPI."
+---
+
+The properties a node can have. Node properties can be set and retrieved using the [InstanceGraphAPI](/api/webvis/interfaces/instancegraphapi).
+
+Using [InstanceGraphAPI.setProperty](/api/webvis/interfaces/instancegraphapi#setproperty) will trigger a EventType.NODE\_CHANGED event.
+
+## Enumeration Members
+
+### `Readonly`ACTIVATABLE
+
+ACTIVATABLE: "activatable"
+
+Specifies whether an AUX node can be enabled.
+
+If this is true, the AUX node can be shown by setting the [Property.ENABLED](#enabled).
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### ANIMATION
+
+ANIMATION: "animation"
+
+The Animation property is used to assign an animation to a node.
+
+#### Value Type
+
+\{ name: string \} & [AnimationOptions](/api/webvis/interfaces/animationoptions)
+
+#### Default
+
+```ts
+null
+```
+
+#### See
+
+[AnimationAPI](/api/webvis/interfaces/animationapi)
+
+### APPEARANCE\_URI
+
+APPEARANCE\_URI: "appearanceURI"
+
+The appearance URI of a node. This defines the node's visual appearance using a URN that encodes color and transparency.
+Appearance URNs always start with `urn:X-l3d:color:` followed by a format and a color specification. Supported formats include:
+
+* **Hexadecimal colors**: Specify a color using the `rgb` format, e.g., `urn:X-l3d:color:rgb:FF0000` for red (`#FF0000`).
+* **Hexadecimal with transparency**: Use the `rgba` format, e.g., `urn:X-l3d:color:rgba:FF000080` for 50% transparent red.
+* **Transparency only**: Use the `a` format to set only the opacity in hexadecimal format, e.g., `urn:X-l3d:color:a:80` for 50% opacity.
+* **Named colors**: Specify standard CSS color names, e.g., `urn:X-l3d:color:red`.
+
+For convenience, you can omit the `urn:X-l3d:color:` prefix and use the color or transparency code directly, such as
+`"FF0000"`, `"FF000080"`, or `"80"`.
+
+Set to null to reset the appearance.
+
+#### Value Type
+
+string | null
+
+#### Default
+
+```ts
+null
+```
+
+### ATTACHMENT
+
+ATTACHMENT: "attachment"
+
+The attachment property is used to attach data to a node. This property contains either the attachment ID or
+the attachment data itself.
+
+#### Value Type
+
+any
+
+#### Default
+
+```ts
+undefined
+```
+
+#### See
+
+[AttachmentAPI](/api/webvis/interfaces/attachmentapi)
+
+### `Readonly`AUX\_CONTENT
+
+AUX\_CONTENT: "auxContent"
+
+Contains additional information for AUX nodes.
+
+#### Value Type
+
+any
+
+#### Default
+
+```ts
+undefined
+```
+
+### AUX\_ENABLED
+
+AUX\_ENABLED: "auxEnabled"
+
+Specifies whether an AUX node is enabled.
+
+If set to true, all AUX nodes associated with the node become visible.
+
+#### Value Type
+
+EnabledState | boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Readonly`AUX\_NODES
+
+AUX\_NODES: "auxNodes"
+
+Contains the IDs of all related AUX nodes.
+
+There are two kinds of AUX nodes. PMIs (Product and Manufacturing Information) are used to display annotations
+and measurements, or to show additional information about a node. The second kind are model views, which can
+contain PMIs as well as camera views that place the camera and the model at a specific position.
+
+#### Value Type
+
+number[]
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Readonly`CHILDREN
+
+CHILDREN: "children"
+
+Contains the IDs of all child nodes.
+
+#### Value Type
+
+number[]
+
+#### Default
+
+```ts
+[]
+```
+
+### COMPARISON\_GROUP
+
+COMPARISON\_GROUP: "comparisonGroup"
+
+Contains the ComparisonGroup of a node.
+
+#### Value Type
+
+ComparisonGroup
+
+#### Default
+
+```ts
+ComparisonGroup.NONE
+```
+
+#### See
+
+* [ViewerAPI.enterColorCompareMode](/api/webvis/interfaces/viewerapi#entercolorcomparemode)
+* InteractionMode.COLOR\_COMPARISON
+
+### `Readonly`DEPTH
+
+DEPTH: "depth"
+
+Indicates the depth of a node within the hierarchy. Root nodes have a depth of 1,
+and each subsequent level of child nodes increases the depth by 1.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+0
+```
+
+### ENABLED
+
+ENABLED: "enabled"
+
+Specifies whether a node is enabled. Toggles the visibility of the according 3D geometry if a viewer is attached.
+
+#### Value Type
+
+EnabledState | boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[ViewerAPI](/api/webvis/interfaces/viewerapi)
+
+### `Experimental`GHOSTED
+
+GHOSTED: "ghosted"
+
+Property GHOSTED is experimental and may be changed in the next release.
+
+Specifies whether a node is ghosted. Ghosted nodes become transparent and can't be interacted with,
+which is useful for highlighting other nodes in the scene. This can be used to localize otherwise occluded
+nodes in your 3D data.
+
+This effect can be further customized by ViewerSettingStrings.GHOSTED\_SCENE\_OPACITY.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Readonly`GLOBAL\_TRANSFORM
+
+GLOBAL\_TRANSFORM: "globalTransform"
+
+Contains the global transformation matrix of a node. Global transformations are relative to the world coordinate system,
+which is always in meters. Hence, the translational component of the local and global transformation is set in meters.
+For top-level nodes, the global transformation is equal to the local transformation. For child nodes, the global transformation
+is calculated by multiplying the parent's global transformation with the child's local transformation.
+
+The global transformation will be updated when manipulating the [Property.LOCAL\_TRANSFORM](#local_transform) property.
+
+#### Value Type
+
+[
+number, number, number, number,
+number, number, number, number,
+number, number, number, number,
+number, number, number, number
+] | Float32Array
+
+#### Default
+
+```ts
+mat4.create()
+```
+
+### `Readonly`GLOBAL\_VOLUME
+
+GLOBAL\_VOLUME: "globalVolume"
+
+Contains the axis-aligned global box volume of a node in meters.
+
+Volumes are propagated throughout the node tree, meaning they will update when the [Property.LOCAL\_TRANSFORM](#local_transform)
+property of the node itself or related nodes (parents or children) is modified.
+
+#### Value Type
+
+[BoxVolume](/api/webvis/interfaces/boxvolume)
+
+#### Default
+
+```ts
+new BoxVolume()
+```
+
+### `Readonly`HAS\_AUX\_STRUCTURE
+
+HAS\_AUX\_STRUCTURE: "hasAuxStructure"
+
+Specifies whether a node has an AUX node structure attached.
+
+If this is true, the AUX nodes can be accessed by reading the [Property.AUX\_NODES](#aux_nodes).
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Readonly`HAS\_VARIANTS
+
+HAS\_VARIANTS: "hasVariants"
+
+Specifies whether a node has variants.
+
+The node's variants can be accessed using [VariantsAPI.requestVariants](/api/webvis/interfaces/variantsapi#requestvariants).
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[VariantsAPI](/api/webvis/interfaces/variantsapi)
+
+### HIDDEN
+
+HIDDEN: "hidden"
+
+Specifies whether a node is hidden. This property is used to fully hide nodes from the scene.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Readonly`INFO\_STATE
+
+INFO\_STATE: "infoState"
+
+#### Deprecated
+
+Property INFO\_STATE is deprecated and will be removed in the next release. Please use [STATE](#state) instead.
+
+### LABEL
+
+LABEL: "label"
+
+Contains the label of a node.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+""
+```
+
+### LOCAL\_TRANSFORM
+
+LOCAL\_TRANSFORM: "localTransform"
+
+Contains the local transformation matrix of a node. Notice that the world coordinate system is always in meters,
+hence the translational component of the local and global transformation is set in meters.
+
+Local transformations are defined in the 3D data but can be changed via this property. Currently, you can only
+transform root nodes of linked parts.
+
+Changing the local transform will update the [Property.GLOBAL\_TRANSFORM](#global_transform) and [Property.GLOBAL\_VOLUME](#global_volume) properties.
+
+#### Value Type
+
+[
+number, number, number, number,
+number, number, number, number,
+number, number, number, number,
+number, number, number, number
+] | Float32Array
+
+#### Default
+
+```ts
+mat4.create()
+```
+
+### `Readonly`LOCAL\_VOLUME
+
+LOCAL\_VOLUME: "localVolume"
+
+Contains the axis-aligned local box volume of a node in meters.
+
+The local volume will be updated when manipulating the [Property.LOCAL\_TRANSFORM](#local_transform) property.
+
+#### Value Type
+
+[BoxVolume](/api/webvis/interfaces/boxvolume)
+
+#### Default
+
+```ts
+new BoxVolume()
+```
+
+### `Readonly`MODEL\_VIEWS
+
+MODEL\_VIEWS: "modelViews"
+
+Contains the IDs of all model views that are attached to a node. Model views are a certain kind of AUX node that can contain
+PMIs as well as camera views that place the camera and the model at a specific position.
+
+Model views can be enabled by setting the [Property.AUX\_ENABLED](#aux_enabled) property of the model view ID to true.
+
+#### Value Type
+
+number[]
+
+#### Default
+
+```ts
+undefined
+```
+
+### NAMES
+
+NAMES: "names"
+
+Contains the names of a node.
+
+#### Value Type
+
+string[]
+
+#### Default
+
+```ts
+[]
+```
+
+### `Readonly`NODE\_REPRESENTATION
+
+NODE\_REPRESENTATION: "nodeRepresentation"
+
+Contains the NodeRepresentation of a node.
+
+#### Value Type
+
+NodeRepresentation
+
+#### Default
+
+```ts
+NodeRepresentation.ASSEMBLY
+```
+
+### `Experimental`OUTLINED
+
+OUTLINED: "outlined"
+
+Property OUTLINE is experimental and may be changed in the next release.
+
+Whether the node is outlined or not. If enabled, the outlined node's silhoutte is highlighted even if it is
+occluded by other geometry. This can be used to localize otherwise occluded nodes or small details in your
+3D data.
+
+This effect can be customized via ViewerSettingStrings.OUTLINE\_COLOR, ViewerSettingStrings.OUTLINE\_COLOR\_OCCLUDED,
+ViewerSettingStrings.OUTLINE\_INNER\_RADIUS and ViewerSettingStrings.OUTLINE\_OUTER\_RADIUS.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### `Readonly`PARENT
+
+PARENT: "parent"
+
+Contains the ID of the parent node.
+
+#### Value Type
+
+number
+
+#### Default
+
+```ts
+undefined
+```
+
+### PICKABLE
+
+PICKABLE: "pickable"
+
+Specifies whether a node is pickable. This disabled interactions on the node but still allows it to be visible.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+true
+```
+
+### REAL
+
+REAL: "real"
+
+The real property is used by the [RealityAPI](/api/webvis/interfaces/realityapi) to specify whether a node will be marked as tracking target for the Reality service.
+The expected value is an EnabledState. Note that true will be mapped to EnabledState.Enabled and false to EnabledState.Disabled.
+
+#### Value Type
+
+EnabledState | boolean
+
+#### Default
+
+```ts
+false
+```
+
+### REAL\_OCCLUDER
+
+REAL\_OCCLUDER: "realOccluder"
+
+When set to true, the node will be used as an occluder in the hypothesis generation process.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+### RENDER\_MODE
+
+RENDER\_MODE: "renderMode"
+
+Contains the RenderMode of a node. If set to anything other than RenderMode.Unset, this property overrides
+the ViewerSettingStrings.RENDER\_MODE setting of the viewer but gets overridden by the [ViewerAPI.forceRenderMode](/api/webvis/interfaces/viewerapi#forcerendermode) method.
+
+#### Value Type
+
+RenderMode
+
+#### Default
+
+```ts
+RenderMode.Unset
+```
+
+### `Readonly`RESOURCE\_STATE
+
+RESOURCE\_STATE: "resourceState"
+
+#### Deprecated
+
+Property RESOURCE\_STATE is deprecated and will be removed in the next release. Please use [STATE](#state) instead.
+
+### `Readonly`SELECTED
+
+SELECTED: "selected"
+
+Specifies whether a node is selected.
+
+#### Value Type
+
+boolean
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+[SelectionAPI](/api/webvis/interfaces/selectionapi)
+
+### `Readonly`STATE
+
+STATE: "state"
+
+Contains the NodeState of a node.
+
+#### Value Type
+
+NodeState
+
+#### Default
+
+```ts
+NodeState.CREATED
+```
+
+### `Readonly`SUBTYPE
+
+SUBTYPE: "subType"
+
+A subtype can be set for custom nodes next to the NodeType. It can be used to further
+specify the type of a customly created node.
+
+#### Value Type
+
+string
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Readonly`TYPE
+
+TYPE: "type"
+
+Contains the NodeType of a node.
+
+#### Value Type
+
+NodeType
+
+#### Default
+
+```ts
+nodeType.STRUCTURE
+```
+
+### USER\_DATA
+
+USER\_DATA: "userData"
+
+Can contain any type of serializable data that is attached to a node.
+
+#### Value Type
+
+[Serializable](/api/webvis/types/serializable) | undefined
+
+#### Default
+
+```ts
+undefined
+```

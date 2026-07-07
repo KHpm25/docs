@@ -1,0 +1,65 @@
+---
+title: "Interface ICollection"
+sidebarTitle: "ICollection"
+description: "Removes all elements from a collection without deleting the collection itself."
+---
+
+## Methods
+
+### clear
+
+* clear(): void
+
+  Removes all elements from a collection without deleting the collection itself.
+
+  #### Returns void
+
+### copy
+
+* copy(other: ICollection): void
+
+  Creates a copy of a given collection.
+
+  #### Parameters
+
+  + other: ICollection
+
+    A ICollection object.
+
+  #### Returns void
+
+### forNodes
+
+* forNodes(callback: (nodeID: number) => Promise\<any>): Promise\<any>
+
+  Applies a callback on all elements of a collection.
+
+  #### Parameters
+
+  + callback: (nodeID: number) => Promise\<any>
+
+    The callback function.
+
+  #### Returns Promise\<any>
+
+### forRootNodes
+
+* forRootNodes(callback: (nodeID: number) => Promise\<any>): Promise\<any>
+
+  Applies a callback on all root node elements of a collection.
+
+  #### Parameters
+
+  + callback: (nodeID: number) => Promise\<any>
+
+    The callback function.
+
+  #### Returns Promise\<any>
+
+### getNodeCount
+
+* getNodeCount(): number
+
+  #### Returns number
+
+  The number of elements inside a collection.

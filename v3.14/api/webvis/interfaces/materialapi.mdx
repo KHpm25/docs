@@ -1,0 +1,170 @@
+---
+title: "Interface MaterialAPI"
+sidebarTitle: "MaterialAPI"
+description: "TheMaterialAPIprovides a set of methods for creating and managing materials in a webvis context. It allows you to:"
+---
+
+## MaterialAPI
+
+### Overview
+
+The **MaterialAPI** provides a set of methods for creating and managing materials in a webvis context. It allows you to:
+
+* Create materials and assign them to specific nodes in a scene.
+* Edit and update existing materials.
+* Retrieve all materials at once.
+* Request detailed material data for a specific material.
+* Remove materials when they are no longer needed.
+
+### Quick Start
+
+The fastest way to get familiar with the MaterialAPI is by creating a material and assigning it to a node. The material can then be updated later and removed when it is no longer needed:
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a node to assign the material to and enable the resource to make it visible  
+const nodeId = context.add({dataURI: "urn:x-i3d:shape:box", initialProperties: {enabled: true}});  
+  
+// Create a material  
+const materialId = context.createMaterial({  
+     baseColor: [1, 0, 0],  
+     opacity: 1,  
+     roughness: 0.5,  
+     metallic: 0,  
+     name: "Red Material",  
+});  
+  
+// Create an appearance URI which can be used to assign the material to a node  
+const appearanceURI = `urn:X-l3d:material:${materialId}`;  
+  
+// Assign the material to the previously added node via the APPEARANCE_URI property  
+await context.setProperty(nodeId, webvis.Property.APPEARANCE_URI, appearanceURI);  
+  
+ // Change the base color and the name of the material  
+context.changeMaterial(materialId, {  
+     baseColor: [0, 1, 0],  
+     name: "Green Material"  
+ });  
+  
+// Unassign the material from the node  
+await context.setProperty(nodeId, webvis.Property.APPEARANCE_URI, null);  
+  
+// Remove the material if no longer required  
+context.removeMaterial(materialId);
+```
+
+### Events
+
+The following events are associated with the MaterialAPI:
+
+* [MaterialCreatedEvent](/v3.14/api/webvis/classes/materialcreatedevent)
+* [MaterialChangedEvent](/v3.14/api/webvis/classes/materialchangedevent)
+* [MaterialRemovedEvent](/v3.14/api/webvis/classes/materialremovedevent)
+
+## Methods
+
+### changeMaterial
+
+* changeMaterial(  
+      materialId: number,  
+      properties: MaterialProperties,  
+  ): MaterialProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of a material with the specified ID and triggers a [MaterialChangedEvent](/v3.14/api/webvis/classes/materialchangedevent).
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material you want to change.
+  + properties: MaterialProperties
+
+    The properties of the material you want change.
+
+  #### Returns MaterialProperties
+
+  An object with the changed properties.
+
+### createMaterial
+
+* createMaterial(properties?: MaterialProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new material and triggers a [MaterialCreatedEvent](/v3.14/api/webvis/classes/materialcreatedevent).
+
+  #### Parameters
+
+  + `Optional`properties: MaterialProperties
+
+    Initial properties of the created material.
+
+  #### Returns number
+
+  The ID of the newly created material.
+
+### getMaterialData
+
+* getMaterialData(materialId: number): MaterialProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of the material entity with the specified ID.
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material entity.
+
+  #### Returns MaterialProperties
+
+  The properties of the material entity.
+
+### getMaterials
+
+* getMaterials(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all material entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all available materials
+
+### removeMaterial
+
+* removeMaterial(materialId: number, safe?: boolean): [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the material from the scene and all related snapshots and triggers a [MaterialRemovedEvent](/v3.14/api/webvis/classes/materialremovedevent).
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the material is part of
+    one or more Snapshots. Default: false
+
+  #### Returns [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.

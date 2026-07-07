@@ -1,0 +1,236 @@
+---
+title: "Interface AnnotationAPI"
+sidebarTitle: "AnnotationAPI"
+description: "TheAnnotationAPIprovides a set of tools for creating and managing annotations via the webvis context. It allows you to:"
+---
+
+### Overview
+
+The **AnnotationAPI** provides a set of tools for creating and managing annotations via the webvis context. It allows you to:
+
+* Create annotations and attach them to specific nodes in a scene.
+* Edit and update existing annotations.
+* Retrieve all annotations at once.
+* Request detailed annotation data for a specific annotations.
+* Remove annotations when they are no longer needed.
+
+Examples of all operations are provided below.
+
+### Quick Start
+
+The fastest way to get familiar with the AnnotationAPI is by creating annotations via the webvis context. Once you have the context, you can call the annotation methods directly.
+
+Example: Create, update and remove an annotation using the AnnotationAPI and connect the annotation to a node.
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a node to attach the annotation to and enable the resource to make it visible  
+const nodeID = context.add({dataURI: "urn:x-i3d:shape:box", initialProperties: {enabled: true}});  
+  
+// Define custom annotation data using the AnnotationProperties type  
+const customAnnotationData = {  
+     anchorPosition: [0, 0, 0],  
+     connectedNodeId: 1,  
+     content: "New Annotation",  
+     contentOffset: [0, 0.5, 0],  
+     enabled: true,  
+     name: "Annotation 1",  
+     trustedSource: true  
+ };  
+  
+// Create an annotation using the custom annotation data  
+const annotationId = context.createAnnotation(customAnnotationData);  
+  
+// Fetch the data of the newly created annotation   
+const annotationData = await context.requestAnnotationData(annotationId);   
+console.log("Fetched annotation data:", annotationData);  
+  
+// Update the annotation with new content  
+context.changeAnnotation(annotationId, { content: "Updated Annotation" });   
+  
+// Fetch the data of the updated annotation   
+const updatedAnnotationData = await context.requestAnnotationData(annotationId);   
+console.log("Fetched updated annotation data:", updatedAnnotationData);  
+  
+// Remove the annotation if no longer required   
+context.removeAnnotation(annotationId);
+```
+
+### Events
+
+The following events are associated with the AnnotationAPI:
+
+* [AnnotationCreatedEvent](/api/webvis/classes/annotationcreatedevent)
+* [AnnotationChangedEvent](/api/webvis/classes/annotationchangedevent)
+* [AnnotationRemovedEvent](/api/webvis/classes/annotationremovedevent)
+
+## Methods
+
+### changeAnnotation
+
+* changeAnnotation(  
+      annotationId: number,  
+      properties: AnnotationProperties,  
+  ): AnnotationProperties
+
+  Changes one or more properties of an Annotation with the specified ID and triggers an [AnnotationChangedEvent](/api/webvis/classes/annotationchangedevent).
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation you want to change.
+  + properties: AnnotationProperties
+
+    The properties of the Annotation you want change.
+
+  #### Returns AnnotationProperties
+
+  An Object with the changed Properties.
+* changeAnnotation(  
+      annotationID: number,  
+      label?: string,  
+      visible?: boolean,  
+      anchorPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      labelPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      active?: boolean,  
+      transform?: number[] | Float32Array\<ArrayBufferLike>,  
+  ): void
+
+  #### Parameters
+
+  + annotationID: number
+
+    The ID of the Annotation.
+  + `Optional`label: string
+
+    The text of the Annotation.
+  + `Optional`visible: boolean
+
+    Indicates if the Annotation should be visible or hidden.
+  + `Optional`anchorPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    Anchor position in world space coordinates.
+  + `Optional`labelPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    The position of the label.
+  + `Optional`active: boolean
+
+    DEPRECATED
+  + `Optional`transform: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the Annotation.
+
+  #### Returns void
+
+  #### Deprecated
+
+  Changes an annotation. Should use a properties object AnnotationProperties as an argument rather than passing individual values.
+
+### createAnnotation
+
+* createAnnotation(properties?: AnnotationProperties): number
+
+  Creates a new Annotation and triggers an [AnnotationCreatedEvent](/api/webvis/classes/annotationcreatedevent).
+
+  #### Parameters
+
+  + `Optional`properties: AnnotationProperties
+
+    Initial properties of the created Annotation.
+
+  #### Returns number
+
+  The ID of the newly created Annotation.
+* createAnnotation(  
+      nodeID: number,  
+      label: string,  
+      visible?: boolean,  
+      anchorPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      labelOffset?: number[] | Float32Array\<ArrayBufferLike>,  
+  ): number
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node that the Annotation belongs to.
+  + label: string
+
+    The text of the Annotation.
+  + `Optional`visible: boolean
+
+    Indicates if the Annotation should be visible or hidden.
+  + `Optional`anchorPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    Anchor position in world space coordinates.
+  + `Optional`labelOffset: number[] | Float32Array\<ArrayBufferLike>
+
+    The offset between anchorPosition and where the label should be displayed.
+
+  #### Returns number
+
+  The ID of the new annotation.
+
+  #### Deprecated
+
+  Creates a new annotation. Should use a properties object AnnotationProperties as an argument rather than passing individual values.
+
+### getAnnotationData
+
+* getAnnotationData(annotationId: number): AnnotationData
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation.
+
+  #### Returns AnnotationData
+
+  The content and properties of an annotation.
+
+  #### Deprecated
+
+### getAnnotations
+
+* getAnnotations(): number[]
+
+  #### Returns number[]
+
+  The IDs of all available Annotations.
+
+### removeAnnotation
+
+* removeAnnotation(annotationId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the Annotation from the scene and all related Snapshots and triggers an [AnnotationRemovedEvent](/api/webvis/classes/annotationremovedevent).
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Annotation is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+### requestAnnotationData
+
+* requestAnnotationData(annotationId: number): Promise\<AnnotationProperties>
+
+  Returns the AnnotationData for the specified Annotation ID.
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation you want to request the data for.
+
+  #### Returns Promise\<AnnotationProperties>
+
+  The requested Annotation data.

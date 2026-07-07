@@ -1,0 +1,44 @@
+---
+title: "Enumeration EntityType"
+sidebarTitle: "EntityType"
+description: "The possible types of a topological entity. Analogous to enumTopologyType. Each topological entity also has a more specific subtype, as defined in theTopologySubTypeenum."
+---
+
+The possible types of a topological entity. Analogous to
+enum TopologyType. Each topological entity also
+has a more specific subtype, as defined in the
+TopologySubType enum.
+
+#### See
+
+* [TopologyHandle](/v3.14/api/webvis/interfaces/topologyhandle)
+* TopologySubType
+* [TopologyAPI](/v3.14/api/webvis/interfaces/topologyapi)
+
+## Enumeration Members
+
+### EDGE
+
+EDGE: 2
+
+An edge within a shape. This can be a line segment,
+circular arc, or other kind of edge.
+
+### FACE
+
+FACE: 1
+
+A face within a shape. This can be a planar or
+non-planar face.
+
+### POINT
+
+POINT: 3
+
+A point within a shape.
+
+### SHAPE
+
+SHAPE: 4
+
+A shape, which can contain faces, edges, and points.

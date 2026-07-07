@@ -1,0 +1,66 @@
+---
+title: "Interface ViewerMagnifierAPI"
+sidebarTitle: "ViewerMagnifierAPI"
+description: "TheViewerMagnifierAPIallows to magnify a specified region of the current view in aviewer."
+---
+
+## ViewerMagnifierAPI
+
+### Overview
+
+The `ViewerMagnifierAPI` allows to magnify a specified region of the current view in a viewer.
+
+### Quick Start
+
+```ts
+// Get an instance of the webvis context  
+const myContext = webvis.getContext();  
+  
+// Get default viewer  
+const viewer = myContext.getViewer();  
+  
+// Enable magnifier for viewer  
+viewer.changeMagnifier({enabled: true});   
+  
+// Change magnifier properties  
+viewer.changeMagnifier({roundness: 50, position: [1000,720], size: [500,300], zoomLevel: 2}) ;  
+  
+// Alternatively, enable magnifier and set all properties in one call  
+viewer.changeMagnifier({roundness: 50, enabled: true, position: [1000,720], size: [500,300], zoomLevel: 2});
+```
+
+### Events
+
+The following events are associated with the ViewerMagnifierAPI:
+
+* [ViewerMagnifierChangedEvent](/api/webvis/classes/viewermagnifierchangedevent)
+
+## Methods
+
+### changeMagnifier
+
+* changeMagnifier(  
+      properties: ViewerMagnifierProperties,  
+  ): ViewerMagnifierProperties
+
+  Changes the properties of the viewer magnifier.
+
+  #### Parameters
+
+  + properties: ViewerMagnifierProperties
+
+    Properties which should be changed.
+
+  #### Returns ViewerMagnifierProperties
+
+  The changed properties.
+
+### getMagnifierProperties
+
+* getMagnifierProperties(): ViewerMagnifierProperties
+
+  Returns the current properties of the magnifier.
+
+  #### Returns ViewerMagnifierProperties
+
+  The current properties of the magnifier.

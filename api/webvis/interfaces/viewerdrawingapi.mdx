@@ -1,0 +1,59 @@
+---
+title: "Interface ViewerDrawingAPI"
+sidebarTitle: "ViewerDrawingAPI"
+description: "TheViewerDrawingAPIprovides basic functionalities to control the 2D drawing mode and the processed output."
+---
+
+The **ViewerDrawingAPI** provides basic functionalities to control the 2D drawing mode and the
+processed output.
+
+See the ViewerDrawingProcessOptions for the various configuration options for creating a drawing.
+
+```ts
+const ctx = webvis.getContext();  
+const viewer = ctx.getViewer();  
+// Create a new 2D drawing by entering the drawing mode, interacting with the viewer and finally leaving the drawing mode:  
+viewer.enterDrawingMode(); // after that you can draw on top of your 3D model  
+viewer.leaveDrawingMode(); // leaves the 2D drawing mode by committing the drawings and returns the processed 2D drawing data  
+  
+// You can also cancel any started drawing:  
+viewer.enterDrawingMode();  
+viewer.cancelDrawingMode(); // leaves the 2D drawing mode and discards all uncomitted drawings
+```
+
+## Methods
+
+### cancelDrawingMode
+
+* cancelDrawingMode(): void
+
+  Leaves the 2D drawing mode and discards all uncomitted drawings.
+
+  #### Returns void
+
+### enterDrawingMode
+
+* enterDrawingMode(): void
+
+  Enters the 2D drawing mode where you can draw on top of your 3D model.
+
+  #### Returns void
+
+### leaveDrawingMode
+
+* leaveDrawingMode(  
+      options?: ViewerDrawingProcessOptions,  
+  ): Promise\<ViewerDrawingResult>
+
+  Leaves the 2D drawing mode and returns the processed 2D drawing data which can be used to create
+  a drawing with the help of the DrawingAPI.
+
+  #### Parameters
+
+  + `Optional`options: ViewerDrawingProcessOptions
+
+    Options to configure the result of the processing.
+
+  #### Returns Promise\<ViewerDrawingResult>
+
+  The processed 2D drawing data.

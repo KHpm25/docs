@@ -1,0 +1,34 @@
+---
+title: "Enumeration TransparencyMode"
+sidebarTitle: "TransparencyMode"
+description: "The possible Order Independent Trancparency Modes."
+---
+
+The possible Order Independent Trancparency Modes.
+
+## Enumeration Members
+
+### PERFORMANCE
+
+PERFORMANCE: 0
+
+High performance but low fidelity rendering of transparent objects (default setting).
+Implements weighted-blended order-independent transparency.
+Works well for any of the following scenarios:
+
+* Small number of transparent objects
+* Very high transparency (low opacity)
+* Little overdraw between transparent objects
+
+### QUALITY
+
+QUALITY: 1
+
+High fidelity but less performance rendering of transparent objects.
+Implements depth peeling along with weighted-blended order-independent transparency.
+Performance impact is less than 50% is half of the visible objects are transparent.
+Works well for any of the following scenarios:
+
+* Large number of transparent objects
+* Medium to low transparency (medium to high opacity)
+* High overdraw between transparent objects

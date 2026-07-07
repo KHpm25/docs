@@ -1,0 +1,106 @@
+---
+title: "Enumeration ServiceType"
+sidebarTitle: "ServiceType"
+description: "Represents the various services provided by the instant3dhub-backend. The ServiceType is used to identify which services are available from the backend."
+---
+
+Represents the various services provided by the instant3dhub-backend. The ServiceType is used to identify which services are available from the backend.
+
+The state of a service can be obtained by using the [HubAPI.requestServiceStates](/v3.14/api/webvis/interfaces/hubapi#requestservicestates) function, which returns a ServiceState for each service.
+
+#### See
+
+* [HubAPI.requestServiceStates](/v3.14/api/webvis/interfaces/hubapi#requestservicestates)
+* ServiceState
+
+## Enumeration Members
+
+### COLLABORATION
+
+COLLABORATION: "CollaborationService"
+
+### DELIVERY
+
+DELIVERY: "DeliveryService"
+
+The service for retrieving geometric-, structural- as well as meta-data.
+
+### GEOMETRY
+
+GEOMETRY: "GeometryService"
+
+The service for geometry operations.
+Provides interactive geometry capping functionality.
+
+#### See
+
+[ClipPlaneAPI.createCapping](/v3.14/api/webvis/interfaces/clipplaneapi#createcapping)
+
+### HUB\_2\_RESOURCE
+
+HUB\_2\_RESOURCE: "Hub2ResourceService"
+
+Indicates the Hub2Resource as a service.
+
+### HUB\_3\_RESOURCE
+
+HUB\_3\_RESOURCE: "Hub3ResourceService"
+
+Indicates the Hub3Resource as a service.
+
+### MEASUREMENT
+
+MEASUREMENT: "MeasurementService"
+
+The service for interactive measurements.
+
+#### See
+
+[MeasurementAPI](/v3.14/api/webvis/interfaces/measurementapi)
+
+### QUERY
+
+QUERY: "QueryService"
+
+The service for dynamic queries of non-geometric data.
+
+#### See
+
+[QueryAPI](/v3.14/api/webvis/interfaces/queryapi)
+
+### REALITY
+
+REALITY: "RealityService"
+
+The modeltracking functionality for the RealityAPI.
+
+#### See
+
+[RealityAPI](/v3.14/api/webvis/interfaces/realityapi)
+
+### SHARED\_SESSION
+
+SHARED\_SESSION: "SharedSessionService"
+
+The service for collaborating simultaneously with multiple users.
+
+### SPACE\_STORE
+
+SPACE\_STORE: "SpaceStoreService"
+
+The service for a persistent storage API for storing and retrieving 3D spaces.
+
+#### See
+
+[SessionStorageAPI.storeSession](/v3.14/api/webvis/interfaces/sessionstorageapi#storesession)
+
+### VIS
+
+VIS: "VisService"
+
+The service for an interactive visualization using RenderSetup.HYBRID
+
+#### See
+
+* [ViewerAPI](/v3.14/api/webvis/interfaces/viewerapi)
+* ViewerSettingStrings.RENDER\_SETUP

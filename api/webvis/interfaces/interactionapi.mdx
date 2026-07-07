@@ -1,0 +1,139 @@
+---
+title: "Interface InteractionAPI"
+sidebarTitle: "InteractionAPI"
+description: "TheInteractionAPIprovides functionalities to control the current interaction behavior by switching between different predefined interaction modesinteraction modes."
+---
+
+## InteractionAPI
+
+### Overview
+
+The **InteractionAPI** provides functionalities to control the current interaction behavior by
+switching between different predefined interaction modes [interaction modes](/api/webvis/enums/interactionmode).
+
+### Quick Start
+
+**Example**
+
+```ts
+// Get the webvis default context  
+const myContext = webvis.getContext();  
+  
+// Switch to another interaction mode  
+myContext.setInteractionMode(webvis.InteractionMode.MEASUREMENT_DOUBLE);  
+  
+// Get the current interaction mode  
+const activeInteractionMode = myContext.getInteractionMode();  
+  
+// Leave the double measurement mode and switch back to the default interaction behaviour.  
+myContext.resetInteractionMode();
+```
+
+### Events
+
+The InteractionAPI emits the following events:
+
+* [InteractionModeChangedEvent](/api/webvis/classes/interactionmodechangedevent)
+
+## Methods
+
+### getInteractionMode
+
+* getInteractionMode(): [InteractionMode](/api/webvis/enums/interactionmode)
+
+  Returns the current Interaction mode.
+
+  #### Returns [InteractionMode](/api/webvis/enums/interactionmode)
+
+  The current Interaction mode.
+
+### isColorComparisonActive
+
+* isColorComparisonActive(): boolean
+
+  Checks if the color comparison mode is active.
+
+  #### Returns boolean
+
+  true if the color comparison mode is active, otherwise false.
+
+### processInteractionInput
+
+* processInteractionInput(interactionData: InteractionData): void
+
+  Triggers an interaction on the current active interaction mode.
+
+  #### Parameters
+
+  + interactionData: InteractionData
+
+    Definition of the triggered Interaction.
+
+  #### Returns void
+
+### resetInteractionMode
+
+* resetInteractionMode(keepColorCompareActive?: boolean): void
+
+  Sets the current interaction mode back to the Default mode.
+
+  #### Parameters
+
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. (Default: false)
+
+  #### Returns void
+
+  #### See
+
+  [isColorComparisonActive](#iscolorcomparisonactive)
+
+### setInteractionMode
+
+* setInteractionMode(  
+      mode: string | string[],  
+      keepColorCompareActive?: boolean,  
+  ): void
+
+  Set the current interaction mode.
+
+  #### Parameters
+
+  + mode: string | string[]
+
+    Specifies the interaction mode you want set.
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. Default: false
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling setInteractionMode with the mode parameter of type string or string[] is deprecated, please use the InteractionMode enum instead.
+
+  #### See
+
+  [isColorComparisonActive](#iscolorcomparisonactive)
+* setInteractionMode(  
+      mode: [InteractionMode](/api/webvis/enums/interactionmode),  
+      keepColorCompareActive?: boolean,  
+  ): void
+
+  Set the current interaction mode.
+
+  #### Parameters
+
+  + mode: [InteractionMode](/api/webvis/enums/interactionmode)
+
+    Specifies the interaction mode you want set.
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. Default: false
+
+  #### Returns void
+
+  #### See
+
+  [isColorComparisonActive](#iscolorcomparisonactive)

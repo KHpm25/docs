@@ -1,0 +1,196 @@
+---
+title: "Context Initialization and Lifecycle in the webvisAPI"
+sidebarTitle: "Initialization"
+description: "Deep-dive into requestContext options, context lifecycle management, and connecting your application to an instant3Dhub instance securely."
+---
+
+A **context** is the central object in the webvisAPI. It represents a live connection to a single instant3Dhub instance and owns everything associated with that session: the rendered scene, loaded models, event subscriptions, and API surface. Before you can do anything with the webvisAPI — loading models, querying nodes, listening for events — you need a context.
+
+## Creating a Context
+
+Call `requestContext` with at minimum a `hubURL` to establish a connection:
+
+```javascript
+import { requestContext } from '@threedy/webvis';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com'
+});
+```
+
+`requestContext` is asynchronous. It connects to the hub, negotiates a session, and resolves with a fully initialised context object. The returned `context` exposes all API namespaces (`context.space`, `context.annotations`, `context.viewer`, `context.setProperty`, `context.addEventListener`, and so on).
+
+## requestContext Options
+
+<ParamField path="hubURL" type="string" required>
+  The base URL of your instant3Dhub instance. Must be reachable from the browser. Ensure your hub is configured to allow requests from your application's origin (see [Troubleshooting — CORS errors](/v3.14/developers/troubleshooting)).
+
+  ```javascript
+  hubURL: 'https://your-hub.example.com'
+  ```
+</ParamField>
+
+<ParamField path="container" type="HTMLElement">
+  The DOM element to render the 3D viewer into. The element must already exist in the document and must have an explicit `width` and `height` set via CSS. If you omit `container`, the context is created in headless mode — useful for server-side or data-only use cases where you don't need a visual output.
+
+  ```javascript
+  container: document.getElementById('viewer')
+  ```
+</ParamField>
+
+<ParamField path="config" type="object">
+  An optional initial configuration object. Settings passed here are applied before the first frame renders. See the [Configuration](/v3.14/developers/configuration) page for the full schema.
+
+  ```javascript
+  config: {
+    viewer: { background: '#1a1a2e', enableNavCube: true },
+    streaming: { targetFPS: 30, quality: 'high' }
+  }
+  ```
+</ParamField>
+
+<ParamField path="token" type="string">
+  A bearer token for protected hub instances. Pass the token here rather than setting a custom `Authorization` header. The webvisAPI appends it to all requests it makes to the hub on your behalf. Tokens are not stored between sessions — re-supply the token on each `requestContext` call.
+
+  ```javascript
+  token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...'
+  ```
+</ParamField>
+
+## Context Lifecycle
+
+### Reusing an Existing Context
+
+Calling `requestContext` a second time with the same `hubURL` does **not** create a duplicate — it returns the existing context for that hub. If you need an explicit reference later without triggering creation, use `getContext`:
+
+```javascript
+import { requestContext, getContext, getContexts } from '@threedy/webvis';
+
+// First call — creates the context
+const context = await requestContext({ hubURL: 'https://your-hub.example.com' });
+const contextId = context.id;
+
+// Later, anywhere in your app — retrieves the same context without reconnecting
+const sameContext = getContext(contextId);
+
+// Enumerate every active context in the current page
+const allContexts = getContexts();
+console.log(`${allContexts.length} active context(s)`);
+```
+
+### Destroying a Context
+
+When a context is no longer needed — for example, when a component unmounts or the user navigates away — call `removeContext` to tear down the WebGL renderer, close the hub session, and release all associated memory:
+
+```javascript
+import { removeContext } from '@threedy/webvis';
+
+removeContext(contextId);
+```
+
+<Warning>
+  Always call `removeContext` when you're done with a context. Failing to do so leaks the WebGL context, keeps the hub session alive, and causes memory to grow unboundedly in long-lived single-page applications.
+</Warning>
+
+### Multiple Contexts on the Same Page
+
+You can create multiple contexts simultaneously — for example, to display two different hub instances side by side in a split-panel layout. Each context is independent and renders into its own container:
+
+```javascript
+import { requestContext } from '@threedy/webvis';
+
+const [contextA, contextB] = await Promise.all([
+  requestContext({
+    hubURL: 'https://hub-a.example.com',
+    container: document.getElementById('viewer-a')
+  }),
+  requestContext({
+    hubURL: 'https://hub-b.example.com',
+    container: document.getElementById('viewer-b')
+  })
+]);
+```
+
+<Note>
+  Each context has its own WebGL context. Most devices support up to 8–16 simultaneous WebGL contexts. Exceeding that limit causes older contexts to be lost. Aim for the minimum number of contexts your UI actually needs.
+</Note>
+
+## Connecting the Viewer to the DOM
+
+The viewer renders into whatever element you pass as `container`. The element must satisfy two requirements before you call `requestContext`:
+
+1. **Present in the DOM** — the element must be attached to the document, not just created in memory.
+2. **Have explicit dimensions** — set `width` and `height` via CSS or inline styles. The renderer reads those dimensions to create the WebGL canvas at the correct resolution.
+
+```html
+<div id="viewer" style="width: 100%; height: 600px;"></div>
+```
+
+```javascript
+// Wait for DOMContentLoaded if your script runs in the <head>
+document.addEventListener('DOMContentLoaded', async () => {
+  const context = await requestContext({
+    hubURL: 'https://your-hub.example.com',
+    container: document.getElementById('viewer')
+  });
+});
+```
+
+<Tip>
+  If you resize the container after initialisation (for example, in a resizable panel), the renderer detects dimension changes automatically on the next render cycle. Ensure the container's CSS dimensions are updated so the viewer canvas adjusts correctly.
+</Tip>
+
+## React Integration
+
+The example below shows the recommended pattern for React applications. The context is created after the component mounts (so the container ref is populated), and destroyed when the component unmounts.
+
+```tsx
+import { useEffect, useRef } from 'react';
+import { requestContext, removeContext } from '@threedy/webvis';
+
+export function Viewer3D({ hubURL, modelURL }) {
+  const containerRef = useRef(null);
+  const contextRef = useRef(null);
+
+  useEffect(() => {
+    let ctxId;
+
+    requestContext({ hubURL, container: containerRef.current })
+      .then(async (context) => {
+        ctxId = context.id;
+        contextRef.current = context;
+        await context.add(modelURL);
+      });
+
+    return () => {
+      if (ctxId) removeContext(ctxId);
+    };
+  }, [hubURL, modelURL]);
+
+  return <div ref={containerRef} style={{ width: '100%', height: '600px' }} />;
+}
+```
+
+<Note>
+  The `useEffect` dependency array includes `hubURL` and `modelURL`. If either prop changes, the effect re-runs: the old context is destroyed and a new one is created. This keeps the viewer in sync with your component's props without manual teardown logic.
+</Note>
+
+## Working with Authentication
+
+For hub instances that require authentication, pass a `token` to `requestContext`. Obtain the token from your identity provider — typically via an OAuth 2.0 client credentials or authorization code flow — before initialising the context:
+
+```javascript
+async function initWithAuth(getAccessToken) {
+  const token = await getAccessToken(); // your auth logic
+
+  const context = await requestContext({
+    hubURL: 'https://your-hub.example.com',
+    container: document.getElementById('viewer'),
+    token
+  });
+
+  return context;
+}
+```
+
+If the token expires during a session, destroy the context, obtain a fresh token, and call `requestContext` again. The webvisAPI does not refresh tokens automatically.

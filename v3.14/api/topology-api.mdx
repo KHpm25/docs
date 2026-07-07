@@ -1,0 +1,222 @@
+---
+title: "TopologyAPI: Access B-Rep Geometry Data on 3D Nodes"
+sidebarTitle: "Topology API"
+description: "Reference for the instant3Dhub TopologyAPI — query vertices, edges, faces, and solid shapes from B-Rep geometry nodes programmatically."
+---
+
+The TopologyAPI gives you direct access to the precise geometric entities — points, edges, faces, and solid shapes — stored in Boundary Representation (B-Rep) data attached to scene nodes. Use it to build measurement workflows, drive downstream engineering calculations, or highlight specific geometric features interactively.
+
+## When Topology Data Is Available
+
+Topology queries only work on nodes that carry B-Rep geometry. B-Rep data is present when the original source file was a parametric CAD format (STEP, JT, CATIA, NX, Creo, Solidworks, and others) and was ingested with geometry processing enabled. Mesh-only formats (OBJ, glTF, STL) do not produce topology data.
+
+If you call a topology method on a node that has no B-Rep data, the returned array is empty or the promise resolves to `null`. Use `context.hub.getCapabilities()` to confirm that the `BREP_TOPOLOGY` capability is available on your hub before calling these methods.
+
+<Note>
+  Topology queries are not available on group or assembly nodes — only on leaf geometry nodes that directly own B-Rep solid data. Traverse the scene graph to find leaf nodes before calling topology methods.
+</Note>
+
+## Accessing the TopologyAPI
+
+The TopologyAPI is accessible as `context.topology` on any initialized `WebvisContext`:
+
+```typescript
+const context = await requestContext({ hubURL: 'https://your-hub.example.com' });
+// context.topology is available immediately
+```
+
+---
+
+## Methods
+
+### `context.topology.getPoints(nodeId)`
+
+Returns all discrete vertices (corner points) of the B-Rep solid attached to the given node.
+
+```typescript
+const points = await context.topology.getPoints(nodeId);
+points.forEach(p => {
+  console.log(`Vertex: (${p.x}, ${p.y}, ${p.z})`);
+});
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of a leaf geometry node with B-Rep data. Obtain this from `context.add()` or `context.query()`.
+</ParamField>
+
+**Returns:** `Promise<Point3D[]>`
+
+Each `Point3D` has the shape:
+```typescript
+interface Point3D {
+  x: number; // world-space X coordinate (in model units)
+  y: number;
+  z: number;
+}
+```
+
+---
+
+### `context.topology.getEdges(nodeId)`
+
+Returns all edges (curve segments bounding faces) of the B-Rep solid.
+
+```typescript
+const edges = await context.topology.getEdges(nodeId);
+console.log(`Part has ${edges.length} edges`);
+
+edges.forEach(edge => {
+  console.log('Edge ID:', edge.id, 'Length:', edge.length);
+});
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of a leaf B-Rep geometry node.
+</ParamField>
+
+**Returns:** `Promise<Edge[]>`
+
+Each `Edge` has the shape:
+```typescript
+interface Edge {
+  id: string;        // Stable identifier for this edge
+  startPoint: Point3D;
+  endPoint: Point3D;
+  length: number;    // Arc length in model units
+  isClosed: boolean; // True for circular/elliptical edges
+}
+```
+
+---
+
+### `context.topology.getFaces(nodeId)`
+
+Returns all faces (surface patches) of the B-Rep solid. Faces carry area, normal, and surface-type information.
+
+```typescript
+const faces = await context.topology.getFaces(nodeId);
+const totalArea = faces.reduce((sum, f) => sum + f.area, 0);
+console.log('Total surface area:', totalArea, 'mm²');
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of a leaf B-Rep geometry node.
+</ParamField>
+
+**Returns:** `Promise<Face[]>`
+
+Each `Face` has the shape:
+```typescript
+interface Face {
+  id: string;
+  area: number;           // Surface area in model units squared
+  normal: Point3D;        // Outward unit normal at face centroid
+  centroid: Point3D;      // Geometric center of the face
+  surfaceType: string;    // 'PLANE', 'CYLINDER', 'CONE', 'SPHERE', 'TORUS', 'NURBS'
+}
+```
+
+---
+
+### `context.topology.getShapes(nodeId)`
+
+Returns the top-level solid shapes (shells or bodies) composing the B-Rep entity. Most parts have a single shape, but multi-body designs may return several.
+
+```typescript
+const shapes = await context.topology.getShapes(nodeId);
+console.log(`Part contains ${shapes.length} solid body(ies)`);
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of a leaf B-Rep geometry node.
+</ParamField>
+
+**Returns:** `Promise<Shape[]>`
+
+Each `Shape` has the shape:
+```typescript
+interface Shape {
+  id: string;
+  volume: number;        // Volume in model units cubed
+  boundingBox: {
+    min: Point3D;
+    max: Point3D;
+  };
+  faceCount: number;
+  edgeCount: number;
+  vertexCount: number;
+}
+```
+
+---
+
+### `context.topology.getClosestPoint(nodeId, position)`
+
+Finds the point on the B-Rep solid's surface closest to the given world-space position. Use this for snapping, proximity detection, or seeding 3D annotations precisely on the surface.
+
+```typescript
+const cursorPosition = { x: 14.2, y: 3.8, z: 1.0 };
+const snapped = await context.topology.getClosestPoint(nodeId, cursorPosition);
+
+console.log(`Closest surface point: (${snapped.x}, ${snapped.y}, ${snapped.z})`);
+```
+
+<ParamField body="nodeId" type="number" required>
+  The node ID of the B-Rep geometry node to snap to.
+</ParamField>
+
+<ParamField body="position" type="Point3D" required>
+  The query position in world space. The API returns the nearest point on the solid's boundary to this input position.
+</ParamField>
+
+**Returns:** `Promise<Point3D>` — the nearest surface point, also in world space.
+
+---
+
+## Practical Example: Finding the Largest Face and Closest Point
+
+The following example selects the face with the greatest area on a part, logs its surface type, and then snaps a measurement start-point to the nearest location on that part's surface from the camera's look-at target.
+
+```typescript
+import { requestContext } from '@threedy/webvis';
+
+const context = await requestContext({
+  hubURL: 'https://your-hub.example.com',
+  container: document.getElementById('viewer'),
+});
+
+const rootId = await context.add('urn:my-org:part:bracket-001');
+
+// Wait for geometry to finish loading
+context.addEventListener('LOADING_FINISHED', async () => {
+
+  // 1. Retrieve all faces
+  const faces = await context.topology.getFaces(rootId);
+  if (faces.length === 0) {
+    console.warn('No B-Rep faces found — check that topology processing is enabled.');
+    return;
+  }
+
+  // 2. Find the largest face
+  const largest = faces.reduce((max, f) => f.area > max.area ? f : max, faces[0]);
+  console.log(`Largest face: ${largest.id}`);
+  console.log(`  Surface type : ${largest.surfaceType}`);
+  console.log(`  Area         : ${largest.area.toFixed(2)} mm²`);
+  console.log(`  Centroid     : (${largest.centroid.x.toFixed(2)}, ${largest.centroid.y.toFixed(2)}, ${largest.centroid.z.toFixed(2)})`);
+
+  // 3. Snap a query point to the nearest surface location
+  const queryPoint = { x: 50, y: 0, z: 0 };
+  const snapped = await context.topology.getClosestPoint(rootId, queryPoint);
+  console.log(`Snapped point: (${snapped.x.toFixed(3)}, ${snapped.y.toFixed(3)}, ${snapped.z.toFixed(3)})`);
+
+  // 4. Create a measurement from the snapped point to the largest face's centroid
+  await context.measurements.createMeasurement(snapped, largest.centroid);
+
+  // 5. Fit camera
+  await context.viewer.setCameraToFitAll();
+});
+```
+
+<Note>
+  All coordinate values returned by the TopologyAPI are in the node's **world space** after the node's transform has been applied. If you move the node with `context.setProperty(nodeId, 'TRANSFORM', matrix)`, re-query topology data to obtain updated world-space coordinates.
+</Note>

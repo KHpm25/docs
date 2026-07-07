@@ -1,0 +1,65 @@
+---
+title: "Interface XRPlaybackState"
+sidebarTitle: "XRPlaybackState"
+description: "The playback state of an XR sequence."
+---
+
+The playback state of an XR sequence.
+
+#### See
+
+* RealityAPI.getXRPlaybackState
+* [XRPlaybackStateChangedEvent](/v3.14/api/webvis/classes/xrplaybackstatechangedevent)
+
+## Properties
+
+### boomerang
+
+boomerang: boolean
+
+Whether the playback does "boomerang" (play forward and backward) or not
+
+#### See
+
+RealityAPI.setXRPlaybackBoomerang
+
+### bufferHeadFrame
+
+bufferHeadFrame: number
+
+The current frame up to which the playback has been buffered.
+If the replayed sequence is small enough (i.e. contains max. 64 frames),
+this value will be fixed to the last frame of the sequence.
+
+### currentFrame
+
+currentFrame: number
+
+The current frame at which the playback is currently
+
+#### See
+
+RealityAPI.seekXRPlayback
+
+### currentPlaybackSpeed
+
+currentPlaybackSpeed: number
+
+The fractional speed with which the sequence is played back currently
+
+Must be a value between 0 and 1
+
+#### See
+
+RealityAPI.setXRPlaybackSpeed
+
+### isPlaying
+
+isPlaying: boolean
+
+Whether the sequence is playing or not
+
+#### See
+
+* RealityAPI.startXRPlayback
+* RealityAPI.stopXRPlayback

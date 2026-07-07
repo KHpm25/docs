@@ -1,0 +1,86 @@
+---
+title: "Interface ViewerPolylineAPI"
+sidebarTitle: "ViewerPolylineAPI"
+description: "TheViewerPolylineAPIprovides basic functionalities to create and visualize Polylines."
+---
+
+The **ViewerPolylineAPI** provides basic functionalities to create and visualize Polylines.
+
+**Example**
+
+```ts
+// Get an instance of the ContextAPI & ViewerAPI  
+const theContext : ContextAPI = webvis.getContext(),  
+      theViewer  : ViewerAPI  = theContext.getViewer();  
+  
+// Create a list of 3D positions which defines the Polyline  
+const linePositions : number[] = [  
+ 0, 0, 0,  
+ 1, 0, 0,  
+ 2, 0, 0  
+];  
+  
+// Create a red Polyline with the given linePositions and a width of 6 pixels  
+const polylineId : number = theViewer.createPolyline( linePositions , {  
+    color: [1, 0, 0, 1],  
+    width: 6  
+});  
+  
+// Change the color of the Polyline to green  
+theViewer.changePolyline( polylineId, {  
+    color: [0, 1, 0, 1]  
+};  
+  
+// Removes the Polyline  
+theViewer.removePolyline(polylineId)
+```
+
+## Methods
+
+### changePolyline
+
+* changePolyline(polylineId: number, properties: PolylineProperties): void
+
+  Changes the properties of the Polyline with the specified Id.
+
+  #### Parameters
+
+  + polylineId: number
+
+    The Id of the Polyline which should be removed.
+  + properties: PolylineProperties
+
+    The properties which should be changed.
+
+  #### Returns void
+
+### createPolyline
+
+* createPolyline(positions: number[], properties?: PolylineProperties): number
+
+  Creates a new Polyline with the specified positions and properties.
+
+  #### Parameters
+
+  + positions: number[]
+
+    List of 3D positions which defines the Polyline.
+  + `Optional`properties: PolylineProperties
+
+    The properties of the Polyline.
+
+  #### Returns number
+
+### removePolyline
+
+* removePolyline(polylineId: number): void
+
+  Removes the Polyline with the specified Id.
+
+  #### Parameters
+
+  + polylineId: number
+
+    The Id of the Polyline which should be removed.
+
+  #### Returns void

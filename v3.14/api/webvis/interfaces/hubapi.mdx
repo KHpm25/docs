@@ -1,0 +1,81 @@
+---
+title: "Interface HubAPI"
+sidebarTitle: "HubAPI"
+description: "TheHubAPIprovides functionalities to get information from the instant3Dhub-backend. This includes:"
+---
+
+## webvis: The HubAPI
+
+### Overview
+
+The **HubAPI** provides functionalities to get information from the instant3Dhub-backend. This includes:
+
+* requesting basic hub information
+* requesting service states
+
+Every webvis instance requires a backend connection.
+The backend address is defined by [SettingStrings.HUB\_URL](/v3.14/api/webvis/enums/settingstrings#hub_url).
+Webvis will automatically connect to the backend in the background using the specified huburl.
+
+### Quick Start
+
+Example: Request the supported content types from the backend.
+
+```ts
+const context = webvis.getContext();  
+  
+const contentTyes = await context.requestSupportedContentTypes();
+```
+
+### Events
+
+The following events are associated with the HubAPI:
+
+* [ServiceConnectionLostEvent](/v3.14/api/webvis/classes/serviceconnectionlostevent): This event occurs when the connection to a service gets lost.
+* [ServiceErrorEvent](/v3.14/api/webvis/classes/serviceerrorevent): This event occurs when the service goes into an error.
+* [ServiceStateChangedEvent](/v3.14/api/webvis/classes/servicestatechangedevent): This event occurs when the state of a service changes.
+
+## Methods
+
+### requestHubVersion
+
+* requestHubVersion(): Promise\<string>
+
+  Request the current version of the connected instant3Dhub-backend. May return undefined for older versions.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains a string containing the version of the connected backend.
+
+### requestServiceStates
+
+* requestServiceStates(): Promise\<Map<[ServiceType](/v3.14/api/webvis/enums/servicetype), [ServiceState](/v3.14/api/webvis/enums/servicestate)>>
+
+  Requests all available services of the backend and their current state.
+
+  #### Returns Promise\<Map<[ServiceType](/v3.14/api/webvis/enums/servicetype), [ServiceState](/v3.14/api/webvis/enums/servicestate)>>
+
+  Returns a Promise which contains a map of all available services and their states.
+
+### requestSupportedContentTypes
+
+* requestSupportedContentTypes(): Promise\<ContentType[]>
+
+  Request a list of (model) data formats which are supported by the connected instance3Dhub-backend.
+  If requested before the connection to the Hub is established, it will return the local list of content types.
+
+  #### Returns Promise\<ContentType[]>
+
+  Returns a Promise which contains the list of all supported data formats.
+
+### requestSupportedRenderSetups
+
+* requestSupportedRenderSetups(): Promise<\{ name: string; value: string \}[]>
+
+  Request all supported render setups if one or more are available.
+  The render setup is a key value pair where the key is the name of the render setup and the value could be
+  used as an input value for the [ViewerSettingStrings.RENDER\_SETUP](/v3.14/api/webvis/enums/viewersettingstrings#render_setup) setting.
+
+  #### Returns Promise<\{ name: string; value: string \}[]>
+
+  Returns a Promise which contains the list of supported render setups.

@@ -1,0 +1,50 @@
+---
+title: "Interface ProgressState"
+sidebarTitle: "ProgressState"
+description: "Keeps track of the progress of the viewer. Contains information about the amount of open service requests, draw jobs and uploads to the GPU."
+---
+
+Keeps track of the progress of the viewer.
+Contains information about the amount of open service requests, draw jobs and uploads to the GPU.
+
+#### See
+
+[ProgressChangedEvent](/v3.14/api/webvis/classes/progresschangedevent)
+
+## Properties
+
+### downloadProgress
+
+downloadProgress: number
+
+The percentage of requests that are finished.
+
+### isProcessing
+
+isProcessing: boolean
+
+True when there are open requests, unfinished draw jobs or uploads to the GPU.
+
+### numberOfDownloads
+
+numberOfDownloads: number
+
+The amount of open and queued requests.
+
+### numberOfUpdateStates
+
+numberOfUpdateStates: number
+
+The number of resources that are known to the viewer but are not yet downloaded.
+
+### numberOfUploads
+
+numberOfUploads: number
+
+The amount of open GPU uploads.
+
+### renderingProgress
+
+renderingProgress: number
+
+The percentage of draw jobs that are finished.

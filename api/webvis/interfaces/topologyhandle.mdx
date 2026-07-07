@@ -1,0 +1,36 @@
+---
+title: "Interface TopologyHandle"
+sidebarTitle: "TopologyHandle"
+description: "A handle for a topological entity, which can be used with theTopologyAPI. The handle represents either a shape or an entity within a shape. To get a more detaileddescriptorof the t"
+---
+
+A handle for a topological entity, which can be used with the
+TopologyAPI. The handle represents either a shape or an
+entity within a shape. To get a more detailed
+[descriptor](/api/webvis/types/topologydescriptor) of the topological entity,
+the function TopologyAPI.requestTopologyDescriptor can
+be used. Besides performing actions such as selecting the
+topological entity, the handle can also be used together with
+the MeasurementAPI to perform different kinds of
+measurements.
+
+#### See
+
+* [TopologyDescriptor](/api/webvis/types/topologydescriptor)
+* TopologyAPI.requestTopologyDescriptor
+* TopologyAPI
+* MeasurementAPI
+
+## Properties
+
+### `Optional`entityID
+
+entityID?: number
+
+### entityType
+
+entityType: [EntityType](/api/webvis/enums/entitytype)
+
+### shapeInstanceID
+
+shapeInstanceID: number

@@ -1,0 +1,36 @@
+---
+title: "Interface ContextMenuData"
+sidebarTitle: "ContextMenuData"
+description: "Defines the properties of a requested context menu."
+---
+
+Defines the properties of a requested context menu.
+
+This type is only used internally by the [RequestContextMenuEvent](/v3.14/api/webvis/classes/requestcontextmenuevent) event to request a context menu from the UI.
+To modify the context menu, use the related functions provided by the webvisUI API.
+
+## Properties
+
+### `Optional`clickResult
+
+clickResult?: PointerInfo
+
+### `Optional`contents
+
+contents?: ContextMenuEntry[]
+
+### leftPos
+
+leftPos: number
+
+### `Optional`onCloseCallback
+
+onCloseCallback?: () => void
+
+### `Optional`targetID
+
+targetID?: number
+
+### topPos
+
+topPos: number

@@ -1,0 +1,46 @@
+---
+title: "Enumeration ViewerInteractionLevel"
+sidebarTitle: "ViewerInteractionLevel"
+description: "Specifies the interaction level of a viewer. The interaction level determines which entities can be interacted with and which interaction events are emitted."
+---
+
+Specifies the interaction level of a viewer.
+The interaction level determines which entities can be interacted with and
+which interaction events are emitted.
+
+#### See
+
+[ViewerInteractionAPI](/v3.14/api/webvis/interfaces/viewerinteractionapi)
+
+## Enumeration Members
+
+### NODE
+
+NODE: 0
+
+Specifies an interaction level based on nodes.
+
+Note, that if set, the [TopologyPointerEnterEvent](/v3.14/api/webvis/classes/topologypointerenterevent)
+and the [TopologyPointerOutEvent](/v3.14/api/webvis/classes/topologypointeroutevent) will **not** be emitted.
+
+#### See
+
+[InstanceGraphAPI](/v3.14/api/webvis/interfaces/instancegraphapi)
+
+### TOPOLOGY
+
+TOPOLOGY: 1
+
+Specifies an interaction level based on topological entities.
+
+Note that you can only interact with topological entities which
+are rendered in the viewer. To enable interaction with all
+topological entities, the ViewerSettingStrings.RENDER\_MODE
+must be set to RenderMode.FacesTopology.
+
+If set, the [TopologyPointerEnterEvent](/v3.14/api/webvis/classes/topologypointerenterevent) and the
+[TopologyPointerOutEvent](/v3.14/api/webvis/classes/topologypointeroutevent) will be emitted for all rendered topological entities.
+
+#### See
+
+[TopologyAPI](/v3.14/api/webvis/interfaces/topologyapi)

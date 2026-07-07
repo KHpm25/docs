@@ -1,0 +1,2495 @@
+---
+title: "Interface ViewerAPI"
+sidebarTitle: "ViewerAPI"
+description: "TheViewerAPIprovides methods to interact with the viewer."
+---
+
+## Visualizing 3D data with webvis: The ViewerAPI
+
+### Overview
+
+The **ViewerAPI** provides methods to interact with the viewer.
+
+### Quick Start
+
+A viewer is always part of a webvis context. Please note, that a context can contain one or more viewers.
+To create a viewer, you can use ContextAPI.createViewer.
+
+```ts
+const canvas1 = document.getElementById("canvas-element-1");  
+const canvas2 = document.getElementById("canvas-element-2");  
+const viewer1 = webvis.getContext().createViewer("viewer-id-1", canvas1);  
+const viewer2 = webvis.getContext().createViewer("viewer-id-2", canvas2);  
+  
+console.log(viewer1.getID()); // "viewer-id-1"  
+console.log(viewer2.getID()); // "viewer-id-2"
+```
+
+### The viewer's settings
+
+Each viewer of a context has its own settings. You can configure the viewer by passing the initial
+settings to the ContextAPI.createViewer method. A full list of available viewer settings
+can be found in the [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings).
+
+```ts
+const viewerSettings = {  
+  [ViewerSettingStrings.RENDER_MODE]: RenderMode.Topology,  
+  [ViewerSettingStrings.CAMERA_FIELD_OF_VIEW]: 60,  
+  // and other initial settings you would like to set ...  
+};  
+const viewer = webvis.getContext().createViewer("viewer-id", undefined, viewerSettings);
+```
+
+You can also change the settings of a viewer at runtime using [ViewerAPI.changeSetting](#changesetting) and read
+the current settings with [ViewerAPI.readSetting](#readsetting). Use [ViewerAPI.resetSetting](#resetsetting) to reset a
+setting to its default value.
+
+```ts
+viewer.changeSetting(ViewerSettingStrings.RENDER_MODE, RenderMode.Faces);  
+console.log(viewer.readSetting(ViewerSettingStrings.RENDER_MODE));  
+viewer.resetSetting(ViewerSettingStrings.RENDER_MODE);
+```
+
+#### Viewer settings vs. context settings
+
+You can also change settings on the context level via ContextAPI.changeSetting.
+The difference between viewer settings and context settings is that viewer settings are only applied to the specific
+viewer while context settings are applied to all viewers of the context. The same applies to resetting a setting
+via ContextAPI.resetSetting.
+
+This also means that if you read a setting via ContextAPI.readSetting, you will get the value of the context
+setting which might differ from the value of settings of a specific viewer.
+
+### Manipulating the camera view
+
+The viewer provides methods to manipulate the camera's view. The most important one is
+[ViewerAPI.setViewMatrix](#setviewmatrix) which allows you to set the view matrix directly.
+The view matrix transforms the geometry from world space into camera space.
+
+```ts
+const viewMatrix = [  
+ 0.1, 0.2, 0.3, 0,  
+ 0.4, 0.5, 0.6, 0,  
+ 0.7, 0.8, 0.9, 0,  
+ 0.5, 0.4, 0.6, 1  
+];  
+await viewer.setViewMatrix(viewMatrix);
+```
+
+If you prefer to animate the camera movement, you can use [ViewerAPI.animateViewToViewmatrix](#animateviewtoviewmatrix):
+
+```ts
+const viewMatrix = [  
+ // your view matrix  
+];  
+const transitionTime = 2000; // 2 seconds  
+await viewer.animateViewToViewmatrix(viewMatrix, transitionTime);
+```
+
+If you want to read out the current view matrix at a specific frame, you can use [ViewerAPI.getViewMatrix](#getviewmatrix)
+
+```ts
+const viewMatrix = viewer.getViewMatrix();
+```
+
+However, if you are interested in subscribing to view changes, you can listen to the [ViewChangedEvent](/api/webvis/classes/viewchangedevent):
+
+```ts
+webvis.getContext().registerListener(  
+ [EventType.VIEW_CHANGED],  
+ (event) => {  
+  console.log("The view has changed. Current view matrix:", event.matrix);  
+ }  
+);
+```
+
+### Receiving information about the 3D scene via the ViewerAPI
+
+The ViewerAPI provides methods to retrieve information about the 3D scene based on the current view.
+For instance, you can get the node IDs which are included or overlapped by a specific 2D screen space rectangle
+using [ViewerAPI.requestNodeIdsByRect](#requestnodeidsbyrect):
+
+```ts
+const x = 100;  
+const y = 100;  
+const width = 200;  
+const height = 200;  
+includeOverlappingNodes = true;  
+const nodeIDs = await viewer.requestNodeIdsByRect(x, y, width, height, includeOverlappingNodes);
+```
+
+Another example is to get all TopologyHandles which are included and overlapped by a specific 2D screen
+space rectangle using [ViewerAPI.requestTopologyHandlesByRect](#requesttopologyhandlesbyrect):
+
+```ts
+const x = 100;  
+const y = 100;  
+const width = 200;  
+const height = 200;  
+const topologyHandles = await viewer.requestTopologyHandlesByRect(x, y, width, height);
+```
+
+### Taking screenshots
+
+The ViewerAPI provides a method to take screenshots of the current view. You can use [ViewerAPI.requestScreenshot](#requestscreenshot)
+to request a screenshot of the current viewer at the current view:
+
+```ts
+const width = 800;  
+const height = 600;  
+const mimeType = "image/png";  
+const resetCanvasSize = true;  
+const screenshot = await viewer.requestScreenshot(width, height, mimeType, resetCanvasSize);
+```
+
+## Methods
+
+### addPointsToSet
+
+* addPointsToSet(id: number, pois: PointOfInterest[]): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Adds points to an existing POI set.
+
+  Triggers a [ViewerPOISetPointsAddedEvent](/api/webvis/classes/viewerpoisetpointsaddedevent) event if the points were added successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set
+  + pois: PointOfInterest[]
+
+    The list of PointOfInterests to add.
+
+  #### Returns number[]
+
+  The IDs of the newly added POIs.
+
+  Inherited from ViewerPointsOfInterestAPI.addPointsToSet
+
+### animateViewToViewmatrix
+
+* animateViewToViewmatrix(  
+      matrix:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Animates to the specified view matrix.
+  The optional `transitionTime` parameter allows for controlling animation speed.
+
+  #### Parameters
+
+  + matrix:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    The new view matrix for the camera
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 600.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### cancelDrawingMode
+
+* cancelDrawingMode(): void
+
+  Leaves the 2D drawing mode and discards all uncomitted drawings.
+
+  #### Returns void
+
+  Inherited from ViewerDrawingAPI.cancelDrawingMode
+
+### changeGlobalHeatmapConfig
+
+* changeGlobalHeatmapConfig(config: HeatmapConfig): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Configures global heatmap settings and triggers a [ViewerHeatmapConfigChangedEvent](/api/webvis/classes/viewerheatmapconfigchangedevent).
+
+  #### Parameters
+
+  + config: HeatmapConfig
+
+    Settings to configure.
+
+  #### Returns void
+
+  #### Example: Configuring the heatmap:
+
+  ```ts
+  viewer.changeGlobalHeatmapConfig({  
+    // set a color scheme  
+    colorScheme: webvis.HeatmapColorScheme.BLACKBODY,  
+    // calculated density is normalized, upper end of color scheme is mapped to maxValue  
+    maxValue: 100,  
+    // configure heatmap to be had 5 separated bands of colors (smooth gradient by default)  
+    colorBands: true,  
+    colorResolution: 5,  
+    // kernel defines the falloff from a point's center to its edge  
+    // this defaults to a gaussian curve, but other options are available  
+    kernel: webvis.HeatmapKernal.LINEAR,  
+    // scale all points' size uniformly for more/less overlap  
+    sizeFactor: 2,  
+    // scale all point's strength uniformly  
+    // this has the same effect as adjusting maxValue by the inverse factor  
+    strengthFactor: 1.5,  
+  });
+  ```
+
+  Inherited from ViewerHeatmapAPI.changeGlobalHeatmapConfig
+
+### changeHeatmap
+
+* changeHeatmap(id: number, properties: HeatmapProperties): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of the heatmap with the specified ID and triggers a [ViewerHeatmapCreatedEvent](/api/webvis/classes/viewerheatmapcreatedevent).
+
+  #### Parameters
+
+  + id: number
+
+    ID of dataset to update. Obtained using createHeatmap.
+  + properties: HeatmapProperties
+
+    The properties of the Heatmap you want change.
+
+  #### Returns void
+
+  #### Example: Adding points to an existing heatmap dataset:
+
+  ```ts
+  // [continued createHeatmapData example]  
+    
+  // add points  
+  heatmapPositions.push(  
+    1, 3, 0, // fourth point  
+    3, 0, 1, // fifth point  
+  )  
+    
+  // update data by passing id and data to override  
+  viewer.changeHeatmap(heatmapDataId, { position: heatmapPositions });
+  ```
+
+  Inherited from ViewerHeatmapAPI.changeHeatmap
+
+### changeMagnifier
+
+* changeMagnifier(  
+      properties: ViewerMagnifierProperties,  
+  ): ViewerMagnifierProperties
+
+  Changes the properties of the [viewer](#) magnifier.
+
+  #### Parameters
+
+  + properties: ViewerMagnifierProperties
+
+    Properties which should be changed.
+
+  #### Returns ViewerMagnifierProperties
+
+  The changed properties.
+
+  Inherited from ViewerMagnifierAPI.changeMagnifier
+
+### changePointCloud
+
+* changePointCloud(pointCloudId: number, properties: PointCloudProperties): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of the point cloud with the specified ID and triggers a [ViewerPointCloudChangedEvent](/api/webvis/classes/viewerpointcloudchangedevent).
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of the point cloud to update. Obtained using createPointCloud.
+  + properties: PointCloudProperties
+
+    The properties of the point cloud you want change.
+
+  #### Returns void
+
+  Inherited from ViewerPointCloudAPI.changePointCloud
+
+### changePointsInSet
+
+* changePointsInSet(  
+      poiSetId: number,  
+      poiIds: number[],  
+      pois: PointOfInterest[],  
+  ): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes points in an existing POI set.
+
+  Triggers a [ViewerPOISetPointsChangedEvent](/api/webvis/classes/viewerpoisetpointschangedevent) event if the points were changed successfully.
+
+  #### Parameters
+
+  + poiSetId: number
+
+    The ID of the POI set
+  + poiIds: number[]
+
+    The IDs of the POIs to change.
+  + pois: PointOfInterest[]
+
+    The new PointOfInterest data. The length of this array must match the length of the poiIds array.
+
+  #### Returns void
+
+  Inherited from ViewerPointsOfInterestAPI.changePointsInSet
+
+### changePOISet
+
+* changePOISet(id: number, properties: POISetProperties): POISetProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Sets the properties for the POI set.
+
+  Triggers a [ViewerPOISetChangedEvent](/api/webvis/classes/viewerpoisetchangedevent) event if the properties were changed.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to change.
+  + properties: POISetProperties
+
+    The new properties of the POI set.
+
+  #### Returns POISetProperties
+
+  Inherited from ViewerPointsOfInterestAPI.changePOISet
+
+### changePOIStyle
+
+* changePOIStyle(  
+      poiStyleId: number,  
+      properties: POIStyleProperties,  
+  ): POIStyleProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Sets the properties for the POI style.
+
+  Triggers a [ViewerPOIStyleChangedEvent](/api/webvis/classes/viewerpoistylechangedevent) event if the properties were changed.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to change.
+  + properties: POIStyleProperties
+
+    The new properties of the POI style.
+
+  #### Returns POIStyleProperties
+
+  Inherited from ViewerPointsOfInterestAPI.changePOIStyle
+
+### changePolyline
+
+* changePolyline(polylineId: number, properties: PolylineProperties): void
+
+  Changes the properties of the Polyline with the specified Id.
+
+  #### Parameters
+
+  + polylineId: number
+
+    The Id of the Polyline which should be removed.
+  + properties: PolylineProperties
+
+    The properties which should be changed.
+
+  #### Returns void
+
+  Inherited from ViewerPolylineAPI.changePolyline
+
+### changeSetting
+
+* changeSetting<[T](#changesettingt) extends string>(  
+      viewerSetting: [T](#changesettingt),  
+      value: ViewerSettingType<[T](#changesettingt)>,  
+  ): boolean
+
+  Changes the viewer setting with the given name to the given value.
+
+  Triggers a [ViewerSettingChangedEvent](/api/webvis/classes/viewersettingchangedevent) if the new value is different from the old value.
+
+  #### Type Parameters
+
+  + T extends string
+
+    The type of the setting to change.
+
+  #### Parameters
+
+  + viewerSetting: [T](#changesettingt)
+
+    Specifies the particular viewer setting which should be changed.
+  + value: ViewerSettingType<[T](#changesettingt)>
+
+    The new value for the setting.
+
+  #### Returns boolean
+
+  True if the setting was changed successfully, false otherwise.
+
+  #### See
+
+  [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) for a list of available viewer settings.
+
+### changeXREdgeCompare
+
+* changeXREdgeCompare(  
+      properties: XREdgeCompareProperties,  
+  ): XREdgeCompareProperties
+
+  `Experimental`
+
+  Sets the specified properties.
+
+  #### Parameters
+
+  + properties: XREdgeCompareProperties
+
+    An object with all or a subset of properties to update.
+
+  #### Returns XREdgeCompareProperties
+
+  An object with the changed properties.
+
+  Inherited from ViewerXREdgeCompareAPI.changeXREdgeCompare
+
+### clearBackground
+
+* clearBackground(): void
+
+  Clears the viewer's background.
+
+  #### Returns void
+
+  Inherited from ViewerBackgroundAPI.clearBackground
+
+### createCollectionFromGizmo
+
+* createCollectionFromGizmo(includeOverlappingNodes: boolean): Promise\<number>
+
+  #### Parameters
+
+  + includeOverlappingNodes: boolean
+
+  #### Returns Promise\<number>
+
+  Inherited from ViewerGizmoAPI.createCollectionFromGizmo
+
+### createGeometry
+
+* createGeometry(userGeoData: UserGeometryData): number
+
+  #### Parameters
+
+  + userGeoData: UserGeometryData
+
+  #### Returns number
+
+  Inherited from ViewerUserGeometryAPI.createGeometry
+
+### createHeatmap
+
+* createHeatmap(properties: HeatmapProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new heatmap and triggers a [ViewerHeatmapCreatedEvent](/api/webvis/classes/viewerheatmapcreatedevent).
+
+  #### Parameters
+
+  + properties: HeatmapProperties
+
+    Initial properties of the created Heatmap.
+
+  #### Returns number
+
+  ID of dataset or -1 if an error occurred.
+
+  #### Example: Adding heatmap data:
+
+  ```ts
+  // positions are stored in a flat array  
+  const heatmapPositions = [  
+    0, 1, 0, // first point  
+    0, 1, 1, // second point  
+    0, 0, 2, // third point  
+  ];  
+  const heatmapDataId = viewer.createHeatmap({ position: heatmapPositions });
+  ```
+
+  #### Example: Adding heatmap data with varying size/strength:
+
+  By specifying per-point size and/or strength, you can tweak ther influence on the heatmap. This example defines two points:
+
+  + Small radius and high strength. Represents a precisely located but highly important issue.
+  + High radius and low strength. Represents a low-priority issue affecting a larger area.
+
+  Note: The number of points defined by position, size and strength must match. Since position contains the coordinates, its length must be three times that of size and strength.
+
+  ```ts
+  const position = [  
+    0, 0, 0, // first point  
+    1, 0, 0, // second point  
+  ];  
+  const size = [  
+    0.2, // first point has small radius  
+    3, // second point has large radius  
+  ];  
+  const strength = [  
+    2, // first point has a high impact  
+    0.5, // second point has a low impact  
+  ];  
+  const heatmapDataId = viewer.createHeatmap({ position, size, strength });
+  ```
+
+  Inherited from ViewerHeatmapAPI.createHeatmap
+
+### createPointCloud
+
+* createPointCloud(  
+      points: CloudPoint[],  
+      properties?: PointCloudProperties,  
+  ): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new point cloud and triggers a [ViewerPointCloudCreatedEvent](/api/webvis/classes/viewerpointcloudcreatedevent).
+
+  #### Parameters
+
+  + points: CloudPoint[]
+
+    The list of points.
+  + `Optional`properties: PointCloudProperties
+
+    Initial properties of the created point cloud.
+
+  #### Returns number
+
+  The ID of the newly created point cloud.
+
+  Inherited from ViewerPointCloudAPI.createPointCloud
+
+### createPOISet
+
+* createPOISet(properties?: POISetProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new POI set.
+
+  Triggers a [ViewerPOISetCreatedEvent](/api/webvis/classes/viewerpoisetcreatedevent) event if the set was created successfully.
+
+  #### Parameters
+
+  + `Optional`properties: POISetProperties
+
+    Initial properties of the created POI set.
+
+  #### Returns number
+
+  The ID the newly created set.
+
+  Inherited from ViewerPointsOfInterestAPI.createPOISet
+
+### createPOIStyle
+
+* createPOIStyle(properties?: POIStyleProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new POI style.
+
+  Triggers a [ViewerPOIStyleCreatedEvent](/api/webvis/classes/viewerpoistylecreatedevent) event if the style was created successfully.
+
+  #### Parameters
+
+  + `Optional`properties: POIStyleProperties
+
+    Initial properties of the created POI style.
+
+  #### Returns number
+
+  The ID the newly created style.
+
+  Inherited from ViewerPointsOfInterestAPI.createPOIStyle
+
+### createPolyline
+
+* createPolyline(positions: number[], properties?: PolylineProperties): number
+
+  Creates a new Polyline with the specified positions and properties.
+
+  #### Parameters
+
+  + positions: number[]
+
+    List of 3D positions which defines the Polyline.
+  + `Optional`properties: PolylineProperties
+
+    The properties of the Polyline.
+
+  #### Returns number
+
+  Inherited from ViewerPolylineAPI.createPolyline
+
+### dehighlightEntity
+
+* dehighlightEntity(highlightHandle?: number): void
+
+  Disable highlighting for the handle
+
+  #### Parameters
+
+  + `Optional`highlightHandle: number
+
+    : number
+
+  #### Returns void
+
+  Inherited from ViewerHighlightAPI.dehighlightEntity
+
+### enableNavigation
+
+* enableNavigation(flag?: boolean): void
+
+  Sets the enabled state of the 3D navigation to on or off.
+  If called without any flag, the state will be toggled.
+
+  #### Parameters
+
+  + `Optional`flag: boolean
+
+    Specifies if the navigation should be enabled or disabled. Default: true.
+
+  #### Returns void
+
+  #### Deprecated
+
+  use [ViewerSettingStrings.NAVIGATION\_MODE](/api/webvis/enums/viewersettingstrings#navigation_mode) instead
+
+### enableSnapping
+
+* enableSnapping(useSnapping: boolean): void
+
+  Enables or disables snapping in the viewer.
+
+  #### Parameters
+
+  + useSnapping: boolean
+
+    Whether to enable or disable snapping.
+
+  #### Returns void
+
+  Inherited from ViewerInteractionAPI.enableSnapping
+
+### enterColorCompareMode
+
+* enterColorCompareMode(): void
+
+  Enters the color compare mode which renders nodes depending on their [Property.COMPARISON\_GROUP](/api/webvis/enums/property#comparison_group).
+
+  In the color compare mode, the viewer will render the pixels of nodes with the [Property.COMPARISON\_GROUP](/api/webvis/enums/property#comparison_group)
+  set to the value [ComparisonGroup.A](/api/webvis/enums/comparisongroup#a) in the color specified by the
+  [ViewerSettingStrings.COLOR\_COMPARISON\_FIRST\_COLOR](/api/webvis/enums/viewersettingstrings#color_comparison_first_color) setting. The pixels of nodes with the
+  [Property.COMPARISON\_GROUP](/api/webvis/enums/property#comparison_group) set to the value [ComparisonGroup.B](/api/webvis/enums/comparisongroup#b) will be rendered in the color
+  specified by the [ViewerSettingStrings.COLOR\_COMPARISON\_SECOND\_COLOR](/api/webvis/enums/viewersettingstrings#color_comparison_second_color) setting.
+  However, in this mode, the depth value at each pixel is compared between the two groups. If the depth values
+  overlap within a certain threshold, the pixel is rendered in the color specified by the
+  [ViewerSettingStrings.COLOR\_COMPARISON\_MATCHING\_COLOR](/api/webvis/enums/viewersettingstrings#color_comparison_matching_color) setting.
+
+  By this approach, the viewer can visualize the differences between two groups of nodes ("3-color-comparison").
+
+  #### Returns void
+
+  #### See
+
+  + [InteractionMode.COLOR\_COMPARISON](/api/webvis/enums/interactionmode#color_comparison)
+  + [leaveColorCompareMode](#leavecolorcomparemode) to leave the color compare mode.
+
+### enterDrawingMode
+
+* enterDrawingMode(): void
+
+  Enters the 2D drawing mode where you can draw on top of your 3D model.
+
+  #### Returns void
+
+  Inherited from ViewerDrawingAPI.enterDrawingMode
+
+### fitView
+
+* fitView(  
+      view?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      up?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that the whole geometry is fitting into the view. The optional `view` and `up`
+  parameters allow to define a viewing direction and roll for the resulting camera pose, while the optional
+  `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + `Optional`view: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Defines the desired viewing direction
+  + `Optional`up: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Defines the desired camera orientation in conjunction with the viewing direction
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### fitViewToAuxNode
+
+* fitViewToAuxNode(nodeID: number, transitionTime?: number): Promise\<void>
+
+  Positions the camera such that the aux node with the specified `nodeID` is fitting into the view.
+  The optional `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node on which the view will be fitted on
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+  #### See
+
+  [NodeType.AUX](/api/webvis/enums/nodetype#aux)
+
+### fitViewToDirection
+
+* fitViewToDirection(  
+      direction?: [ViewDirection](/api/webvis/enums/viewdirection),  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that it looks from a specific [ViewDirection](/api/webvis/enums/viewdirection).
+  The optional `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + `Optional`direction: [ViewDirection](/api/webvis/enums/viewdirection)
+
+    The direction to fit. Default: [ViewDirection.CURRENT](/api/webvis/enums/viewdirection#current).
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+  #### See
+
+  [ViewDirection](/api/webvis/enums/viewdirection)
+
+### fitViewToNode
+
+* fitViewToNode(  
+      nodeID: number,  
+      view?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      up?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that the bounding box of the node with the `nodeID` is fitting into the view.
+  The optional `view` and `up` parameter allow to define a viewing direction and roll for the resulting camera
+  pose, while the optional `transitionTime` parameter allows for controlling animation speed.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node on which the view will be fitted on
+  + `Optional`view: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    The direction in which the camera will look on the node
+  + `Optional`up: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    The orientation in which the camera will look on the node
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the cameramovement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### fitViewToRectangle
+
+* fitViewToRectangle(  
+      x: number,  
+      y: number,  
+      width: number,  
+      height: number,  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that the view is focused onto the given rectangle.
+  The optional `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + x: number
+
+    Specifies the X-coordinate of the 2D screen space rectangle in pixels.
+  + y: number
+
+    Specifies the Y-coordinate of the 2D screen space rectangle in pixels.
+  + width: number
+
+    Specifies the width of the 2D screen space rectangle in pixels.
+  + height: number
+
+    Specifies the height of the 2D screen space rectangle in pixels.
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 1000.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### fitViewToVolume
+
+* fitViewToVolume(  
+      volume: BoxVolume,  
+      view?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      up?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that the view is focused onto the given BoxVolume. The optional `view` and `up`
+  parameters allow to define a viewing direction and roll for the resulting camera pose, while the optional
+  `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + volume: BoxVolume
+
+    A particular volume on which the view will be fitted
+  + `Optional`view: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Specifies the direction in which the camera will look on the volume
+  + `Optional`up: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Specifies the orientation in which the camera will look on the volume
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+  #### See
+
+  BoxVolume
+
+### fitViewToVolumeFromDirection
+
+* fitViewToVolumeFromDirection(  
+      volume: BoxVolume,  
+      direction?: [ViewDirection](/api/webvis/enums/viewdirection),  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Positions the camera such that it looks from the specified [ViewDirection](/api/webvis/enums/viewdirection) onto the specified BoxVolume.
+  The optional `transitionTime` parameter allows for controlling animation speed.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent).
+
+  #### Parameters
+
+  + volume: BoxVolume
+
+    The volume on which the camera will be fitted
+  + `Optional`direction: [ViewDirection](/api/webvis/enums/viewdirection)
+
+    The direction to fit. Default: [ViewDirection.CURRENT](/api/webvis/enums/viewdirection#current).
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 100.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+  #### See
+
+  + BoxVolume
+  + [ViewDirection](/api/webvis/enums/viewdirection)
+
+### flipAuxToView
+
+* flipAuxToView(): void
+
+  Flips specific elements in the auxiliary geometry (like text or specific polygons)
+  with respect to the current view.
+
+  #### Returns void
+
+### forceRenderMode
+
+* forceRenderMode(renderMode: [RenderMode](/api/webvis/enums/rendermode)): void
+
+  Forces the viewer to render in the specified [RenderMode](/api/webvis/enums/rendermode) regardless of any other [RenderMode](/api/webvis/enums/rendermode) settings.
+  If [RenderMode.Unset](/api/webvis/enums/rendermode#unset) is passed, the viewer will switch back to the default mode, specified in
+  [ViewerSettingStrings.RENDER\_MODE](/api/webvis/enums/viewersettingstrings#render_mode).
+
+  #### Parameters
+
+  + renderMode: [RenderMode](/api/webvis/enums/rendermode)
+
+    The render mode to force the viewer to render in.
+
+  #### Returns void
+
+### getActiveItem
+
+* getActiveItem(): ActiveItemInfo
+
+  #### Returns ActiveItemInfo
+
+  Inherited from ViewerGizmoAPI.getActiveItem
+
+### getAvailableGizmoTransformationModes
+
+* getAvailableGizmoTransformationModes(): number
+
+  #### Returns number
+
+  Inherited from ViewerGizmoAPI.getAvailableGizmoTransformationModes
+
+### getBoxGizmoProperties
+
+* getBoxGizmoProperties(): BoxGizmoProperties
+
+  Returns the properties of the BoxGizmo
+
+  #### Returns BoxGizmoProperties
+
+  The properties of the BoxGizmo
+
+  Inherited from ViewerGizmoAPI.getBoxGizmoProperties
+
+### getCameraPosition
+
+* getCameraPosition(): Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  Returns the current camera position as a 3D vector.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The current camera position.
+
+### getCameraProjectionType
+
+* getCameraProjectionType(): [CameraProjectionType](/api/webvis/enums/cameraprojectiontype)
+
+  Returns the current [CameraProjectionType](/api/webvis/enums/cameraprojectiontype) of the camera.
+
+  #### Returns [CameraProjectionType](/api/webvis/enums/cameraprojectiontype)
+
+  The current camera projection type.
+
+  #### See
+
+  [ViewerSettingStrings.PROJECTION\_TYPE](/api/webvis/enums/viewersettingstrings#projection_type)
+
+### getCenterOfRotation
+
+* getCenterOfRotation(): Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  Returns the center of rotation being the point around which the camera rotates around.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  A 3D vector representing the center of rotation
+
+### getContext
+
+* getContext(): ContextAPI
+
+  Returns the webvis context to which the viewer belongs.
+
+  #### Returns ContextAPI
+
+  The context of the viewer
+
+### getCurrentGizmoType
+
+* getCurrentGizmoType(): [GizmoType](/api/webvis/enums/gizmotype)
+
+  #### Returns [GizmoType](/api/webvis/enums/gizmotype)
+
+  Inherited from ViewerGizmoAPI.getCurrentGizmoType
+
+### getGizmoSize
+
+* getGizmoSize(): Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  Inherited from ViewerGizmoAPI.getGizmoSize
+
+### getGizmoTransform
+
+* getGizmoTransform(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  Inherited from ViewerGizmoAPI.getGizmoTransform
+
+### getGizmoTransformationMode
+
+* getGizmoTransformationMode(): [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+  #### Returns [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+  Inherited from ViewerGizmoAPI.getGizmoTransformationMode
+
+### getGlobalHeatmapConfig
+
+* getGlobalHeatmapConfig(): HeatmapConfig
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Return the current global heatmap configuration.
+
+  #### Returns HeatmapConfig
+
+  Current global heatmap configuration.
+
+  Inherited from ViewerHeatmapAPI.getGlobalHeatmapConfig
+
+### getHeatmapColorSchemeLegend
+
+* getHeatmapColorSchemeLegend(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns data which can be used to create a legend.
+  The data has 4 color channels (RGBA) each in a range between 0 and 255 packed into an Array.
+
+  #### Returns number[]
+
+  Color scheme legend data.
+
+  #### Example: Creating a legend:
+
+  Note: Canvas can be resized using CSS width/height settings to achieve desired display size.
+
+  ```ts
+  const legend = document.createElement("canvas");  
+  // fetch data  
+  const legendData = viewer.getHeatmapColorSchemeLegend();  
+  // width matches colorResolution set using changeGlobalHeatmapConfig  
+  const width = legendData.length / 4;  
+  // canvas requires ImageData as source  
+  const img = new ImageData(new Uint8ClampedArray(legendData), width, 1);  
+  // resize canvas render resolution  
+  legend.width = width;  
+  legend.height = 1;  
+  // get canvas 2d context and fill canvas with data  
+  const ctx = legend.getContext("2d");  
+  ctx.putImageData(img, 0, 0);
+  ```
+
+  Inherited from ViewerHeatmapAPI.getHeatmapColorSchemeLegend
+
+### getHeatmapData
+
+* getHeatmapData(id: number): HeatmapProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of a heatmap dataset.
+
+  #### Parameters
+
+  + id: number
+
+    ID of dataset to query. Obtained using createHeatmap.
+
+  #### Returns HeatmapProperties
+
+  Properties of the heatmap dataset.
+
+  Inherited from ViewerHeatmapAPI.getHeatmapData
+
+### getHeatmaps
+
+* getHeatmaps(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns a list of all heatmap datasets.
+
+  #### Returns number[]
+
+  Array of heatmap dataset IDs.
+
+  Inherited from ViewerHeatmapAPI.getHeatmaps
+
+### getID
+
+* getID(): string
+
+  Returns the ID of the viewer.
+
+  #### Returns string
+
+  The ID of the viewer
+
+### getInteractionLevel
+
+* getInteractionLevel(): [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+  Returns the current interaction level of the viewer.
+
+  #### Returns [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+  The current interaction level of the viewer.
+
+  Inherited from ViewerInteractionAPI.getInteractionLevel
+
+### getMagnifierProperties
+
+* getMagnifierProperties(): ViewerMagnifierProperties
+
+  Returns the current properties of the magnifier.
+
+  #### Returns ViewerMagnifierProperties
+
+  The current properties of the magnifier.
+
+  Inherited from ViewerMagnifierAPI.getMagnifierProperties
+
+### getPointCloudData
+
+* getPointCloudData(pointCloudId: number): PointCloudProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of a point cloud dataset.
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of point cloud to query. Obtained using createPointCloud.
+
+  #### Returns PointCloudProperties
+
+  Properties of the point cloud.
+
+  Inherited from ViewerPointCloudAPI.getPointCloudData
+
+### getPointClouds
+
+* getPointClouds(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns a list of all point clouds.
+
+  #### Returns number[]
+
+  Array of point cloud IDs.
+
+  Inherited from ViewerPointCloudAPI.getPointClouds
+
+### getPOISetData
+
+* getPOISetData(id: number): POISetProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Queries the properties of a POI set.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to query.
+
+  #### Returns POISetProperties
+
+  The properties of the queried POI set.
+
+  Inherited from ViewerPointsOfInterestAPI.getPOISetData
+
+### getPOISets
+
+* getPOISets(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all existing POI sets.
+
+  #### Returns number[]
+
+  A number array representing the IDs of all POI sets.
+
+  Inherited from ViewerPointsOfInterestAPI.getPOISets
+
+### getPOIStyleData
+
+* getPOIStyleData(poiStyleId: number): POIStyleProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Queries the properties of a POI style.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to query.
+
+  #### Returns POIStyleProperties
+
+  The properties of the queried POI style.
+
+  Inherited from ViewerPointsOfInterestAPI.getPOIStyleData
+
+### getPOIStyles
+
+* getPOIStyles(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all existing POI styles.
+
+  #### Returns number[]
+
+  A number array representing the IDs of all POI styles.
+
+  Inherited from ViewerPointsOfInterestAPI.getPOIStyles
+
+### getProjectionMatrix
+
+* getProjectionMatrix(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  Returns the current projection matrix. The 4x4 transformation matrix is represented as a flat 16-element array
+  in column-major order.
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The current projection matrix
+
+  #### See
+
+  [ViewerAPI.setProjectionMatrix](#setprojectionmatrix)
+
+### getState
+
+* getState(): [ViewerState](/api/webvis/enums/viewerstate)
+
+  #### Returns [ViewerState](/api/webvis/enums/viewerstate)
+
+  Inherited from ViewerStateAPI.getState
+
+### getToCoordinateSystemMatrix
+
+* getToCoordinateSystemMatrix(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The toCoordinateSystem matrix
+
+  #### Deprecated
+
+  use CoordinateSystemAPI.getCoordinateSystemMatrix instead
+
+  Returns a 4x4 rotation matrix which is used to transform the internal default right-handed coordinate system
+  with X and Y as front plane axis to the configured one.
+
+### getViewMatrix
+
+* getViewMatrix(): [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  Returns the current view matrix. The 4x4 transformation matrix is represented as a flat 16-element array in
+  column-major order.
+
+  #### Returns [     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number,     number, ]
+
+  The current view matrix of the camera
+
+  #### See
+
+  [ViewerAPI.setViewMatrix](#setviewmatrix)
+
+### getXREdgeCompareProperties
+
+* getXREdgeCompareProperties(): XREdgeCompareProperties
+
+  `Experimental`
+
+  Returns the currently set XR Edge Compare properties.
+
+  #### Returns XREdgeCompareProperties
+
+  The currently set properties.
+
+  Inherited from ViewerXREdgeCompareAPI.getXREdgeCompareProperties
+
+### hideAllLineMarkers
+
+* hideAllLineMarkers(): void
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.hideAllLineMarkers
+
+### hideAllMarkers
+
+* hideAllMarkers(): void
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.hideAllMarkers
+
+### hideAllPointMarkers
+
+* hideAllPointMarkers(): void
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.hideAllPointMarkers
+
+### hideGizmo
+
+* hideGizmo(): void
+
+  Hides the currently visible Gizmo
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.hideGizmo
+
+### hidePointMarker
+
+* hidePointMarker(index?: number): void
+
+  #### Parameters
+
+  + `Optional`index: number
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.hidePointMarker
+
+### highlightArc
+
+* highlightArc(  
+      pickedPt1: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      pickedPt3: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      center: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      axis: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      angle: number,  
+      measurementID: number,  
+  ): number
+
+  #### Parameters
+
+  + pickedPt1: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + pickedPt3: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + center: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + axis: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + angle: number
+  + measurementID: number
+
+  #### Returns number
+
+  Inherited from ViewerHighlightAPI.highlightArc
+
+### highlightBBox
+
+* highlightBBox(  
+      center: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      size: Float32Array\<ArrayBufferLike> | [number, number, number],  
+  ): number
+
+  #### Parameters
+
+  + center: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + size: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  #### Returns number
+
+  Inherited from ViewerHighlightAPI.highlightBBox
+
+### highlightCircularArc
+
+* highlightCircularArc(  
+      circularArcDescriptor: TopologyCircularArcDescriptor,  
+  ): number
+
+  #### Parameters
+
+  + circularArcDescriptor: TopologyCircularArcDescriptor
+
+  #### Returns number
+
+  Inherited from ViewerHighlightAPI.highlightCircularArc
+
+### highlightEntity
+
+* highlightEntity(  
+      handle: TopologyHandle,  
+      highlightParameters?: ViewerHighlightParameters,  
+  ): Promise\<number>
+
+  Enable highlighting of the entity , which matches the attributes informed in the viewerDataSelector
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    : IViewerHighlightSelector
+  + `Optional`highlightParameters: ViewerHighlightParameters
+
+  #### Returns Promise\<number>
+
+  the highlightHandle, which it reqed to remove the highlighting
+
+  Inherited from ViewerHighlightAPI.highlightEntity
+
+### highlightLine
+
+* highlightLine(values: number[], scale: number, markerIndex: number): void
+
+  #### Parameters
+
+  + values: number[]
+  + scale: number
+  + markerIndex: number
+
+  #### Returns void
+
+  Inherited from ViewerHighlightAPI.highlightLine
+
+### highlightPoint
+
+* highlightPoint(  
+      position: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      markerIndex: number,  
+  ): void
+
+  #### Parameters
+
+  + position: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + markerIndex: number
+
+  #### Returns void
+
+  Inherited from ViewerHighlightAPI.highlightPoint
+
+### isSnappingEnabled
+
+* isSnappingEnabled(): boolean
+
+  Returns whether snapping is enabled in the viewer.
+
+  #### Returns boolean
+
+  `true` if snapping is enabled, `false` otherwise.
+
+  Inherited from ViewerInteractionAPI.isSnappingEnabled
+
+### leaveColorCompareMode
+
+* leaveColorCompareMode(): void
+
+  Leaves the color compare mode. For a description of the color compare mode see [enterColorCompareMode](#entercolorcomparemode).
+
+  #### Returns void
+
+  #### See
+
+  + [Property.COMPARISON\_GROUP](/api/webvis/enums/property#comparison_group)
+  + [InteractionMode.COLOR\_COMPARISON](/api/webvis/enums/interactionmode#color_comparison)
+  + [enterColorCompareMode](#entercolorcomparemode) to enter the color compare mode.
+
+### leaveDrawingMode
+
+* leaveDrawingMode(  
+      options?: ViewerDrawingProcessOptions,  
+  ): Promise\<ViewerDrawingResult>
+
+  Leaves the 2D drawing mode and returns the processed 2D drawing data which can be used to create
+  a drawing with the help of the DrawingAPI.
+
+  #### Parameters
+
+  + `Optional`options: ViewerDrawingProcessOptions
+
+    Options to configure the result of the processing.
+
+  #### Returns Promise\<ViewerDrawingResult>
+
+  The processed 2D drawing data.
+
+  Inherited from ViewerDrawingAPI.leaveDrawingMode
+
+### readSetting
+
+* readSetting<[T](#readsettingt) extends string>(viewerSetting: [T](#readsettingt)): ViewerSettingType<[T](#readsettingt)>
+
+  Returns the current value of a viewer setting.
+
+  #### Type Parameters
+
+  + T extends string
+
+    The type of the setting to read.
+
+  #### Parameters
+
+  + viewerSetting: [T](#readsettingt)
+
+    The name of the setting to read.
+
+  #### Returns ViewerSettingType<[T](#readsettingt)>
+
+  The current value of the setting.
+
+  #### See
+
+  [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) for a list of available viewer settings.
+
+### removeGeometry
+
+* removeGeometry(id: number): void
+
+  #### Parameters
+
+  + id: number
+
+  #### Returns void
+
+  Inherited from ViewerUserGeometryAPI.removeGeometry
+
+### removeHeatmap
+
+* removeHeatmap(id: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the heatmap with the specified ID and triggers a [ViewerHeatmapRemovedEvent](/api/webvis/classes/viewerheatmapremovedevent).
+
+  #### Parameters
+
+  + id: number
+
+    The ID of heatmap to remove. Obtained using createHeatmap.
+
+  #### Returns void
+
+  Inherited from ViewerHeatmapAPI.removeHeatmap
+
+### removePointCloud
+
+* removePointCloud(pointCloudId: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the point cloud with the specified ID and triggers a [ViewerPointCloudRemovedEvent](/api/webvis/classes/viewerpointcloudremovedevent).
+
+  #### Parameters
+
+  + pointCloudId: number
+
+    The ID of point cloud to remove. Obtained using createPointCloud.
+
+  #### Returns void
+
+  Inherited from ViewerPointCloudAPI.removePointCloud
+
+### removePointsFromSet
+
+* removePointsFromSet(id: number, poiIds: number[]): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes points from an existing POI set.
+
+  Triggers a [ViewerPOISetPointsRemovedEvent](/api/webvis/classes/viewerpoisetpointsremovedevent) event if the points were removed successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set
+  + poiIds: number[]
+
+    The IDs of the POIs to remove.
+
+  #### Returns void
+
+  Inherited from ViewerPointsOfInterestAPI.removePointsFromSet
+
+### removePOISet
+
+* removePOISet(id: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the POI set with the given identifier.
+
+  Triggers a [ViewerPOISetRemovedEvent](/api/webvis/classes/viewerpoisetremovedevent) event if the set was removed successfully.
+
+  #### Parameters
+
+  + id: number
+
+    The ID of the POI set to be removed.
+
+  #### Returns void
+
+  Inherited from ViewerPointsOfInterestAPI.removePOISet
+
+### removePOIStyle
+
+* removePOIStyle(poiStyleId: number): void
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the POI style with the given identifier.
+
+  Triggers a [ViewerPOIStyleRemovedEvent](/api/webvis/classes/viewerpoistyleremovedevent) event if the style was removed successfully.
+
+  #### Parameters
+
+  + poiStyleId: number
+
+    The ID of the POI style to be removed.
+
+  #### Returns void
+
+  Inherited from ViewerPointsOfInterestAPI.removePOIStyle
+
+### removePolyline
+
+* removePolyline(polylineId: number): void
+
+  Removes the Polyline with the specified Id.
+
+  #### Parameters
+
+  + polylineId: number
+
+    The Id of the Polyline which should be removed.
+
+  #### Returns void
+
+  Inherited from ViewerPolylineAPI.removePolyline
+
+### requestNodeIdsByRect
+
+* requestNodeIdsByRect(  
+      x: number,  
+      y: number,  
+      width: number,  
+      height: number,  
+      includeOverlappingNodes?: boolean,  
+  ): Promise\<number[]>
+
+  Returns a list of all node IDs which are included or overlapped by the specified 2D screen space rectangle.
+
+  #### Parameters
+
+  + x: number
+
+    Specifies the X-Coordinate of the 2D screen space rectangle.
+  + y: number
+
+    Specifies the Y-Coordinate of the 2D screen space rectangle.
+  + width: number
+
+    Specifies the width of the 2D screen space rectangle.
+  + height: number
+
+    Specifies the height of the 2D screen space rectangle.
+  + `Optional`includeOverlappingNodes: boolean
+
+    Specifies that the result should include nodes which overlap the
+    specified 2D screen space rectangle as well. Default: false.
+
+  #### Returns Promise\<number[]>
+
+  List of all node IDs which are included or overlapped by the specified 2D screen
+  space rectangle.
+
+### requestScreenshot
+
+* requestScreenshot(  
+      width?: number,  
+      height?: number,  
+      mimeType?: "image/png" | "image/jpeg",  
+      resetCanvasSize?: boolean,  
+  ): Promise\<string>
+
+  Requests a screenshot of the current viewer at the current view.
+
+  #### Parameters
+
+  + `Optional`width: number
+
+    The width of the requested screenshot. If not specified it uses the width of the current view.
+  + `Optional`height: number
+
+    The height of the requested screenshot. If not specified it uses the height of the current view.
+  + `Optional`mimeType: "image/png" | "image/jpeg"
+
+    A string indicating the image format. Default: `image/png`.
+  + `Optional`resetCanvasSize: boolean
+
+    If 'true', it ensures that the “normal” screen-dependent resolution is used again after
+    taking the screenshot. Default: `true`.
+
+  #### Returns Promise\<string>
+
+  + A string containing the requested screenshot as dataUrl.
+
+### requestTopologyHandlesByRect
+
+* requestTopologyHandlesByRect(  
+      x: number,  
+      y: number,  
+      width: number,  
+      height: number,  
+  ): Promise\<TopologyHandle[]>
+
+  Returns a list of all TopologyHandles which are included and overlapped by the specified 2D screen
+  space rectangle.
+
+  #### Parameters
+
+  + x: number
+
+    Specifies the X-coordinate of the 2D screen space rectangle in pixels.
+  + y: number
+
+    Specifies the Y-xoordinate of the 2D screen space rectangle in pixels.
+  + width: number
+
+    Specifies the width of the 2D screen space rectangle in pixels.
+  + height: number
+
+    Specifies the height of the 2D screen space rectangle in pixels.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  A list of all TopologyHandles which are included and overlapped by the
+  specified 2D screen space rectangle.
+
+### requestXRAutoDetectScores
+
+* requestXRAutoDetectScores(nodeIDs: number[]): Promise\<XRAutoDetectScore[]>
+
+  `Experimental`
+
+  Request scores caluclated based on the ratio of matching/non-matching pixels of the XR Edge Compare feature. Passed nodes must be in [XR Edge Compare mode](/api/webvis/enums/comparisongroup#xr_edge) mode to produce a valid score. Multiple concurrent requests of this method are not allowed.
+
+  **Example**
+
+  ```ts
+  // Get an instance of the ContextAPI  
+  const myContext : ContextAPI = webvis.getContext( "example" )  
+    
+  // The node to request a result for  
+  const nodeID = 1;  
+    
+  // Enable XR Edge Compare mode for node  
+  myContext.setProperty(nodeID, webvis.Property.COMPARISON_GROUP, webvis.ComparisonGroup.XR_EDGE);  
+    
+  async function update() {  
+      // Request score  
+      const result = await myContext.getViewer().requestXRAutoDetectScores([nodeID]);  
+    
+      // Check score value  
+      console.log(result[0].score > 0.5 ? "Positive" : "Negative");  
+    
+      // Re-request score twice per second as long as node is in XR Edge Compare mode  
+      if (result[0].details.edgeCompareEnabled) {  
+          setTimeout(update, 500);  
+      }  
+  }  
+    
+  // Start loop  
+  update();
+  ```
+
+  #### Parameters
+
+  + nodeIDs: number[]
+
+    The nodeIDs to process.
+
+  #### Returns Promise\<XRAutoDetectScore[]>
+
+  + A promise containing a list of auto detect score results.
+
+  Inherited from ViewerXREdgeCompareAPI.requestXRAutoDetectScores
+
+### reset
+
+* reset(): void
+
+  #### Returns void
+
+  #### Deprecated
+
+  Will be removed in a future version because it is not needed anymore to switch between render setups.
+
+  The viewer is destroyed and reinitialized with renderSetup selection
+
+### resetSetting
+
+* resetSetting(viewerSetting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings)): void
+
+  Resets the value of a viewer setting to its default value.
+
+  Triggers a [ViewerSettingChangedEvent](/api/webvis/classes/viewersettingchangedevent).
+
+  #### Parameters
+
+  + viewerSetting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings)
+
+    The name of the viewer setting that should be reset.
+
+  #### Returns void
+
+  #### See
+
+  [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) for a list of available viewer settings.
+
+### restoreInitView
+
+* restoreInitView(): void
+
+  Sets the camera to the initial position specified in the [ViewerSettingStrings.INIT\_VIEW](/api/webvis/enums/viewersettingstrings#init_view) setting.
+  If the setting is not defined or empty, there will be no effect.
+
+  Triggers a [ViewChangedEvent](/api/webvis/classes/viewchangedevent) if the [ViewerSettingStrings.INIT\_VIEW](/api/webvis/enums/viewersettingstrings#init_view) setting is set.
+
+  #### Returns void
+
+### setActiveItem
+
+* setActiveItem(id: number, type: [ActiveItemType](/api/webvis/enums/activeitemtype)): void
+
+  #### Parameters
+
+  + id: number
+  + type: [ActiveItemType](/api/webvis/enums/activeitemtype)
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.setActiveItem
+
+### setCenterOfRotation
+
+* setCenterOfRotation(  
+      center?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+  ): Promise\<void>
+
+  Sets the center of rotation being the point around which the inspection camera rotates. If no
+  center parameter is supplied the center of rotation is set to the center of all currently loaded
+  models.
+
+  #### Parameters
+
+  + `Optional`center: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    The new center of rotation represented by a 3D vector
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the center of rotation is set
+
+### setCORGizmoVisible
+
+* setCORGizmoVisible(flag: boolean): void
+
+  #### Parameters
+
+  + flag: boolean
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.setCORGizmoVisible
+
+### setGizmoTransformationMode
+
+* setGizmoTransformationMode(mode: [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)): void
+
+  #### Parameters
+
+  + mode: [GizmoTransformationMode](/api/webvis/enums/gizmotransformationmode)
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.setGizmoTransformationMode
+
+### setInteractionLevel
+
+* setInteractionLevel(level: [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)): void
+
+  Sets the viewer's interaction level.
+
+  #### Parameters
+
+  + level: [ViewerInteractionLevel](/api/webvis/enums/viewerinteractionlevel)
+
+    Specifies the viewer's interaction level.
+
+  #### Returns void
+
+  Inherited from ViewerInteractionAPI.setInteractionLevel
+
+### setProjectionMatrix
+
+* setProjectionMatrix(  
+      matrix:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+  ): void
+
+  Sets the current projection matrix. The 4x4 transformation matrix must be represented as a flat 16-element array
+  in column-major order.
+
+  #### Parameters
+
+  + matrix:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    The new projection matrix
+
+  #### Returns void
+
+  #### See
+
+  [ViewerAPI.getProjectionMatrix](#getprojectionmatrix)
+
+### setView
+
+* setView(  
+      position: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      target: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      upVector?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Sets the camera position, its target and the up-vector. If the up-vector is not defined, the
+  previous up-vector is kept. The optional `transitionTime` parameter allows for controlling animation speed.
+
+  #### Parameters
+
+  + position: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Specifies the new position or center of the camera
+  + target: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Specifies the point on which the camera will look
+  + `Optional`upVector: Float32Array\<ArrayBufferLike> | [number, number, number]
+
+    Specifies the new orientation of the camera
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 0.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### setViewMatrix
+
+* setViewMatrix(  
+      matrix:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+      transitionTime?: number,  
+  ): Promise\<void>
+
+  Sets the view matrix. The optional `transitionTime` parameter allows for controlling animation speed.
+
+  #### Parameters
+
+  + matrix:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+    The new view matrix for the camera
+  + `Optional`transitionTime: number
+
+    Defines the transition time for the camera movement in milliseconds. Default: 0.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the camera movement is finished.
+
+### showAxisMarker
+
+* showAxisMarker(  
+      values:  
+          | Float32Array\<ArrayBufferLike>  
+          | [number, number, number, number, number, number],  
+      scale?: number,  
+      index?: number,  
+  ): void
+
+  #### Parameters
+
+  + values: Float32Array\<ArrayBufferLike> | [number, number, number, number, number, number]
+  + `Optional`scale: number
+  + `Optional`index: number
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showAxisMarker
+
+### showBoxGizmo
+
+* showBoxGizmo(properties?: BoxGizmoProperties): void
+
+  Shows the BoxGizmo based on the specified properties.
+  If the BoxGizmo is already visible the specified properties will be updated.
+
+  #### Parameters
+
+  + `Optional`properties: BoxGizmoProperties
+
+    The properties of the BoxGizmo.
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showBoxGizmo
+
+### showClippingBoxGizmo
+
+* showClippingBoxGizmo(clipRoomID: number): void
+
+  #### Parameters
+
+  + clipRoomID: number
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showClippingBoxGizmo
+
+### showPointMarker
+
+* showPointMarker(  
+      position: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      index?: number,  
+  ): void
+
+  #### Parameters
+
+  + position: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + `Optional`index: number
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showPointMarker
+
+### showSelectionBoxGizmo
+
+* showSelectionBoxGizmo(  
+      size?: Float32Array\<ArrayBufferLike> | [number, number, number],  
+      transform?:  
+          | Float32Array\<ArrayBufferLike>  
+          | [  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+              number,  
+          ],  
+  ): void
+
+  #### Parameters
+
+  + `Optional`size: Float32Array\<ArrayBufferLike> | [number, number, number]
+  + `Optional`transform:   
+        | Float32Array\<ArrayBufferLike>  
+        | [  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+            number,  
+        ]
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showSelectionBoxGizmo
+
+### showSelectionBoxGizmoFromVolume
+
+* showSelectionBoxGizmoFromVolume(volume?: BoxVolume): void
+
+  #### Parameters
+
+  + `Optional`volume: BoxVolume
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showSelectionBoxGizmoFromVolume
+
+### showSelectionTransformationGizmo
+
+* showSelectionTransformationGizmo(nodeIds: number[]): void
+
+  #### Parameters
+
+  + nodeIds: number[]
+
+  #### Returns void
+
+  Inherited from ViewerGizmoAPI.showSelectionTransformationGizmo
+
+### takeScreenshot
+
+* takeScreenshot(  
+      callback: (dataUrl: string) => void,  
+      mimeType?: string,  
+      width?: number,  
+      height?: number,  
+  ): void
+
+  Takes a screenshot from the current view.
+
+  #### Parameters
+
+  + callback: (dataUrl: string) => void
+
+    A callback containing the result which is executed after all Rendering operations are finished.
+  + `Optional`mimeType: string
+
+    A string indicating the image format. The default type is image/png.
+  + `Optional`width: number
+
+    The width of the requested screenshot. If not specified it uses the width of the current view.
+  + `Optional`height: number
+
+    The height of the requested screenshot. If not specified it uses the height of the current view.
+
+  #### Returns void
+
+  #### Deprecated
+
+  takeScreenshot is deprecated, please use [requestScreenshot](#requestscreenshot) instead
+
+### updateGeometry
+
+* updateGeometry(id: number, data: UserGeometryData): void
+
+  #### Parameters
+
+  + id: number
+  + data: UserGeometryData
+
+  #### Returns void
+
+  Inherited from ViewerUserGeometryAPI.updateGeometry

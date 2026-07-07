@@ -1,0 +1,102 @@
+---
+title: "Interface HeatmapConfigExperimental"
+sidebarTitle: "HeatmapConfig"
+description: "Experimental. May be changed in the future without notice."
+---
+
+*Experimental. May be changed in the future without notice.*
+
+Global Heatmap configuration. When partially filled, only set values are override.
+
+#### See
+
+## Properties
+
+### `Optional` `Experimental`colorBands
+
+colorBands?: boolean
+
+Whether the color mapping produces a continuous gradient of colors or separated bands of colors.
+Can be used in combination with [colorResolution](#colorresolution) to generate isobands.
+
+#### Default
+
+```ts
+false
+```
+
+### `Optional` `Experimental`colorResolution
+
+colorResolution?: number
+
+Resolution of color scheme lookup texture.
+Can be used in combination with [colorBands](#colorbands) to generate isobands.
+
+#### Default
+
+```ts
+32
+```
+
+### `Optional` `Experimental`colorScheme
+
+colorScheme?: [CustomHeatmapColorScheme](/v3.14/api/webvis/types/customheatmapcolorscheme) | [HeatmapColorScheme](/v3.14/api/webvis/enums/heatmapcolorscheme)
+
+Color scheme to map calculated densities to.
+
+#### Default
+
+```ts
+HeatmapColorScheme.TURBO
+```
+
+### `Optional` `Experimental`kernel
+
+kernel?: [HeatmapKernel](/v3.14/api/webvis/enums/heatmapkernel)
+
+Density falloff function from the center of a data point towards it's maximum impact range.
+
+#### Default
+
+```ts
+HeatmapKernel.GAUSSIAN
+```
+
+### `Optional` `Experimental`maxValue
+
+maxValue?: number
+
+Upper end of the color scheme.
+The calculated density is divided by this value before sampling the color scheme lookup texture.
+
+#### Default
+
+```ts
+1000
+```
+
+### `Optional` `Experimental`sizeFactor
+
+sizeFactor?: number
+
+Global factor to adjust range of all points.
+Each heatmap point's size is scaled based on this value.
+
+#### Default
+
+```ts
+1
+```
+
+### `Optional` `Experimental`strengthFactor
+
+strengthFactor?: number
+
+Global factor to adjust maximum density of all points.
+This factor is applied to all heatmap points, adjusting the overall density.
+
+#### Default
+
+```ts
+1
+```

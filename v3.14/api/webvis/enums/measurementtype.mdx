@@ -1,0 +1,68 @@
+---
+title: "Enumeration MeasurementType"
+sidebarTitle: "MeasurementType"
+description: "The types of measurements that can be performed by thecreateMeasurementfunction."
+---
+
+The types of measurements that can be performed by the [createMeasurement](/v3.14/api/webvis/interfaces/measurementapi#createmeasurement) function.
+
+#### See
+
+* MeasurementTargetClass
+* [MeasurementAPI](/v3.14/api/webvis/interfaces/measurementapi)
+
+## Enumeration Members
+
+### ARC
+
+ARC: 2
+
+A measurement of different properties of a circular arc that is defined by three points.
+
+The measurement input is an array of three corresponding [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s. The first
+point specifies the start of the circular arc, the second point lies on the arc, and the third point
+specifies the end of the arc.
+
+The measurement result has type [TopologyDescriptor](/v3.14/api/webvis/types/topologydescriptor) and its `descriptor` property points to a
+[TopologyCircularArcDescriptor](/v3.14/api/webvis/interfaces/topologycirculararcdescriptor). It includes the radius, center, and length of the circular arc.
+
+### MULTIPLE
+
+MULTIPLE: 1
+
+A measurement of the distance and, if applicable, the angle between two 3D objects.
+Analogous to the [measureBetween](/v3.14/api/webvis/interfaces/measurementapi#measurebetween) function.
+
+If the targets intersect, the result will contain a representation of the intersection. Note that the
+intersection is not available for all MeasurementTargetClass combinations. For details, see the
+documentation of [measureBetween](/v3.14/api/webvis/interfaces/measurementapi#measurebetween).
+
+The measurement input is an array of two [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s.
+
+The measurement result has type [BetweenMeasurementResult](/v3.14/api/webvis/interfaces/betweenmeasurementresult).
+
+### SINGLE
+
+SINGLE: 0
+
+Creates a measurement entity that holds information about a single 3D object.
+
+The measurement input is an array containing a single [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget). The currently supported
+target classes are POINT, NODE,
+and TOPOLOGY.
+
+The measurement result has type [TopologyDescriptor](/v3.14/api/webvis/types/topologydescriptor) and describes the 3D object. In case of input
+target class NODE, the result describes the combined bounding box of
+the nodes.
+
+### THICKNESS
+
+THICKNESS: 3
+
+A measurement of the thickness of a shape at a given point. Analogous to the
+[measureThickness](/v3.14/api/webvis/interfaces/measurementapi#measurethickness) function.
+
+The measurement input is an array of two [MeasurementTarget](/v3.14/api/webvis/types/measurementtarget)s. The first one represents
+the point and the second one represents the shape.
+
+The measurement result has type [ThicknessMeasurementResult](/v3.14/api/webvis/interfaces/thicknessmeasurementresult).

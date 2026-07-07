@@ -1,0 +1,315 @@
+---
+title: "Interface SessionStorageAPI"
+sidebarTitle: "SessionStorageAPI"
+description: "TheSessionStorageAPIprovides tools to manage session storage and snapshots in webvis. A session represents the entire state of the 3D space, which can be shared, stored, and restor"
+---
+
+## SessionStorageAPI
+
+### Overview
+
+The **SessionStorageAPI** provides tools to manage session storage and snapshots in webvis.
+A session represents the entire state of the 3D space, which can be shared, stored, and restored.
+Snapshots are subsets of a session that capture a momentary state, including elements like clip planes and measurements.
+
+This API allows you to:
+
+* Create, change, restore, and delete snapshots.
+* Store and restore session states.
+
+### Quick Start
+
+Example: Create a snapshot, modify its properties, and restore it.
+
+```ts
+// Get the WebVis context  
+const context = webvis.getContext();  
+  
+// Create a snapshot  
+const snapshotId = await context.createSnapshot("My Snapshot");  
+  
+// Change the snapshot's properties  
+context.changeSnapshot(snapshotId, { name: "Updated Snapshot Name" });  
+  
+// Restore the snapshot  
+await context.restoreSnapshot(snapshotId);
+```
+
+### Events
+
+The following events are associated with the SessionStorageAPI:
+
+* [SnapshotCreatedEvent](/v3.14/api/webvis/classes/snapshotcreatedevent)
+* [SnapshotCreationStartedEvent](/v3.14/api/webvis/classes/snapshotcreationstartedevent)
+* [SnapshotChangedEvent](/v3.14/api/webvis/classes/snapshotchangedevent)
+* [SnapshotRestoredEvent](/v3.14/api/webvis/classes/snapshotrestoredevent)
+* [SnapshotRestoreStartedEvent](/v3.14/api/webvis/classes/snapshotrestorestartedevent)
+* [SnapshotRemovedEvent](/v3.14/api/webvis/classes/snapshotremovedevent)
+
+## Methods
+
+### changeSnapshot
+
+* changeSnapshot(  
+      snapshotID: number,  
+      properties: SnapshotProperties,  
+  ): SnapshotProperties
+
+  Changes one or more properties of a snapshot with the specified ID.
+
+  Triggers a [SnapshotChangedEvent](/v3.14/api/webvis/classes/snapshotchangedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to change.
+  + properties: SnapshotProperties
+
+    The properties of the snapshot to change.
+
+  #### Returns SnapshotProperties
+
+  An object with the changed properties.
+* changeSnapshot(  
+      snapshotID: number,  
+      name?: string,  
+      screenshotURL?: string,  
+      order?: number,  
+  ): SnapshotProperties
+
+  Changes the textual description of the snapshot with the specified ID to the value of text.
+
+  Triggers a [SnapshotChangedEvent](/v3.14/api/webvis/classes/snapshotchangedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to change.
+  + `Optional`name: string
+
+    The new name of the snapshot.
+  + `Optional`screenshotURL: string
+
+    The new screenshot URL of the snapshot.
+  + `Optional`order: number
+
+    The order inside the list of snapshots.
+
+  #### Returns SnapshotProperties
+
+  #### Deprecated
+
+  Calling changeSnapshot with single parameters is deprecated, please use SnapshotProperties instead.
+
+### createSnapshot
+
+* createSnapshot(  
+      name?: string,  
+      options?: SnapshotCreationOptions,  
+  ): Promise\<number>
+
+  Creates a snapshot of the current session state.
+
+  Triggers a [SnapshotCreationStartedEvent](/v3.14/api/webvis/classes/snapshotcreationstartedevent) and, if successful, a [SnapshotCreatedEvent](/v3.14/api/webvis/classes/snapshotcreatedevent).
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the snapshot.
+  + `Optional`options: SnapshotCreationOptions
+
+    Options used for the snapshot creation.
+
+  #### Returns Promise\<number>
+
+  The ID of the created snapshot.
+
+### getSnapshotData
+
+* getSnapshotData(  
+      snapshotID: number,  
+  ): \{ attachmentID: number; name: string; order: number \}
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to request data for.
+
+  #### Returns \{ attachmentID: number; name: string; order: number \}
+
+  The data of the specified snapshot.
+
+  #### Deprecated
+
+  getSnapshotData is deprecated. Please use [requestSnapshotData](#requestsnapshotdata) instead.
+
+### getSnapshots
+
+* getSnapshots(): number[]
+
+  Returns the IDs of all available snapshots.
+
+  #### Returns number[]
+
+  An array of snapshot IDs.
+
+### importSession
+
+* importSession(data: any, format?: "xscn"): Promise\<any>
+
+  Imports a session from the given data string in the specified format.
+
+  Supported formats: xscn.
+
+  #### Parameters
+
+  + data: any
+
+    The content of the session file.
+  + `Optional`format: "xscn"
+
+    The format of the session file. Default: "xscn".
+
+  #### Returns Promise\<any>
+
+  A Promise that resolves when the session is imported.
+
+### isOfflineStorageAvailable
+
+* isOfflineStorageAvailable(): Promise\<boolean>
+
+  #### Returns Promise\<boolean>
+
+  A Promise that always resolves to false, as offline storage is not used anymore.
+
+  #### Deprecated
+
+  isOfflineStorageAvailable is deprecated.
+
+  Checks if offline storage is currently available. This functionality is no longer relevant
+  as offline storage is not supported anymore.
+
+### removeSnapshot
+
+* removeSnapshot(snapshotID: number): void
+
+  Deletes the snapshot for the given snapshot ID.
+
+  Triggers a [SnapshotRemovedEvent](/v3.14/api/webvis/classes/snapshotremovedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to delete.
+
+  #### Returns void
+
+### requestSnapshotData
+
+* requestSnapshotData(snapshotID: number): Promise\<SnapshotProperties>
+
+  Requests the data of the specified snapshot.
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to request data for.
+
+  #### Returns Promise\<SnapshotProperties>
+
+  The data of the specified snapshot.
+
+### restoreSession
+
+* restoreSession(handle: string): Promise\<void>
+
+  Restores a session for the given access handle from the infrastructure.
+
+  #### Parameters
+
+  + handle: string
+
+    The access handle of the session to restore.
+
+  #### Returns Promise\<void>
+
+  A Promise that resolves when the session is restored.
+
+### restoreSnapshot
+
+* restoreSnapshot(  
+      snapshotID: number,  
+      options?: SnapshotRestoreOptions,  
+  ): Promise\<void>
+
+  Restores the snapshot for the given snapshot ID.
+
+  Triggers a [SnapshotRestoreStartedEvent](/v3.14/api/webvis/classes/snapshotrestorestartedevent) and, if successful, a [SnapshotRestoredEvent](/v3.14/api/webvis/classes/snapshotrestoredevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to restore.
+  + `Optional`options: SnapshotRestoreOptions
+
+    Options to control the subset of snapshot data to restore.
+
+  #### Returns Promise\<void>
+
+  A Promise that resolves when the snapshot is restored.
+
+### storeSession
+
+* storeSession(): Promise\<string>
+
+  Temporarily stores the session in the connected hub instance and returns an access handle.
+
+  This function does not transfer caches of referenced resources to the hub instance.
+  For transferring caches, see [transferSession](#transfersession).
+
+  #### Returns Promise\<string>
+
+  The access handle of the stored session.
+
+### transferSession
+
+* transferSession(progressCallback: [StoreSessionProgressCallback](/v3.14/api/webvis/types/storesessionprogresscallback)): Promise\<string>
+
+  `Experimental`
+
+  #### Parameters
+
+  + progressCallback: [StoreSessionProgressCallback](/v3.14/api/webvis/types/storesessionprogresscallback)
+
+    Can be used to track the progress of the transfer.
+
+  #### Returns Promise\<string>
+
+  The access handle of the transferred session.
+
+  #### Deprecated
+
+  transferSession with progress callback is deprecated. Please use transferSession without
+  parameters and utilize the returned promise instead!
+
+  Transfers the session to the connected hub instance and returns an access handle.
+
+  Transfers caches of referenced resources to the hub instance if they are not already present.
+* transferSession(): Promise\<string>
+
+  `Experimental`
+
+  Transfers the session to the connected hub instance and returns an access handle.
+
+  Transfers caches of referenced resources to the hub instance if they are not already present.
+
+  #### Returns Promise\<string>
+
+  The access handle of the transferred session.

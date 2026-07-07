@@ -1,0 +1,859 @@
+---
+title: "Interface ClipPlaneAPI"
+sidebarTitle: "ClipPlaneAPI"
+description: "Clip planes are used to visually cut through 3D models by defining a separating plane that hides geometry on one side. This makes it possible to examine internal structures and cro"
+---
+
+## ClipPlaneAPI
+
+### Overview
+
+Clip planes are used to visually cut through 3D models by defining a separating plane
+that hides geometry on one side. This makes it possible to examine internal structures
+and cross-sections of models that would otherwise be hidden.
+
+A clip room consists of six orthogonal planes forming a box that clips any geometry
+outside of it, useful for focusing on specific regions of interest.
+
+### Key Features
+
+* Creating individual clip planes with specific orientation and position
+* Creating clip rooms (box-shaped clipping volumes)
+* Positioning clip planes relative to selected components
+* Enabling/disabling clip planes
+* Creating capping geometry to visualize cut surfaces
+* Configuring which nodes are affected by clipping
+
+### Quick Start
+
+```ts
+// Get the webvis context  
+const context = webvis.getContext();  
+  
+// Create a basic clip plane  
+const clipPlaneId = context.createClipPlane({  
+  normal: [0, 0, 1],     // Z-axis normal (up)  
+  position: [0, 0, 0]    // Passing through origin  
+});  
+  
+// Create a clip room around selected nodes  
+const selectedNodes = context.getSelectedNodes();  
+context.clipOtherParts(selectedNodes);  
+  
+// Create and visualize a cut surface  
+await context.createCapping(clipPlaneId);
+```
+
+### Events
+
+The API triggers the following events:
+
+* [ClipPlaneCreatedEvent](/v3.14/api/webvis/classes/clipplanecreatedevent)
+* [ClipPlaneChangedEvent](/v3.14/api/webvis/classes/clipplanechangedevent)
+* [ClipPlaneRemovedEvent](/v3.14/api/webvis/classes/clipplaneremovedevent)
+* [ClippingRoomCreatedEvent](/v3.14/api/webvis/classes/clippingroomcreatedevent)
+* [ClippingRoomChangedEvent](/v3.14/api/webvis/classes/clippingroomchangedevent)
+* [ClippingRoomRemovedEvent](/v3.14/api/webvis/classes/clippingroomremovedevent)
+
+### Related Types
+
+* ClipPlaneProperties
+* ClipRoomProperties
+
+## Methods
+
+### changeClippingRoom
+
+* changeClippingRoom(properties?: ClipRoomProperties): ClipRoomProperties
+
+  Changes one or more properties of an existing clip room.
+
+  Allows modifying various aspects of the clip room such as size, position,
+  orientation (via transform matrix), visibility, and enabled state. Only the properties
+  specified in the properties object will be changed.
+
+  Since WebVis only supports a single clip room at a time, there's no need to specify
+  a clip room ID. If no clip room exists when this method is called, it will create one.
+
+  Triggers a [ClippingRoomChangedEvent](/v3.14/api/webvis/classes/clippingroomchangedevent) when properties are modified.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Change the size and position of a clip room  
+  const updatedProps = context.changeClippingRoom({  
+    size: [20, 15, 10],          // Resize the clip room  
+    transform: [                 // Move to new position with rotation  
+      1, 0, 0, 0,  
+      0, 1, 0, 0,  
+      0, 0, 1, 0,  
+      5, 2, 3, 1                 // Translation component  
+    ],  
+    invisible: true              // Hide the visual representation  
+  });  
+    
+  // Disable the clip room temporarily without removing it  
+  context.changeClippingRoom({  
+    enabled: false  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipRoomProperties
+
+    Properties to change on the clip room
+
+  #### Returns ClipRoomProperties
+
+  An object containing only the properties that were actually changed
+* changeClippingRoom(  
+      name?: string,  
+      size?: number[] | Float32Array\<ArrayBufferLike>,  
+      transformation?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+  ): ClipRoomProperties
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the clip room.
+  + `Optional`size: number[] | Float32Array\<ArrayBufferLike>
+
+    The size of the clip room.
+  + `Optional`transformation: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the clip room.
+  + `Optional`disabled: boolean
+
+    The disabled state of the clip room.
+  + `Optional`invisible: boolean
+
+    The invisible state of the clip room.
+
+  #### Returns ClipRoomProperties
+
+  An object with the changed properties.
+
+  #### Deprecated
+
+  Calling changeClippingRoom with single parameters is deprecated, please use ClipRoomProperties instead.
+
+  Changes one or more properties of the clip room.
+
+### changeClipPlane
+
+* changeClipPlane(  
+      clipPlaneId: number,  
+      properties: ClipPlaneProperties,  
+  ): ClipPlaneProperties
+
+  Changes one or more properties of an existing clip plane .
+
+  Allows modifying various aspects of a clip plane such as orientation, position,
+  visibility, and selection of which nodes are affected. Only the properties
+  specified in the properties object will be changed.
+
+  Triggers a [ClipPlaneChangedEvent](/v3.14/api/webvis/classes/clipplanechangedevent) when properties are modified.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Change the position and orientation of a clip plane  
+  const updatedProps = context.changeClipPlane(clipPlaneId, {  
+    normal: [0, 1, 0],     // Update to Y-axis normal  
+    position: [0, 0, 5],   // Move to new position  
+    invisible: true        // Hide the visual plane representation  
+  });  
+    
+  // Exclude certain components from being clipped  
+  context.changeClipPlane(clipPlaneId, {  
+    excludedNodes: [1234, 5678]  // These nodes won't be affected by the clip plane  
+  });
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to modify
+  + properties: ClipPlaneProperties
+
+    Properties to change on the clip plane
+
+  #### Returns ClipPlaneProperties
+
+  An object containing only the properties that were actually changed
+* changeClipPlane(  
+      clipPlaneID: number,  
+      normal?: number[] | Float32Array\<ArrayBufferLike>,  
+      point?: number[] | Float32Array\<ArrayBufferLike>,  
+      name?: string,  
+      thickness?: number,  
+      tangent?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+      exclusive?: boolean,  
+  ): void
+
+  #### Parameters
+
+  + clipPlaneID: number
+
+    The ID of the clip plane to modify
+  + `Optional`normal: number[] | Float32Array\<ArrayBufferLike>
+
+    The new normal vector for the clip plane
+  + `Optional`point: number[] | Float32Array\<ArrayBufferLike>
+
+    A point in space that lies on the clip plane
+  + `Optional`name: string
+
+    The display name for the clip plane
+  + `Optional`thickness: number
+
+    The visual thickness of the clip plane
+  + `Optional`tangent: number[] | Float32Array\<ArrayBufferLike>
+
+    The tangent vector for the clip plane
+  + `Optional`disabled: boolean
+
+    Whether the clip plane is enabled (false) or disabled (true)
+  + `Optional`invisible: boolean
+
+    Whether the clip plane's visual representation is hidden
+  + `Optional`exclusive: boolean
+
+    Whether the clip plane only affects nodes with the exclusiveClipplanes property
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling changeClipPlane with single parameters is deprecated, please use the version with ClipPlaneProperties instead.
+
+  Changes properties of an existing clip plane using individual parameters.
+
+  Triggers a [ClipPlaneChangedEvent](/v3.14/api/webvis/classes/clipplanechangedevent) when properties are modified.
+
+### clipOtherParts
+
+* clipOtherParts(target: number | number[]): void
+
+  Creates a clip room that encompasses the selected node(s).
+
+  This method automatically calculates a bounding box around the specified target
+  node(s) and creates a clip room with the exact dimensions of that box. It's an
+  easy way to isolate specific components for closer examination by clipping away
+  all surrounding geometry.
+
+  The created clip room replaces any existing clip room .
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip room around a single component  
+  context.clipOtherParts(4567);  
+    
+  // Create a clip room around multiple components  
+  context.clipOtherParts([1234, 5678, 9012]);  
+    
+  // Create a clip room around the currently selected components  
+  const selectedNodes = context.getSelectedNodes();  
+  if (selectedNodes.length > 0) {  
+    context.clipOtherParts(selectedNodes);  
+  }
+  ```
+
+  #### Parameters
+
+  + target: number | number[]
+
+    ID or array of IDs of the nodes to create a clip room around
+
+  #### Returns void
+
+### createCapping
+
+* createCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Generates capping geometry for the surface that is cut by a clip plane.
+
+  This method creates visible geometry at the intersection of the clip plane and the model,
+  allowing you to see and interact with the cut surface. The generated capping geometry
+  supports measurements and all other operations that can be performed on regular geometry.
+
+  Once generated, capping geometry can be enabled, disabled, or removed using the
+  corresponding methods.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  // Generate capping geometry for the cut surface  
+  await context.createCapping(clipPlaneId);  
+    
+  // Later, disable the capping when not needed  
+  await context.disableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to create capping geometry for
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been created
+
+### createClippingRoom
+
+* createClippingRoom(properties?: ClipRoomProperties): void
+
+  Creates a new clip room.
+
+  A clip room consists of six orthogonal planes forming a box that clips any geometry
+  outside of it. This is useful for examining internal structures of complex models
+  or focusing on specific regions of interest.
+
+  Clip rooms can be positioned and sized using the properties object, and can be
+  made invisible (for clipping without showing the room boundaries) or disabled
+  temporarily without removing them.
+
+  Triggers a [ClippingRoomCreatedEvent](/v3.14/api/webvis/classes/clippingroomcreatedevent) when the clip room is created.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a basic clip room at the origin  
+  context.createClippingRoom({  
+    size: [10, 10, 10],        // Size along X, Y, and Z axes  
+    name: "Engine Section"  
+  });  
+    
+  // Create a positioned and rotated clip room  
+  context.createClippingRoom({  
+    size: [5, 5, 5],  
+    // Matrix including rotation and translation  
+    transform: [  
+      0.866, 0.5, 0, 0,      // First row (rotation + scale)  
+      -0.5, 0.866, 0, 0,     // Second row (rotation + scale)  
+      0, 0, 1, 0,            // Third row (rotation + scale)  
+      10, 5, 3, 1            // Fourth row (translation + w)  
+    ]  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipRoomProperties
+
+    Initial properties of the created clip room. Default: \{\}
+
+  #### Returns void
+* createClippingRoom(  
+      name?: string,  
+      size?: number[] | Float32Array\<ArrayBufferLike>,  
+      transformation?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+  ): void
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the clip room.
+  + `Optional`size: number[] | Float32Array\<ArrayBufferLike>
+
+    The size of the clip room.
+  + `Optional`transformation: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the clip room.
+  + `Optional`disabled: boolean
+
+    The disabled state of the clip room.
+  + `Optional`invisible: boolean
+
+    The invisible state of the clip room.
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling createClippingRoom with single parameters is deprecated, please use ClipRoomProperties instead.
+
+  Creates a new clip room.
+
+### createClipPlane
+
+* createClipPlane(properties?: ClipPlaneProperties): number
+
+  Creates a new clip plane.
+
+  Clip planes create a visual cut through 3D models, allowing examination of internal structures
+  by hiding geometry on one side of the plane. The orientation and position of the plane are
+  defined by its normal vector and a point on the plane.
+
+  A clip plane can be configured to exclude specific nodes from clipping or to clip only
+  specific nodes, using the excludedNodes and clippedNodes properties respectively.
+
+  Triggers a [ClipPlaneCreatedEvent](/v3.14/api/webvis/classes/clipplanecreatedevent) when the clip plane is created.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane aligned with the XY plane  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],     // Z-axis normal  
+    position: [0.04, -0.03, -0.15],   // Passing through a specific point  
+    name: "Section View"  
+  });  
+    
+  // Create a clip plane with excluded nodes  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [1, 0, 0],  
+    excludedNodes: [1234, 5678],  // These nodes won't be clipped  
+    invisible: true               // Hide the visual representation of the plane  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipPlaneProperties
+
+    Initial properties of the created clip plane. Default: \{\}
+
+  #### Returns number
+
+  The ID of the newly created clip plane.
+* createClipPlane(  
+      normal?: number[] | Float32Array\<ArrayBufferLike>,  
+      point?: number[] | Float32Array\<ArrayBufferLike>,  
+      name?: string,  
+      thickness?: number,  
+      tangent?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+      exclusive?: boolean,  
+  ): number
+
+  #### Parameters
+
+  + `Optional`normal: number[] | Float32Array\<ArrayBufferLike>
+
+    The normal of the clip plane
+  + `Optional`point: number[] | Float32Array\<ArrayBufferLike>
+
+    An arbitrary point in space which lies on the clip plane
+  + `Optional`name: string
+
+    The name of the clip plane
+  + `Optional`thickness: number
+
+    The thickness of the clip plane
+  + `Optional`tangent: number[] | Float32Array\<ArrayBufferLike>
+
+    The tangent of the clip plane
+  + `Optional`disabled: boolean
+
+    The state of the clip plane
+  + `Optional`invisible: boolean
+
+    Invisible on the UI
+  + `Optional`exclusive: boolean
+
+    Set the exclusive flag to clip geometry when using exclusiveClipplanes property
+
+  #### Returns number
+
+  The ID of the newly created clip plane
+
+  #### Deprecated
+
+  Calling createClipPlane with single parameters is deprecated, please use ClipPlaneProperties instead.
+
+  Creates a clip plane defined by the plane's normal, positioned at an optional point (otherwise at
+  the world space origin) and an optional name.
+
+### disableCapping
+
+* disableCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Disables the generated capping geometry for a clip plane.
+
+  This method temporarily hides the capping geometry without removing it from
+  the scene. The capping geometry can be made visible again using [enableCapping](#enablecapping).
+  This is useful when you need to switch between seeing the cut surface and
+  seeing through to the interior of the model.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Hide the capping geometry temporarily  
+  await context.disableCapping(clipPlaneId);  
+    
+  // Show it again later  
+  await context.enableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be disabled
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been disabled
+
+### enableCapping
+
+* enableCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Enables the generated capping geometry for a clip plane.
+
+  After capping geometry has been created for a clip plane, this method makes it visible
+  . The capping geometry represents the intersection between the clip plane
+  and the model, allowing visualization and interaction with the cut surface.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Later disable capping and then re-enable it  
+  await context.disableCapping(clipPlaneId);  
+  // ...  
+  await context.enableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be enabled
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been enabled
+
+### getClipPlanes
+
+* getClipPlanes(): number[]
+
+  Returns the IDs of all clip planes.
+
+  This method provides a list of all clip plane IDs that can be used with other
+  ClipPlaneAPI methods like changeClipPlane, removeClipPlane, or requestClipPlaneData.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get all clip planes and print their properties  
+  const clipPlaneIds = context.getClipPlanes();  
+    
+  clipPlaneIds.forEach(async (id) => {  
+    const properties = await context.requestClipPlaneData(id);  
+    console.log(`Clip plane ${id}: ${properties.name || 'unnamed'}`);  
+  });
+  ```
+
+  #### Returns number[]
+
+  An array of clip plane IDs. Empty array if no clip planes exist.
+
+### getClipRoom
+
+* getClipRoom(): number
+
+  Returns the ID of the current clip room.
+
+  Since WebVis only supports a single clip room at a time, this method returns
+  a single ID value rather than an array. The ID can be used with other clip room
+  methods like requestClipRoomData.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get the current clip room ID and retrieve its properties  
+  const clipRoomId = context.getClipRoom();  
+    
+  if (clipRoomId !== undefined) {  
+    const properties = await context.requestClipRoomData();  
+    console.log(`Clip room size: [${properties.size}]`);  
+  } else {  
+    console.log("No clip room exists in the scene");  
+  }
+  ```
+
+  #### Returns number
+
+  The ID of the current clip room, or undefined if no clip room exists
+
+### removeCapping
+
+* removeCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Completely removes the generated capping geometry for a clip plane.
+
+  This method permanently deletes any capping geometry that was previously created
+  for the specified clip plane. Unlike [disableCapping](#disablecapping), which merely hides the
+  geometry, this method removes it entirely from the scene.
+
+  If you later want to see capping geometry again, you'll need to call [createCapping](#createcapping)
+  to regenerate it.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Later, permanently remove the capping geometry  
+  await context.removeCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be removed
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been removed
+
+### removeClippingRoom
+
+* removeClippingRoom(safe?: boolean): [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  Removes the clip room from the scene.
+
+  This method completely removes the clip room and disables its clipping effect.
+  Only one clip room can exist at a time, so there's no need to specify an ID.
+
+  When the `safe` parameter is set to true and the clip room is referenced by snapshots,
+  the removal will be prevented and the method will return `REFERENCED_BY_SNAPSHOT`.
+  By default (`safe` is false), the clip room will be forcibly removed even if it's
+  referenced by snapshots.
+
+  Triggers a [ClippingRoomRemovedEvent](/v3.14/api/webvis/classes/clippingroomremovedevent) when the clip room is successfully removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Safe remove - will fail if referenced by snapshots  
+  const removeResult = context.removeClippingRoom(true);  
+    
+  if (removeResult === webvis.RemoveState.REFERENCED_BY_SNAPSHOT) {  
+    console.log("Cannot remove clip room - it's referenced by a snapshot");  
+  } else if (removeResult === webvis.RemoveState.OK) {  
+    console.log("Clip room successfully removed");  
+  }  
+    
+  // Force remove even if referenced by snapshots (default behavior)  
+  context.removeClippingRoom();
+  ```
+
+  #### Parameters
+
+  + `Optional`safe: boolean
+
+    Whether to prevent removal if the clip room is referenced by snapshots. Default: false
+
+  #### Returns [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  A RemoveState value indicating the result of the removal operation
+
+### removeClipPlane
+
+* removeClipPlane(clipPlaneId: number, safe?: boolean): [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  Removes a clip plane from the scene.
+
+  This method completely removes the specified clip plane from the scene. Any capping
+  geometry associated with the clip plane will also be removed.
+
+  When the `safe` parameter is set to true and the clip plane is referenced by snapshots,
+  the removal will be prevented and the method will return `REFERENCED_BY_SNAPSHOT`.
+  By default (`safe` is false), clip planes will be forcibly removed even if they're
+  referenced by snapshots.
+
+  Triggers a [ClipPlaneRemovedEvent](/v3.14/api/webvis/classes/clipplaneremovedevent) when the clip plane is successfully removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Safe remove - will fail if referenced by snapshots  
+  const removeResult = context.removeClipPlane(clipPlaneId, true);  
+    
+  if (removeResult === webvis.RemoveState.REFERENCED_BY_SNAPSHOT) {  
+    console.log("Cannot remove clip plane - it's referenced by a snapshot");  
+  } else if (removeResult === webvis.RemoveState.OK) {  
+    console.log("Clip plane successfully removed");  
+  }  
+    
+  // Force remove even if referenced by snapshots (default behavior)  
+  context.removeClipPlane(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to remove
+  + `Optional`safe: boolean
+
+    Whether to prevent removal if the clip plane is referenced by snapshots. Default: false
+
+  #### Returns [RemoveState](/v3.14/api/webvis/enums/removestate)
+
+  A RemoveState value indicating the result of the removal operation
+
+### requestClipPlaneData
+
+* requestClipPlaneData(clipPlaneId: number): Promise\<ClipPlaneProperties>
+
+  Retrieves the properties of a specific clip plane.
+
+  This method asynchronously fetches the current configuration of a clip plane,
+  including its position, orientation, visibility settings, and any node exclusions.
+  The data is returned as a ClipPlaneProperties object that can be inspected or used
+  to create a similar clip plane.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  const properties = await context.requestClipPlaneData(clipPlaneId);  
+  console.log(`Clip plane position: [${properties.position}]`);  
+  console.log(`Clip plane normal: [${properties.normal}]`);  
+      
+  // Use the properties to create a similar clip plane  
+  const newClipPlaneId = context.createClipPlane({  
+    ...properties,  
+    name: properties.name + " (copy)"  
+  });
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to get data for
+
+  #### Returns Promise\<ClipPlaneProperties>
+
+  Promise resolving to the clip plane's properties
+
+### requestClipRoomData
+
+* requestClipRoomData(): Promise\<ClipRoomProperties>
+
+  Retrieves the properties of the current clip room.
+
+  This method asynchronously fetches the current configuration of the clip room,
+  including its size, position, transformation matrix, and visibility settings.
+  The data is returned as a ClipRoomProperties object that can be inspected or used
+  to create a similar clip room after the current one is removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get the clip room properties and display information  
+  const properties = await context.requestClipRoomData();  
+  console.log(`Clip room size: [${properties.size}]`);  
+  console.log(`Clip room transform: [${properties.transform}]`);  
+    
+  // Use the properties to create a similar clip room after removing the current one  
+  context.removeClippingRoom();  
+  context.createClippingRoom({  
+    ...properties,  
+    size: [properties.size[0] * 1.5, properties.size[1] * 1.5, properties.size[2] * 1.5],  
+    name: properties.name ? properties.name + " (enlarged)" : "Enlarged Room"  
+  });
+  ```
+
+  #### Returns Promise\<ClipRoomProperties>
+
+  Promise resolving to the clip room's properties

@@ -1,0 +1,87 @@
+---
+title: "Interface MaterialPropertiesExperimental"
+sidebarTitle: "MaterialProperties"
+description: "Experimental. May be changed in the future without notice."
+---
+
+*Experimental. May be changed in the future without notice.*
+
+The properties of a material entity in the webvis context.
+
+#### See
+
+MaterialAPI
+
+## Properties
+
+### `Optional` `Experimental`baseColor
+
+baseColor?: [number, number, number]
+
+The base color of the material specified by an RGB array, where each channel's value ranges from 0 to 1.
+
+#### Default
+
+```ts
+[1,1,1]
+```
+
+### `Optional` `Experimental`emissiveColor
+
+emissiveColor?: [number, number, number]
+
+The emissive color of the material specified by an RGB array, where each channel's value ranges from 0 to 1.
+
+#### Default
+
+```ts
+[0,0,0]
+```
+
+### `Optional` `Experimental`metallic
+
+metallic?: number
+
+The metallic property of the material specified in the range from 0 to 1.
+
+#### Default
+
+```ts
+0
+```
+
+### `Optional` `Experimental`name
+
+name?: string
+
+The name of the material.
+
+#### Default
+
+```ts
+undefined
+```
+
+### `Optional` `Experimental`opacity
+
+opacity?: number
+
+The opacity of the material specified in the range from 0 to 1.
+
+#### Default
+
+```ts
+1.0
+```
+
+### `Optional` `Experimental`roughness
+
+roughness?: number
+
+The roughness of the material specified in the range from 0 to 1.
+
+#### Default
+
+```ts
+0.5
+```

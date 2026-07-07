@@ -1,0 +1,125 @@
+---
+title: "Scale Globally with Hub Mesh: Multi-Instance instant3Dhub"
+sidebarTitle: "Hub Mesh"
+description: "How to connect multiple instant3Dhub instances with Hub Mesh to distribute 3D data across regions, departments, or infrastructure boundaries."
+---
+
+Hub Mesh is the federation layer that links multiple instant3Dhub instances into a single logical network. With Hub Mesh, a user working through one hub can seamlessly access 3D resources that physically reside on a different hub — across data centers, geographic regions, or organizational boundaries — without any manual re-routing. Each hub retains full autonomy over its own data and access policies while participating in the shared mesh.
+
+## Why Use Hub Mesh
+
+Running a single global instant3Dhub instance sounds simpler, but it quickly hits practical limits: latency for remote users, data sovereignty constraints, and the need to keep certain datasets within specific network perimeters. Hub Mesh solves these problems by letting you deploy one hub per site, department, or cloud region, then connect them so that every hub can serve every user.
+
+Common use cases include:
+
+- **Geographic distribution** — one hub per region (e.g., Europe, North America, APAC) to minimize latency for local users while sharing a unified model library.
+- **Per-department isolation** — engineering, manufacturing, and supplier hubs each manage their own data, but cross-functional teams can pull from all three.
+- **Hybrid cloud / on-premise** — keep sensitive IP on an on-premise hub while offloading public-facing or compute-intensive workloads to a cloud hub.
+- **Disaster recovery** — replicate critical resources across mesh nodes so that a hub outage does not interrupt user sessions.
+
+<Tip>
+  Hub Mesh is also an effective disaster recovery strategy. Configure two hubs with overlapping resource mappings and let Hub Mesh route requests to whichever node is healthy. Users experience seamless failover with no application-level changes required.
+</Tip>
+
+## How Cross-Instance Resource Access Works
+
+When a client requests a resource from Hub A, and Hub A's URN Mapper does not contain a local mapping for that URN, Hub A queries its mesh peers in priority order. The first peer that claims ownership of the URN proxies the resource back through Hub A to the client. From the client's perspective, all resources come from a single hub URL.
+
+```text
+Client
+  │ requests urn:eu:models:assembly-4711
+  ▼
+Hub A (Europe)  ──── not found locally ────►  Hub B (North America)
+  ▲                                                    │
+  │◄────────────── proxied response ──────────────────┘
+  ▼
+Client receives the model
+```
+
+Routing decisions are made at the hub level, so you do not need to change anything in your client application or Data Gateway configuration when adding a new mesh peer.
+
+## Configuring Hub Mesh Peers
+
+Define your mesh peers in `values.yaml` for each hub. Each peer entry requires at minimum a name and the peer's public URL:
+
+```yaml
+hubMesh:
+  peers:
+    - name: hub-eu
+      url: https://hub-eu.example.com
+    - name: hub-na
+      url: https://hub-na.example.com
+    - name: hub-apac
+      url: https://hub-apac.example.com
+```
+
+Hub-to-hub requests are authenticated using a shared secret that you configure for each peer. Store secrets as Kubernetes Secrets and reference them via environment variables — do not hard-code them in `values.yaml`. The reference implementation packages on the [support portal](https://support.threedy.io) include full examples with secret configuration.
+
+Apply the same peer list to every hub in the mesh. Each hub must be able to reach every peer over HTTPS.
+
+<Warning>
+  Hub-to-hub traffic carries 3D model data. Ensure all mesh peer URLs use HTTPS and that your network allows direct hub-to-hub connections on port 443. If hubs are behind NAT or firewalls, configure appropriate rules before enabling Hub Mesh.
+</Warning>
+
+## Data Routing: Which Hub Serves Which Resources
+
+Each hub serves resources whose URN prefixes are registered in its own URN Mapper. When Hub Mesh is enabled, a hub also advertises its registered prefixes to all peers during the mesh handshake. This creates a distributed routing table: every hub knows which peer to ask for any given URN prefix.
+
+You control routing by managing which URN prefixes each hub's URN Mapper owns:
+
+```yaml
+# values.yaml for Hub Europe
+urnMapper:
+  mappings:
+    - urnPrefix: "urn:eu:models:"
+      baseUrl: "https://plm-eu.example.com/api/3d/"
+
+# values.yaml for Hub North America
+urnMapper:
+  mappings:
+    - urnPrefix: "urn:na:models:"
+      baseUrl: "https://plm-na.example.com/api/3d/"
+```
+
+A client on either hub can request both `urn:eu:models:*` and `urn:na:models:*` resources. Hub Mesh handles the routing transparently.
+
+## Access Control Across Mesh Nodes
+
+Hub Mesh propagates the authenticated user identity across hub-to-hub requests. When Hub A forwards a request to Hub B, it includes a signed identity assertion. Hub B evaluates the request against its own access control policies before returning the resource.
+
+This means:
+
+- Access control rules on each hub are always enforced, regardless of which hub the request originated from.
+- A user with read-only access on Hub B cannot retrieve restricted resources through Hub A.
+- You manage permissions on each hub independently; there is no central ACL store required.
+
+<Note>
+  For identity propagation to work correctly, all hubs in the mesh must trust the same identity provider (IdP). Configure the same OIDC or SAML provider in the authentication settings of each hub.
+</Note>
+
+## Monitoring the Mesh
+
+Check the health of all mesh connections from any hub using the mesh status endpoint:
+
+```bash
+curl https://hub-eu.example.com/health/mesh
+```
+
+The response shows the connectivity status for each peer:
+
+```json
+{
+  "peers": {
+    "hub-na": { "status": "ok", "latencyMs": 87 },
+    "hub-apac": { "status": "ok", "latencyMs": 212 }
+  }
+}
+```
+
+A peer status of `"unreachable"` indicates a network or configuration issue. Check that the peer URL is correct, the shared secret matches on both sides, and that firewall rules permit the connection.
+
+## Adding or Removing Peers
+
+To add a new hub to an existing mesh, add it to the `peers` list in `values.yaml` on every existing hub and run `helm upgrade`. The new hub must also list all existing hubs as its peers. No downtime is required — Hub Mesh performs a rolling handshake as each hub picks up the configuration change.
+
+To remove a peer, delete it from the `peers` list on all remaining hubs and upgrade each. The removed hub will no longer receive mesh requests, and its URN prefixes will become unavailable to the rest of the mesh.

@@ -1,0 +1,52 @@
+---
+title: "Interface VariantsAPI"
+sidebarTitle: "VariantsAPI"
+description: "The ID of the Node."
+---
+
+## Methods
+
+### isNodePartOfEnabledVariant
+
+* isNodePartOfEnabledVariant(nodeId: number): Promise\<boolean>
+
+  #### Parameters
+
+  + nodeId: number
+
+    The ID of the Node.
+
+  #### Returns Promise\<boolean>
+
+  True, if the Node is Part of an enabled Variant. False otherwise.
+
+### requestVariants
+
+* requestVariants(nodeId: number): Promise\<VariantProperties[]>
+
+  #### Parameters
+
+  + nodeId: number
+
+    The ID of the Node.
+
+  #### Returns Promise\<VariantProperties[]>
+
+  The Variant(s) for a given nodeID.
+
+### setVariantEnabled
+
+* setVariantEnabled(variant: number, enabled: boolean): Promise\<void>
+
+  Enables or disables a given Variant.
+
+  #### Parameters
+
+  + variant: number
+
+    The ID of the Variant.
+  + enabled: boolean
+
+    The enabled state.
+
+  #### Returns Promise\<void>

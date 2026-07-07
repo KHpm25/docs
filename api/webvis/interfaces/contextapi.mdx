@@ -1,0 +1,5636 @@
+---
+title: "Interface ContextAPI"
+sidebarTitle: "ContextAPI"
+description: "The ContextAPI combines all functionality which can be applied on the WebvisContext."
+---
+
+The ContextAPI combines all functionality which can be applied on the WebvisContext.
+
+## Methods
+
+### add
+
+* add(options: AddNodeOptions): number
+
+  Adds a new node to the instance graph.
+
+  #### Parameters
+
+  + options: AddNodeOptions
+
+    Specifies the options for the new Node.
+
+  #### Returns number
+
+  The ID of the added node
+
+  Inherited from InstanceGraphAPI.add
+* add(  
+      dataURI: string,  
+      parentID?: number,  
+      usage?: [UsageString](/api/webvis/types/usagestring),  
+      label?: string,  
+      contentType?: string,  
+      initialProperties?: InitialNodeProperties,  
+      cacheStrategy?: [CacheStrategy](/api/webvis/enums/cachestrategy),  
+  ): number
+
+  #### Parameters
+
+  + dataURI: string
+
+    Specifies the URI to the data resource.
+  + `Optional`parentID: number
+
+    Specifies the parent Node ID of the added Node.
+  + `Optional`usage: [UsageString](/api/webvis/types/usagestring)
+
+    The usage parameter allows to define how the resource should be inserted in the InstanceGraph.
+  + `Optional`label: string
+
+    Specifies a custom label for the added Node.
+  + `Optional`contentType: string
+
+    Specifies the MimeType of the data resource.
+  + `Optional`initialProperties: InitialNodeProperties
+
+    Specifies initialProperties of the added Node.
+  + `Optional`cacheStrategy: [CacheStrategy](/api/webvis/enums/cachestrategy)
+
+    Specifies the strategy which is used when a data cache is requested from the Hub.
+
+  #### Returns number
+
+  The ID of added node
+
+  #### Deprecated
+
+  This function will no longer be available in future webvis releases. Please use the add function with AddNodeOptions instead.
+
+  Adds a new Node to the InstanceGraph.
+
+  Triggers a [NodeAddedEvent](/api/webvis/classes/nodeaddedevent). In case of an error, a [NodeErrorEvent](/api/webvis/classes/nodeerrorevent) is triggered.
+
+  Inherited from InstanceGraphAPI.add
+
+### addCustomNode
+
+* addCustomNode(  
+      customNodeType: string,  
+      data: any,  
+      dataType?: [AttachmentType](/api/webvis/enums/attachmenttype),  
+  ): number
+
+  Creates a custom node along with custom data which is stored in an attachment.
+
+  The attached data can be accessed via the [Property.ATTACHMENT](/api/webvis/enums/property#attachment) property of the node.
+
+  Triggers a [NodeAddedEvent](/api/webvis/classes/nodeaddedevent). In case of an error, a [NodeErrorEvent](/api/webvis/classes/nodeerrorevent) is triggered.
+
+  #### Parameters
+
+  + customNodeType: string
+
+    Specifies the custom node type.
+  + data: any
+
+    Specifies the data of the custom node.
+  + `Optional`dataType: [AttachmentType](/api/webvis/enums/attachmenttype)
+
+    Specifies the type of the data. Default: "json".
+
+  #### Returns number
+
+  The ID of the newly created custom node.
+
+  #### See
+
+  AttachmentAPI
+
+  Inherited from InstanceGraphAPI.addCustomNode
+
+### addToCollection
+
+* addToCollection(collectionID: number, nodeID: number, recursive?: boolean): void
+
+  #### Parameters
+
+  + collectionID: number
+
+    Specifies to which collection the node should be added
+  + nodeID: number
+
+    Specifies which node should be added to the collection
+  + `Optional`recursive: boolean
+
+    Specifies if the children of the node should also be added to the collection
+
+  #### Returns void
+
+  #### Deprecated
+
+  addToCollection is deprecated and will be removed in future versions.
+
+  Adds the node given by nodeID to the collection with id collectionID. If recursive is true,
+  the descendants of the node are also added. Returns the number of nodes in the collection.
+
+  Inherited from CollectionAPI.addToCollection
+
+### addTopologyToSelection
+
+* addTopologyToSelection(handle: TopologyHandle | TopologyHandle[]): Promise\<void>
+
+  Adds one or more topological entities to the current selection.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological entities which
+    should be added to the current selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + setTopologySelection
+  + removeTopologyFromSelection
+  + clearTopologySelection
+  + getSelectedTopologyHandles
+
+  Inherited from TopologyAPI.addTopologyToSelection
+
+### addToSelection
+
+* addToSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Adds the specified nodes to the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to add to the selection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+  Inherited from SelectionAPI.addToSelection
+
+### anchorXR
+
+* anchorXR(xrAnchorOptions?: XRAnchorOptions): void
+
+  `Experimental`
+
+  Anchors the model at the current 3D pose. Visually, this will have the effect that the model will stay at the
+  current position and orientation in the real world.
+
+  Please note, that in a model-based tracking scenario, the model will get anchored automatically
+  when the alignment of the model with the real world object is high enough that tracking can be performed
+  (model is snapped).
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.anchored set to `true`.
+
+  The optional parameter XRAnchorOptions, in conjunction with XRAnchorOptions.anchorToSurface,
+  can be used to anchor the model on a detected surface. By default, this is set to false, and the model
+  is anchored at the current 3D pose of the device, as described above.
+
+  However, if set to true, and if the device running webvis supports XR and ray casting, a mathematical ray will be cast from the device into the real world.
+  If this ray intersects with a detected surface, the scene will be transformed and anchored to this surface at the intersection point, with the Y axis alined orthogonally to the surface.
+  On occasion, the model may need to be offset, so it does not appear to be imbedded in the surface it is anchored to.
+  In order to achieve this, an optional parameter can be set in the XRAnchorOptions, by updating the XRAnchorOptions.xrAnchorOffsetTransform matrix.
+
+  #### Parameters
+
+  + `Optional`xrAnchorOptions: XRAnchorOptions
+
+    An optional object that contains the anchorToSurface property.
+
+  #### Returns void
+
+  Inherited from RealityAPI.anchorXR
+
+### changeAnnotation
+
+* changeAnnotation(  
+      annotationId: number,  
+      properties: AnnotationProperties,  
+  ): AnnotationProperties
+
+  Changes one or more properties of an Annotation with the specified ID and triggers an [AnnotationChangedEvent](/api/webvis/classes/annotationchangedevent).
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation you want to change.
+  + properties: AnnotationProperties
+
+    The properties of the Annotation you want change.
+
+  #### Returns AnnotationProperties
+
+  An Object with the changed Properties.
+
+  Inherited from AnnotationAPI.changeAnnotation
+* changeAnnotation(  
+      annotationID: number,  
+      label?: string,  
+      visible?: boolean,  
+      anchorPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      labelPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      active?: boolean,  
+      transform?: number[] | Float32Array\<ArrayBufferLike>,  
+  ): void
+
+  #### Parameters
+
+  + annotationID: number
+
+    The ID of the Annotation.
+  + `Optional`label: string
+
+    The text of the Annotation.
+  + `Optional`visible: boolean
+
+    Indicates if the Annotation should be visible or hidden.
+  + `Optional`anchorPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    Anchor position in world space coordinates.
+  + `Optional`labelPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    The position of the label.
+  + `Optional`active: boolean
+
+    DEPRECATED
+  + `Optional`transform: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the Annotation.
+
+  #### Returns void
+
+  #### Deprecated
+
+  Changes an annotation. Should use a properties object AnnotationProperties as an argument rather than passing individual values.
+
+  Inherited from AnnotationAPI.changeAnnotation
+
+### changeAppearancePattern
+
+* changeAppearancePattern(  
+      patternId: number,  
+      properties: AppearancePatternProperties,  
+  ): AppearancePatternProperties
+
+  Changes one or more properties of an appearance pattern with the specified ID and triggers a [AppearancePatternChangedEvent](/api/webvis/classes/appearancepatternchangedevent).
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern you want to change.
+  + properties: AppearancePatternProperties
+
+    The properties of the appearance pattern you want change.
+
+  #### Returns AppearancePatternProperties
+
+  An object with the changed properties.
+
+  Inherited from AppearancePatternAPI.changeAppearancePattern
+
+### changeClippingRoom
+
+* changeClippingRoom(properties?: ClipRoomProperties): ClipRoomProperties
+
+  Changes one or more properties of an existing clip room.
+
+  Allows modifying various aspects of the clip room such as size, position,
+  orientation (via transform matrix), visibility, and enabled state. Only the properties
+  specified in the properties object will be changed.
+
+  Since WebVis only supports a single clip room at a time, there's no need to specify
+  a clip room ID. If no clip room exists when this method is called, it will create one.
+
+  Triggers a [ClippingRoomChangedEvent](/api/webvis/classes/clippingroomchangedevent) when properties are modified.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Change the size and position of a clip room  
+  const updatedProps = context.changeClippingRoom({  
+    size: [20, 15, 10],          // Resize the clip room  
+    transform: [                 // Move to new position with rotation  
+      1, 0, 0, 0,  
+      0, 1, 0, 0,  
+      0, 0, 1, 0,  
+      5, 2, 3, 1                 // Translation component  
+    ],  
+    invisible: true              // Hide the visual representation  
+  });  
+    
+  // Disable the clip room temporarily without removing it  
+  context.changeClippingRoom({  
+    enabled: false  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipRoomProperties
+
+    Properties to change on the clip room
+
+  #### Returns ClipRoomProperties
+
+  An object containing only the properties that were actually changed
+
+  Inherited from ClipPlaneAPI.changeClippingRoom
+* changeClippingRoom(  
+      name?: string,  
+      size?: number[] | Float32Array\<ArrayBufferLike>,  
+      transformation?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+  ): ClipRoomProperties
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the clip room.
+  + `Optional`size: number[] | Float32Array\<ArrayBufferLike>
+
+    The size of the clip room.
+  + `Optional`transformation: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the clip room.
+  + `Optional`disabled: boolean
+
+    The disabled state of the clip room.
+  + `Optional`invisible: boolean
+
+    The invisible state of the clip room.
+
+  #### Returns ClipRoomProperties
+
+  An object with the changed properties.
+
+  #### Deprecated
+
+  Calling changeClippingRoom with single parameters is deprecated, please use ClipRoomProperties instead.
+
+  Changes one or more properties of the clip room.
+
+  Inherited from ClipPlaneAPI.changeClippingRoom
+
+### changeClipPlane
+
+* changeClipPlane(  
+      clipPlaneId: number,  
+      properties: ClipPlaneProperties,  
+  ): ClipPlaneProperties
+
+  Changes one or more properties of an existing clip plane .
+
+  Allows modifying various aspects of a clip plane such as orientation, position,
+  visibility, and selection of which nodes are affected. Only the properties
+  specified in the properties object will be changed.
+
+  Triggers a [ClipPlaneChangedEvent](/api/webvis/classes/clipplanechangedevent) when properties are modified.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Change the position and orientation of a clip plane  
+  const updatedProps = context.changeClipPlane(clipPlaneId, {  
+    normal: [0, 1, 0],     // Update to Y-axis normal  
+    position: [0, 0, 5],   // Move to new position  
+    invisible: true        // Hide the visual plane representation  
+  });  
+    
+  // Exclude certain components from being clipped  
+  context.changeClipPlane(clipPlaneId, {  
+    excludedNodes: [1234, 5678]  // These nodes won't be affected by the clip plane  
+  });
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to modify
+  + properties: ClipPlaneProperties
+
+    Properties to change on the clip plane
+
+  #### Returns ClipPlaneProperties
+
+  An object containing only the properties that were actually changed
+
+  Inherited from ClipPlaneAPI.changeClipPlane
+* changeClipPlane(  
+      clipPlaneID: number,  
+      normal?: number[] | Float32Array\<ArrayBufferLike>,  
+      point?: number[] | Float32Array\<ArrayBufferLike>,  
+      name?: string,  
+      thickness?: number,  
+      tangent?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+      exclusive?: boolean,  
+  ): void
+
+  #### Parameters
+
+  + clipPlaneID: number
+
+    The ID of the clip plane to modify
+  + `Optional`normal: number[] | Float32Array\<ArrayBufferLike>
+
+    The new normal vector for the clip plane
+  + `Optional`point: number[] | Float32Array\<ArrayBufferLike>
+
+    A point in space that lies on the clip plane
+  + `Optional`name: string
+
+    The display name for the clip plane
+  + `Optional`thickness: number
+
+    The visual thickness of the clip plane
+  + `Optional`tangent: number[] | Float32Array\<ArrayBufferLike>
+
+    The tangent vector for the clip plane
+  + `Optional`disabled: boolean
+
+    Whether the clip plane is enabled (false) or disabled (true)
+  + `Optional`invisible: boolean
+
+    Whether the clip plane's visual representation is hidden
+  + `Optional`exclusive: boolean
+
+    Whether the clip plane only affects nodes with the exclusiveClipplanes property
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling changeClipPlane with single parameters is deprecated, please use the version with ClipPlaneProperties instead.
+
+  Changes properties of an existing clip plane using individual parameters.
+
+  Triggers a [ClipPlaneChangedEvent](/api/webvis/classes/clipplanechangedevent) when properties are modified.
+
+  Inherited from ClipPlaneAPI.changeClipPlane
+
+### changeDrawing
+
+* changeDrawing(  
+      drawingId: number,  
+      properties: DrawingProperties,  
+  ): DrawingProperties
+
+  Changes one or more properties of a Drawing with the specified id.
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the Drawing.
+  + properties: DrawingProperties
+
+    The properties of the Drawing.
+
+  #### Returns DrawingProperties
+
+  An object with the changed properties.
+
+  Inherited from DrawingAPI.changeDrawing
+
+### changeDrawingPlane
+
+* changeDrawingPlane(  
+      drawingPlaneId: number,  
+      properties: DrawingPlaneProperties,  
+  ): DrawingPlaneProperties
+
+  `Experimental`
+
+  Changes one or more properties of a DrawingPlane with the specified ID.
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the DrawingPlane you want to change.
+  + properties: DrawingPlaneProperties
+
+    The properties of the DrawingPlane you want change.
+
+  #### Returns DrawingPlaneProperties
+
+  An Object with the changed Properties.
+
+  Inherited from DrawingPlaneAPI.changeDrawingPlane
+
+### changeMaterial
+
+* changeMaterial(  
+      materialId: number,  
+      properties: MaterialProperties,  
+  ): MaterialProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Changes one or more properties of a material with the specified ID and triggers a [MaterialChangedEvent](/api/webvis/classes/materialchangedevent).
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material you want to change.
+  + properties: MaterialProperties
+
+    The properties of the material you want change.
+
+  #### Returns MaterialProperties
+
+  An object with the changed properties.
+
+  Inherited from MaterialAPI.changeMaterial
+
+### changeMeasurement
+
+* changeMeasurement(  
+      measurementID: number,  
+      properties: MeasurementProperties,  
+  ): MeasurementProperties
+
+  Changes one or more properties of the measurement entity with the specified ID.
+
+  Triggers a [MeasurementChangedEvent](/api/webvis/classes/measurementchangedevent) when the measurement entity has been changed.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity that should be changed.
+  + properties: MeasurementProperties
+
+    The properties that should be changed.
+
+  #### Returns MeasurementProperties
+
+  An object with the changed properties.
+
+  #### See
+
+  createMeasurement
+
+  Inherited from MeasurementAPI.changeMeasurement
+
+### changeSetting
+
+* changeSetting<[T](#changesettingt) extends string>(  
+      setting: [T](#changesettingt),  
+      value: ContextSettingType<[T](#changesettingt)>,  
+  ): boolean
+
+  Changes the setting to the given value.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + setting: [T](#changesettingt)
+
+    A name that specifies a particular setting
+  + value: ContextSettingType<[T](#changesettingt)>
+
+    The new value for the setting
+
+  #### Returns boolean
+
+  A boolean which indicates if the setting has changed
+
+  Inherited from SettingsAPI.changeSetting
+
+### changeSnapshot
+
+* changeSnapshot(  
+      snapshotID: number,  
+      properties: SnapshotProperties,  
+  ): SnapshotProperties
+
+  Changes one or more properties of a snapshot with the specified ID.
+
+  Triggers a [SnapshotChangedEvent](/api/webvis/classes/snapshotchangedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to change.
+  + properties: SnapshotProperties
+
+    The properties of the snapshot to change.
+
+  #### Returns SnapshotProperties
+
+  An object with the changed properties.
+
+  Inherited from SessionStorageAPI.changeSnapshot
+* changeSnapshot(  
+      snapshotID: number,  
+      name?: string,  
+      screenshotURL?: string,  
+      order?: number,  
+  ): SnapshotProperties
+
+  Changes the textual description of the snapshot with the specified ID to the value of text.
+
+  Triggers a [SnapshotChangedEvent](/api/webvis/classes/snapshotchangedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to change.
+  + `Optional`name: string
+
+    The new name of the snapshot.
+  + `Optional`screenshotURL: string
+
+    The new screenshot URL of the snapshot.
+  + `Optional`order: number
+
+    The order inside the list of snapshots.
+
+  #### Returns SnapshotProperties
+
+  #### Deprecated
+
+  Calling changeSnapshot with single parameters is deprecated, please use SnapshotProperties instead.
+
+  Inherited from SessionStorageAPI.changeSnapshot
+
+### clear
+
+* clear(): Promise\<void>
+
+  Clears the whole Context by removing all Nodes, Snapshots, ClipPlanes, Drawings, Measurements, etc.
+
+  #### Returns Promise\<void>
+
+### clearSelection
+
+* clearSelection(silent?: boolean): Promise\<ChangeSelectionResult>
+
+  Clears the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+  Inherited from SelectionAPI.clearSelection
+
+### clearTopologySelection
+
+* clearTopologySelection(): Promise\<void>
+
+  Clears the current topological entity selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + setTopologySelection
+  + addTopologyToSelection
+  + removeTopologyFromSelection
+  + getSelectedTopologyHandles
+
+  Inherited from TopologyAPI.clearTopologySelection
+
+### clipOtherParts
+
+* clipOtherParts(target: number | number[]): void
+
+  Creates a clip room that encompasses the selected node(s).
+
+  This method automatically calculates a bounding box around the specified target
+  node(s) and creates a clip room with the exact dimensions of that box. It's an
+  easy way to isolate specific components for closer examination by clipping away
+  all surrounding geometry.
+
+  The created clip room replaces any existing clip room .
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip room around a single component  
+  context.clipOtherParts(4567);  
+    
+  // Create a clip room around multiple components  
+  context.clipOtherParts([1234, 5678, 9012]);  
+    
+  // Create a clip room around the currently selected components  
+  const selectedNodes = context.getSelectedNodes();  
+  if (selectedNodes.length > 0) {  
+    context.clipOtherParts(selectedNodes);  
+  }
+  ```
+
+  #### Parameters
+
+  + target: number | number[]
+
+    ID or array of IDs of the nodes to create a clip room around
+
+  #### Returns void
+
+  Inherited from ClipPlaneAPI.clipOtherParts
+
+### cloneIntoNewSpace
+
+* cloneIntoNewSpace(spaceId?: string): Promise\<void>
+
+  `Experimental`
+
+  Opens a new space by cloning the current space.
+
+  #### Parameters
+
+  + `Optional`spaceId: string
+
+    An optional predefined ID for the new space. Must satisfy the format rules for space IDs and might
+    cause side-effects as described in the [Space ID Format section](#space-id-format). If a space with this ID already exists,
+    an error will be thrown. If not provided, the new space will be cloned without an ID assigned.
+    Call requestSpaceHandle to get a handle for the new space, which contains a generated space ID.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the new space has been opened. If a space ID was provided and a space with
+  that ID already exists, the promise will be rejected with an error.
+
+  Inherited from SpaceAPI.cloneIntoNewSpace
+
+### collectRuntimeNodesOfType
+
+* collectRuntimeNodesOfType(nodeType: [NodeType](/api/webvis/enums/nodetype), subType?: string): number[]
+
+  Returns a list of all existing runtime node IDs of a specified type.
+
+  #### Parameters
+
+  + nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+    The node type to collect.
+  + `Optional`subType: string
+
+    The sub type to collect. Only used for custom nodes. See [Property.SUBTYPE](/api/webvis/enums/property#subtype).
+
+  #### Returns number[]
+
+  A list of runtime node IDs of the specified type.
+
+  Inherited from InstanceGraphAPI.collectRuntimeNodesOfType
+
+### connectXR
+
+* connectXR(xrConfiguration?: XRConfiguration): Promise\<void>
+
+  `Experimental`
+
+  Connect to the XR system with the given XRConfiguration. The configuration determines what parts of the API are desired to be used.
+
+  By default, XR will be connected with the following configuration:
+
+  ```ts
+  const defaultXRConfiguration = {  
+       imageSourceConfig:  
+       {  
+           type: XRImageSource.DEVICE  
+       }  
+  }
+  ```
+
+  If unspecified, `modelTrackingEnabled` and `autoShowBackgroundFeed` will be inferred as `true` and `deviceScreenshotsEnabled` as `false` automatically.
+
+  Note: If a change of configuration is required after being initialized, the user has to disconnectXR and connect with the new configuration.
+
+  #### Parameters
+
+  + `Optional`xrConfiguration: XRConfiguration
+
+    The configuration for the XR system
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.connectXR
+
+### createAnimationFrames
+
+* createAnimationFrames(name: string, frames: AnimationFrame[]): void
+
+  Creates a new keyframe-based animation sequence.
+
+  #### Parameters
+
+  + name: string
+
+    The name of the animation sequence.
+  + frames: AnimationFrame[]
+
+    The keyframes of the animation sequence.
+
+  #### Returns void
+
+  Inherited from AnimationAPI.createAnimationFrames
+
+### createAnnotation
+
+* createAnnotation(properties?: AnnotationProperties): number
+
+  Creates a new Annotation and triggers an [AnnotationCreatedEvent](/api/webvis/classes/annotationcreatedevent).
+
+  #### Parameters
+
+  + `Optional`properties: AnnotationProperties
+
+    Initial properties of the created Annotation.
+
+  #### Returns number
+
+  The ID of the newly created Annotation.
+
+  Inherited from AnnotationAPI.createAnnotation
+* createAnnotation(  
+      nodeID: number,  
+      label: string,  
+      visible?: boolean,  
+      anchorPosition?: number[] | Float32Array\<ArrayBufferLike>,  
+      labelOffset?: number[] | Float32Array\<ArrayBufferLike>,  
+  ): number
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node that the Annotation belongs to.
+  + label: string
+
+    The text of the Annotation.
+  + `Optional`visible: boolean
+
+    Indicates if the Annotation should be visible or hidden.
+  + `Optional`anchorPosition: number[] | Float32Array\<ArrayBufferLike>
+
+    Anchor position in world space coordinates.
+  + `Optional`labelOffset: number[] | Float32Array\<ArrayBufferLike>
+
+    The offset between anchorPosition and where the label should be displayed.
+
+  #### Returns number
+
+  The ID of the new annotation.
+
+  #### Deprecated
+
+  Creates a new annotation. Should use a properties object AnnotationProperties as an argument rather than passing individual values.
+
+  Inherited from AnnotationAPI.createAnnotation
+
+### createAppearancePattern
+
+* createAppearancePattern(properties?: AppearancePatternProperties): number
+
+  Creates a new appearance pattern and triggers a [AppearancePatternCreatedEvent](/api/webvis/classes/appearancepatterncreatedevent).
+  The current limit for concurrently defined appearance patterns is 31.
+
+  #### Parameters
+
+  + `Optional`properties: AppearancePatternProperties
+
+    Initial properties of the created appearance pattern.
+
+  #### Returns number
+
+  The ID of the newly created appearance pattern or undefined if the maximum number of appearance patterns has been reached.
+
+  Inherited from AppearancePatternAPI.createAppearancePattern
+
+### createAttachment
+
+* createAttachment(dataType: [AttachmentType](/api/webvis/enums/attachmenttype)): number
+
+  Creates a new attachment.
+
+  Triggers an [AttachmentCreatedEvent](/api/webvis/classes/attachmentcreatedevent).
+
+  #### Parameters
+
+  + dataType: [AttachmentType](/api/webvis/enums/attachmenttype)
+
+    Specifies the attachment data type.
+
+  #### Returns number
+
+  The ID of the created attachment.
+
+  Inherited from AttachmentAPI.createAttachment
+
+### createBoxVolume
+
+* createBoxVolume(  
+      min?: [number, number, number],  
+      max?: [number, number, number],  
+  ): BoxVolume
+
+  Creates a new BoxVolume object.
+
+  #### Parameters
+
+  + `Optional`min: [number, number, number]
+  + `Optional`max: [number, number, number]
+
+  #### Returns BoxVolume
+
+  A new Box Volume
+
+  Inherited from UtilityAPI.createBoxVolume
+
+### createCapping
+
+* createCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Generates capping geometry for the surface that is cut by a clip plane.
+
+  This method creates visible geometry at the intersection of the clip plane and the model,
+  allowing you to see and interact with the cut surface. The generated capping geometry
+  supports measurements and all other operations that can be performed on regular geometry.
+
+  Once generated, capping geometry can be enabled, disabled, or removed using the
+  corresponding methods.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  // Generate capping geometry for the cut surface  
+  await context.createCapping(clipPlaneId);  
+    
+  // Later, disable the capping when not needed  
+  await context.disableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to create capping geometry for
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been created
+
+  Inherited from ClipPlaneAPI.createCapping
+
+### createCircularArcDescriptor
+
+* createCircularArcDescriptor(  
+      point0: [number, number, number],  
+      point1: [number, number, number],  
+      point2: [number, number, number],  
+  ): \{ descriptor: TopologyCircularArcDescriptor; type: [CIRCULAR\_ARC](/api/webvis/enums/topologysubtype#circular_arc) \}
+
+  Creates a circular arc descriptor based on three points.
+
+  #### Parameters
+
+  + point0: [number, number, number]
+
+    The first point.
+  + point1: [number, number, number]
+
+    The second point.
+  + point2: [number, number, number]
+
+    The third point.
+
+  #### Returns \{ descriptor: TopologyCircularArcDescriptor; type: [CIRCULAR\_ARC](/api/webvis/enums/topologysubtype#circular_arc) \}
+
+  A circular arc descriptor.
+
+  + ##### descriptor: TopologyCircularArcDescriptor
+
+    The attributes of the topological entity.
+  + ##### type: [CIRCULAR\_ARC](/api/webvis/enums/topologysubtype#circular_arc)
+
+    The subtype of the topological entity.
+
+  Inherited from TopologyAPI.createCircularArcDescriptor
+
+### createClippingRoom
+
+* createClippingRoom(properties?: ClipRoomProperties): void
+
+  Creates a new clip room.
+
+  A clip room consists of six orthogonal planes forming a box that clips any geometry
+  outside of it. This is useful for examining internal structures of complex models
+  or focusing on specific regions of interest.
+
+  Clip rooms can be positioned and sized using the properties object, and can be
+  made invisible (for clipping without showing the room boundaries) or disabled
+  temporarily without removing them.
+
+  Triggers a [ClippingRoomCreatedEvent](/api/webvis/classes/clippingroomcreatedevent) when the clip room is created.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a basic clip room at the origin  
+  context.createClippingRoom({  
+    size: [10, 10, 10],        // Size along X, Y, and Z axes  
+    name: "Engine Section"  
+  });  
+    
+  // Create a positioned and rotated clip room  
+  context.createClippingRoom({  
+    size: [5, 5, 5],  
+    // Matrix including rotation and translation  
+    transform: [  
+      0.866, 0.5, 0, 0,      // First row (rotation + scale)  
+      -0.5, 0.866, 0, 0,     // Second row (rotation + scale)  
+      0, 0, 1, 0,            // Third row (rotation + scale)  
+      10, 5, 3, 1            // Fourth row (translation + w)  
+    ]  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipRoomProperties
+
+    Initial properties of the created clip room. Default: \{\}
+
+  #### Returns void
+
+  Inherited from ClipPlaneAPI.createClippingRoom
+* createClippingRoom(  
+      name?: string,  
+      size?: number[] | Float32Array\<ArrayBufferLike>,  
+      transformation?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+  ): void
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the clip room.
+  + `Optional`size: number[] | Float32Array\<ArrayBufferLike>
+
+    The size of the clip room.
+  + `Optional`transformation: number[] | Float32Array\<ArrayBufferLike>
+
+    The transformation of the clip room.
+  + `Optional`disabled: boolean
+
+    The disabled state of the clip room.
+  + `Optional`invisible: boolean
+
+    The invisible state of the clip room.
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling createClippingRoom with single parameters is deprecated, please use ClipRoomProperties instead.
+
+  Creates a new clip room.
+
+  Inherited from ClipPlaneAPI.createClippingRoom
+
+### createClipPlane
+
+* createClipPlane(properties?: ClipPlaneProperties): number
+
+  Creates a new clip plane.
+
+  Clip planes create a visual cut through 3D models, allowing examination of internal structures
+  by hiding geometry on one side of the plane. The orientation and position of the plane are
+  defined by its normal vector and a point on the plane.
+
+  A clip plane can be configured to exclude specific nodes from clipping or to clip only
+  specific nodes, using the excludedNodes and clippedNodes properties respectively.
+
+  Triggers a [ClipPlaneCreatedEvent](/api/webvis/classes/clipplanecreatedevent) when the clip plane is created.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane aligned with the XY plane  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],     // Z-axis normal  
+    position: [0.04, -0.03, -0.15],   // Passing through a specific point  
+    name: "Section View"  
+  });  
+    
+  // Create a clip plane with excluded nodes  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [1, 0, 0],  
+    excludedNodes: [1234, 5678],  // These nodes won't be clipped  
+    invisible: true               // Hide the visual representation of the plane  
+  });
+  ```
+
+  #### Parameters
+
+  + `Optional`properties: ClipPlaneProperties
+
+    Initial properties of the created clip plane. Default: \{\}
+
+  #### Returns number
+
+  The ID of the newly created clip plane.
+
+  Inherited from ClipPlaneAPI.createClipPlane
+* createClipPlane(  
+      normal?: number[] | Float32Array\<ArrayBufferLike>,  
+      point?: number[] | Float32Array\<ArrayBufferLike>,  
+      name?: string,  
+      thickness?: number,  
+      tangent?: number[] | Float32Array\<ArrayBufferLike>,  
+      disabled?: boolean,  
+      invisible?: boolean,  
+      exclusive?: boolean,  
+  ): number
+
+  #### Parameters
+
+  + `Optional`normal: number[] | Float32Array\<ArrayBufferLike>
+
+    The normal of the clip plane
+  + `Optional`point: number[] | Float32Array\<ArrayBufferLike>
+
+    An arbitrary point in space which lies on the clip plane
+  + `Optional`name: string
+
+    The name of the clip plane
+  + `Optional`thickness: number
+
+    The thickness of the clip plane
+  + `Optional`tangent: number[] | Float32Array\<ArrayBufferLike>
+
+    The tangent of the clip plane
+  + `Optional`disabled: boolean
+
+    The state of the clip plane
+  + `Optional`invisible: boolean
+
+    Invisible on the UI
+  + `Optional`exclusive: boolean
+
+    Set the exclusive flag to clip geometry when using exclusiveClipplanes property
+
+  #### Returns number
+
+  The ID of the newly created clip plane
+
+  #### Deprecated
+
+  Calling createClipPlane with single parameters is deprecated, please use ClipPlaneProperties instead.
+
+  Creates a clip plane defined by the plane's normal, positioned at an optional point (otherwise at
+  the world space origin) and an optional name.
+
+  Inherited from ClipPlaneAPI.createClipPlane
+
+### createCollection
+
+* createCollection(nodeIDlist?: number[]): number
+
+  #### Parameters
+
+  + `Optional`nodeIDlist: number[]
+
+    An array of node id's from which a new node collection should be created.
+
+  #### Returns number
+
+  The id of the newly created node collection.
+
+  #### Deprecated
+
+  createCollection is deprecated and will be removed in future versions. Please use a simple array of node IDs instead.
+
+  Returns the id of a new collection containing the nodes from the given list.
+
+  Inherited from CollectionAPI.createCollection
+* createCollection(): number
+
+  #### Returns number
+
+  The id of the newly created collection.
+
+  #### Deprecated
+
+  createCollection is deprecated and will be removed in future versions. Please use a simple array of node IDs instead.
+
+  Creates a new, empty collection and returns its id.
+
+  Inherited from CollectionAPI.createCollection
+
+### createDrawing
+
+* createDrawing(data: ViewerDrawingResult, properties?: DrawingProperties): number
+
+  Creates a new Drawing from the Output of the ViewerDrawingAPI.
+
+  #### Parameters
+
+  + data: ViewerDrawingResult
+
+    The data generated with the help of the ViewerDrawingAPI.
+  + `Optional`properties: DrawingProperties
+
+    Initial properties of the created Drawing.
+
+  #### Returns number
+
+  The id of the newly created Drawing.
+
+  Inherited from DrawingAPI.createDrawing
+
+### createDrawingPlane
+
+* createDrawingPlane(properties?: DrawingPlaneProperties): number
+
+  `Experimental`
+
+  Creates a new DrawingPlane with the specified properties.
+
+  #### Parameters
+
+  + `Optional`properties: DrawingPlaneProperties
+
+    Initial properties of the created Drawing.
+
+  #### Returns number
+
+  The ID of the newly created Drawing.
+
+  Inherited from DrawingPlaneAPI.createDrawingPlane
+
+### createExplosion
+
+* createExplosion(centerNodeID?: number): void
+
+  Creates an Explosion (around a given point).
+
+  #### Parameters
+
+  + `Optional`centerNodeID: number
+
+    The nodeID of the node around which center the explosion is created.
+
+  #### Returns void
+
+  Inherited from ExplosionAPI.createExplosion
+
+### createMaterial
+
+* createMaterial(properties?: MaterialProperties): number
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Creates a new material and triggers a [MaterialCreatedEvent](/api/webvis/classes/materialcreatedevent).
+
+  #### Parameters
+
+  + `Optional`properties: MaterialProperties
+
+    Initial properties of the created material.
+
+  #### Returns number
+
+  The ID of the newly created material.
+
+  Inherited from MaterialAPI.createMaterial
+
+### createMeasurement
+
+* createMeasurement<[T](#createmeasurementt) extends keyof MeasurementTypeToTargetMap>(  
+      type: [T](#createmeasurementt),  
+      targets: MeasurementTypeToTargetMap[[T](#createmeasurementt)],  
+      properties?: MeasurementProperties,  
+  ): number
+
+  Performs a measurement and creates a corresponding measurement entity in the webvis context.
+  The different kinds of measurements that this function can perform are defined in the
+  [MeasurementType](/api/webvis/enums/measurementtype) enum. Depending on the measurement type, different targets are required.
+
+  Triggers a [MeasurementCreatedEvent](/api/webvis/classes/measurementcreatedevent) when the measurement entity has been created, followed by a
+  [MeasurementChangedEvent](/api/webvis/classes/measurementchangedevent) when processing is complete and the result is available.
+
+  #### Type Parameters
+
+  + T extends keyof MeasurementTypeToTargetMap
+
+    The [MeasurementType](/api/webvis/enums/measurementtype).
+
+  #### Parameters
+
+  + type: [T](#createmeasurementt)
+
+    The type of the measurement, given as a [MeasurementType](/api/webvis/enums/measurementtype).
+  + targets: MeasurementTypeToTargetMap[[T](#createmeasurementt)]
+
+    The [MeasurementTarget](/api/webvis/types/measurementtarget)s, as defined by the [MeasurementType](/api/webvis/enums/measurementtype).
+  + `Optional`properties: MeasurementProperties
+
+    Additional properties of the measurement entity. These include the enabled state and
+    positioning information.
+
+  #### Returns number
+
+  The ID of the created measurement.
+
+  #### See
+
+  + changeMeasurement
+  + requestMeasurementData
+
+  Inherited from MeasurementAPI.createMeasurement
+
+### createNodePathHandles
+
+* createNodePathHandles(targets: number[]): Promise\<NodePathHandle[]>
+
+  createNodePathHandles Creates and returns handles for the target node ids or topology selectors.
+
+  #### Parameters
+
+  + targets: number[]
+
+    \{Array\} Array of target node ids to create the handles for
+
+  #### Returns Promise\<NodePathHandle[]>
+
+  The array of handles
+
+  Inherited from NodePathAPI.createNodePathHandles
+
+### createPointDescriptor
+
+* createPointDescriptor(  
+      point: [number, number, number],  
+  ): \{ descriptor: TopologyPointDescriptor; type: [POINT](/api/webvis/enums/topologysubtype#point) \}
+
+  Creates a point descriptor for the specified point.
+
+  #### Parameters
+
+  + point: [number, number, number]
+
+    The point.
+
+  #### Returns \{ descriptor: TopologyPointDescriptor; type: [POINT](/api/webvis/enums/topologysubtype#point) \}
+
+  A point descriptor.
+
+  + ##### descriptor: TopologyPointDescriptor
+
+    The attributes of the topological entity.
+  + ##### type: [POINT](/api/webvis/enums/topologysubtype#point)
+
+    The subtype of the topological entity.
+
+  Inherited from TopologyAPI.createPointDescriptor
+
+### createSnapshot
+
+* createSnapshot(  
+      name?: string,  
+      options?: SnapshotCreationOptions,  
+  ): Promise\<number>
+
+  Creates a snapshot of the current session state.
+
+  Triggers a [SnapshotCreationStartedEvent](/api/webvis/classes/snapshotcreationstartedevent) and, if successful, a [SnapshotCreatedEvent](/api/webvis/classes/snapshotcreatedevent).
+
+  #### Parameters
+
+  + `Optional`name: string
+
+    The name of the snapshot.
+  + `Optional`options: SnapshotCreationOptions
+
+    Options used for the snapshot creation.
+
+  #### Returns Promise\<number>
+
+  The ID of the created snapshot.
+
+  Inherited from SessionStorageAPI.createSnapshot
+
+### createViewer
+
+* createViewer(  
+      viewerID?: string,  
+      canvas?: HTMLCanvasElement,  
+      settings?: \{  
+          aaSetting?: any;  
+          backgroundColor?: any;  
+          budgetingMode?: any;  
+          budgetingTargetFramerate?: any;  
+          cappingEffectEdgeColor?: any;  
+          cappingEffectEnabled?: any;  
+          cappingEffectInnerColor?: any;  
+          colorComparisonFirstColor?: any;  
+          colorComparisonMatchingColor?: any;  
+          colorComparisonSecondColor?: any;  
+          colorizeEffect?: any;  
+          coordSys?: any;  
+          defaultFieldOfView?: any;  
+          disableSpecularHighlights?: any;  
+          doubleClickAnimationVolumeScale?: any;  
+          doubleClickTimeWindow?: any;  
+          drawingArrowheadEnd?: any;  
+          drawingArrowheadStart?: any;  
+          drawingColor?: any;  
+          drawingMode?: any;  
+          drawingSize?: any;  
+          dynamicAuxContrastEnabled?: any;  
+          dynamicClippingDistance?: any;  
+          dynamicClippingEnabled?: any;  
+          dynamicCOREnabled?: any;  
+          expandOnViewerSelection?: any;  
+          faceHighlightColor?: any;  
+          faceSelectionColor?: any;  
+          fitViewFactor?: any;  
+          flyNavigationSpeed?: any;  
+          flyToOnDoubleClick?: any;  
+          focusOnDoubleClick?: any;  
+          frustumCulling?: any;  
+          ghostedSceneOpacity?: any;  
+          gizmoAxisLabelsEnabled?: any;  
+          gizmoScalingFactor?: any;  
+          gizmosEnabled?: any;  
+          gpuMemoryReleaseFactor?: any;  
+          hoverColor?: any;  
+          initialFit?: any;  
+          initialFitDirection?: any;  
+          initView?: any;  
+          lightingEnvironment?: any;  
+          lineHighlightColor?: any;  
+          lineSelectionColor?: any;  
+          maxDynamicClipDistance?: any;  
+          maxGPUMemory?: any;  
+          maxSRCCPUMemory?: any;  
+          mouseInvertZoomingDirection?: any;  
+          navigationMode?: any;  
+          navigationSampling?: any;  
+          navigationSpeedFactor?: any;  
+          navigationSpeedThrottleFactor?: any;  
+          outlineColor?: any;  
+          outlineColorOccluded?: any;  
+          outlineInnerRadius?: any;  
+          outlineOuterRadius?: any;  
+          preSelectionColor?: any;  
+          projectionType?: any;  
+          renderAuxOnTop?: any;  
+          renderMode?: any;  
+          renderSetup?: any;  
+          sceneOpacity?: any;  
+          screenSpaceCoverageCalculationMethod?: any;  
+          selectionColor?: any;  
+          showAuxOnNavigation?: any;  
+          silhouetteEffect?: any;  
+          silhouetteEffectColor?: any;  
+          silhouetteEffectExclusiveEnabled?: any;  
+          smallFeatureCulling?: any;  
+          smallFeaturePixelThreshold?: any;  
+          soc?: any;  
+          spacemouseMultiplier?: any;  
+          ssaoEnabled?: any;  
+          taaEnabled?: any;  
+          topoGeometryColor?: any;  
+          topoGeometrySecondaryColor?: any;  
+          topoPointsEnabled?: any;  
+          transparencyMode?: any;  
+          turntableLowerVerticalLimit?: any;  
+          turntableUpperVerticalLimit?: any;  
+          turntableVerticalLimitsEnabled?: any;  
+          useDevicePixelRatio?: any;  
+          vertexColorsEnabled?: any;  
+          viewPerspective?: any;  
+          webglPreserveDrawingbuffer?: any;  
+      \},  
+  ): ViewerAPI
+
+  Creates a viewer element.
+
+  #### Parameters
+
+  + `Optional`viewerID: string
+
+    The id of the viewer.
+  + `Optional`canvas: HTMLCanvasElement
+
+    The canvas which is attached to the viewer.
+  + `Optional`settings: \{  
+        aaSetting?: any;  
+        backgroundColor?: any;  
+        budgetingMode?: any;  
+        budgetingTargetFramerate?: any;  
+        cappingEffectEdgeColor?: any;  
+        cappingEffectEnabled?: any;  
+        cappingEffectInnerColor?: any;  
+        colorComparisonFirstColor?: any;  
+        colorComparisonMatchingColor?: any;  
+        colorComparisonSecondColor?: any;  
+        colorizeEffect?: any;  
+        coordSys?: any;  
+        defaultFieldOfView?: any;  
+        disableSpecularHighlights?: any;  
+        doubleClickAnimationVolumeScale?: any;  
+        doubleClickTimeWindow?: any;  
+        drawingArrowheadEnd?: any;  
+        drawingArrowheadStart?: any;  
+        drawingColor?: any;  
+        drawingMode?: any;  
+        drawingSize?: any;  
+        dynamicAuxContrastEnabled?: any;  
+        dynamicClippingDistance?: any;  
+        dynamicClippingEnabled?: any;  
+        dynamicCOREnabled?: any;  
+        expandOnViewerSelection?: any;  
+        faceHighlightColor?: any;  
+        faceSelectionColor?: any;  
+        fitViewFactor?: any;  
+        flyNavigationSpeed?: any;  
+        flyToOnDoubleClick?: any;  
+        focusOnDoubleClick?: any;  
+        frustumCulling?: any;  
+        ghostedSceneOpacity?: any;  
+        gizmoAxisLabelsEnabled?: any;  
+        gizmoScalingFactor?: any;  
+        gizmosEnabled?: any;  
+        gpuMemoryReleaseFactor?: any;  
+        hoverColor?: any;  
+        initialFit?: any;  
+        initialFitDirection?: any;  
+        initView?: any;  
+        lightingEnvironment?: any;  
+        lineHighlightColor?: any;  
+        lineSelectionColor?: any;  
+        maxDynamicClipDistance?: any;  
+        maxGPUMemory?: any;  
+        maxSRCCPUMemory?: any;  
+        mouseInvertZoomingDirection?: any;  
+        navigationMode?: any;  
+        navigationSampling?: any;  
+        navigationSpeedFactor?: any;  
+        navigationSpeedThrottleFactor?: any;  
+        outlineColor?: any;  
+        outlineColorOccluded?: any;  
+        outlineInnerRadius?: any;  
+        outlineOuterRadius?: any;  
+        preSelectionColor?: any;  
+        projectionType?: any;  
+        renderAuxOnTop?: any;  
+        renderMode?: any;  
+        renderSetup?: any;  
+        sceneOpacity?: any;  
+        screenSpaceCoverageCalculationMethod?: any;  
+        selectionColor?: any;  
+        showAuxOnNavigation?: any;  
+        silhouetteEffect?: any;  
+        silhouetteEffectColor?: any;  
+        silhouetteEffectExclusiveEnabled?: any;  
+        smallFeatureCulling?: any;  
+        smallFeaturePixelThreshold?: any;  
+        soc?: any;  
+        spacemouseMultiplier?: any;  
+        ssaoEnabled?: any;  
+        taaEnabled?: any;  
+        topoGeometryColor?: any;  
+        topoGeometrySecondaryColor?: any;  
+        topoPointsEnabled?: any;  
+        transparencyMode?: any;  
+        turntableLowerVerticalLimit?: any;  
+        turntableUpperVerticalLimit?: any;  
+        turntableVerticalLimitsEnabled?: any;  
+        useDevicePixelRatio?: any;  
+        vertexColorsEnabled?: any;  
+        viewPerspective?: any;  
+        webglPreserveDrawingbuffer?: any;  
+    \}
+
+    ViewerSettings
+
+  #### Returns ViewerAPI
+
+### deleteMemberProfileEntry
+
+* deleteMemberProfileEntry(key: string): Promise\<void>
+
+  `Experimental`
+
+  Deletes a profile entry of the local member.
+
+  Triggers a [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent) if successful.
+
+  #### Parameters
+
+  + key: string
+
+    The key of the profile entry to delete.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the profile entry has been deleted.
+
+  Inherited from MemberAPI.deleteMemberProfileEntry
+
+### disableCapping
+
+* disableCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Disables the generated capping geometry for a clip plane.
+
+  This method temporarily hides the capping geometry without removing it from
+  the scene. The capping geometry can be made visible again using enableCapping.
+  This is useful when you need to switch between seeing the cut surface and
+  seeing through to the interior of the model.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Hide the capping geometry temporarily  
+  await context.disableCapping(clipPlaneId);  
+    
+  // Show it again later  
+  await context.enableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be disabled
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been disabled
+
+  Inherited from ClipPlaneAPI.disableCapping
+
+### disconnectXR
+
+* disconnectXR(): Promise\<void>
+
+  `Experimental`
+
+  Disconnect from the XR system.
+
+  This method should be called when the AR functionalities are no longer needed.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.disconnectXR
+
+### enableCapping
+
+* enableCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Enables the generated capping geometry for a clip plane.
+
+  After capping geometry has been created for a clip plane, this method makes it visible
+  . The capping geometry represents the intersection between the clip plane
+  and the model, allowing visualization and interaction with the cut surface.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Later disable capping and then re-enable it  
+  await context.disableCapping(clipPlaneId);  
+  // ...  
+  await context.enableCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be enabled
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been enabled
+
+  Inherited from ClipPlaneAPI.enableCapping
+
+### endExplosion
+
+* endExplosion(): void
+
+  Restores the initial transformations of all exploded parts.
+
+  #### Returns void
+
+  Inherited from ExplosionAPI.endExplosion
+
+### enterXRInitMode
+
+* enterXRInitMode(xrInitOptions?: XRInitOptions): Promise\<void>
+
+  `Experimental`
+
+  Enter the XR initialization mode. The initialization mode is used as an entry point for model-based tracking.
+  It unanchors any previously anchored model and starts the model-based tracking process.
+  In this mode, the user can align the model with the real object (snapping). When the model is
+  snapped, the XRState.anchored value will be set to `true` which will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent).
+  By that, the init mode gets exited and the model is anchored to the real object. The model now gets tracked
+  and moves with the device.
+
+  Please note, that this method should only be called if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  #### Parameters
+
+  + `Optional`xrInitOptions: XRInitOptions
+
+    The options for the XR initialization mode
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.enterXRInitMode
+
+### exportXRInitTemplate
+
+* exportXRInitTemplate(): Promise\<string>
+
+  `Experimental`
+
+  Exports an initialization template for model-based tracking.
+
+  In a model-based tracking scenario, after a successful tracking session, the learned initialization data
+  can be exported with this function and stored as a template for later.
+
+  This method is only available if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  The acquired data can be imported via importXRInitTemplate function.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains the base64 encoded initialization template data
+  when the operation was successful or rejects in an error case.
+
+  Inherited from RealityAPI.exportXRInitTemplate
+
+### fetchAttachmentData
+
+* fetchAttachmentData(attachmentID: number): Promise<[Serializable](/api/webvis/types/serializable)>
+
+  Fetches and returns the attachment data of the specified attachment.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns Promise<[Serializable](/api/webvis/types/serializable)>
+
+  The attached data.
+
+  Inherited from AttachmentAPI.fetchAttachmentData
+
+### getAnnotationData
+
+* getAnnotationData(annotationId: number): AnnotationData
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation.
+
+  #### Returns AnnotationData
+
+  The content and properties of an annotation.
+
+  #### Deprecated
+
+  Inherited from AnnotationAPI.getAnnotationData
+
+### getAnnotations
+
+* getAnnotations(): number[]
+
+  #### Returns number[]
+
+  The IDs of all available Annotations.
+
+  Inherited from AnnotationAPI.getAnnotations
+
+### getAppearancePatternData
+
+* getAppearancePatternData(patternId: number): AppearancePatternProperties
+
+  Returns the properties of the appearance pattern entity with the specified ID.
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern entity.
+
+  #### Returns AppearancePatternProperties
+
+  The properties of the appearance pattern entity.
+
+  Inherited from AppearancePatternAPI.getAppearancePatternData
+
+### getAppearancePatterns
+
+* getAppearancePatterns(): number[]
+
+  Returns the IDs of all appearance pattern entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all available appearance patterns
+
+  Inherited from AppearancePatternAPI.getAppearancePatterns
+
+### getAttachmentData
+
+* getAttachmentData(attachmentID: number): [Serializable](/api/webvis/types/serializable)
+
+  Returns the attachment data.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns [Serializable](/api/webvis/types/serializable)
+
+  The attached data
+
+  #### Deprecated
+
+  getAttachmentData is deprecated, please use fetchAttachmentData instead.
+
+  Inherited from AttachmentAPI.getAttachmentData
+
+### getAttachmentDataURI
+
+* getAttachmentDataURI(attachmentID: number): string
+
+  Returns the attachment data URI.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+
+  #### Returns string
+
+  The attachment data URI.
+
+  Inherited from AttachmentAPI.getAttachmentDataURI
+
+### getClipPlanes
+
+* getClipPlanes(): number[]
+
+  Returns the IDs of all clip planes.
+
+  This method provides a list of all clip plane IDs that can be used with other
+  ClipPlaneAPI methods like changeClipPlane, removeClipPlane, or requestClipPlaneData.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get all clip planes and print their properties  
+  const clipPlaneIds = context.getClipPlanes();  
+    
+  clipPlaneIds.forEach(async (id) => {  
+    const properties = await context.requestClipPlaneData(id);  
+    console.log(`Clip plane ${id}: ${properties.name || 'unnamed'}`);  
+  });
+  ```
+
+  #### Returns number[]
+
+  An array of clip plane IDs. Empty array if no clip planes exist.
+
+  Inherited from ClipPlaneAPI.getClipPlanes
+
+### getClipRoom
+
+* getClipRoom(): number
+
+  Returns the ID of the current clip room.
+
+  Since WebVis only supports a single clip room at a time, this method returns
+  a single ID value rather than an array. The ID can be used with other clip room
+  methods like requestClipRoomData.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get the current clip room ID and retrieve its properties  
+  const clipRoomId = context.getClipRoom();  
+    
+  if (clipRoomId !== undefined) {  
+    const properties = await context.requestClipRoomData();  
+    console.log(`Clip room size: [${properties.size}]`);  
+  } else {  
+    console.log("No clip room exists in the scene");  
+  }
+  ```
+
+  #### Returns number
+
+  The ID of the current clip room, or undefined if no clip room exists
+
+  Inherited from ClipPlaneAPI.getClipRoom
+
+### getCollection
+
+* getCollection(collectionID: number): ICollection
+
+  #### Parameters
+
+  + collectionID: number
+
+    Specifies which collection should be returned
+
+  #### Returns ICollection
+
+  The collection with the given id
+
+  #### Deprecated
+
+  getCollection is deprecated and will be removed in future versions.
+
+  Returns the collection with the given id.
+
+  Inherited from CollectionAPI.getCollection
+
+### getCollectionElements
+
+* getCollectionElements(collectionID: number): Promise\<number[]>
+
+  `Readonly`
+
+  #### Parameters
+
+  + collectionID: number
+
+    The id of the node collection
+
+  #### Returns Promise\<number[]>
+
+  Array of node IDs representing the node collection
+
+  #### Deprecated
+
+  getCollectionElements is deprecated and will be removed in future versions.
+
+  Returns an array containing the ids of the nodes in the collection.
+  Modifying the returned array results in undefined behavior.
+
+  Inherited from CollectionAPI.getCollectionElements
+
+### getCollectionNodeCount
+
+* getCollectionNodeCount(collectionID: number): Promise\<number>
+
+  #### Parameters
+
+  + collectionID: number
+
+    The id of the collection
+
+  #### Returns Promise\<number>
+
+  Number of elements in a collection.
+
+  #### Deprecated
+
+  getCollectionNodeCount is deprecated and will be removed in future versions.
+
+  Returns the number of elements inside a collection.
+
+  Inherited from CollectionAPI.getCollectionNodeCount
+
+### getCoordinateSystemForwardVector
+
+* getCoordinateSystemForwardVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the forward vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The forward vector of the current coordinate system.
+
+  Inherited from CoordinateSystemAPI.getCoordinateSystemForwardVector
+
+### getCoordinateSystemMatrix
+
+* getCoordinateSystemMatrix(): | Float32Array\<ArrayBufferLike>  
+  | [  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+      number,  
+  ]
+
+  This function returns a 4x4 transformation matrix that transforms the default right-handed coordinate system,
+  where the x-axis points right, the y-axis points up, and the z-axis points forward (towards the viewer),
+  to a custom coordinate system defined by the [front plane axis setting](/api/webvis/enums/settingstrings#front_plane_axis).
+
+  #### Returns     | Float32Array\<ArrayBufferLike>     | [         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,         number,     ]
+
+  The 4x4 coordinate system matrix
+
+  Inherited from CoordinateSystemAPI.getCoordinateSystemMatrix
+
+### getCoordinateSystemRightVector
+
+* getCoordinateSystemRightVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the right vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The right vector of the current coordinate system.
+
+  Inherited from CoordinateSystemAPI.getCoordinateSystemRightVector
+
+### getCoordinateSystemUpVector
+
+* getCoordinateSystemUpVector(): | Float32Array\<ArrayBufferLike>  
+  | [number, number, number]
+
+  Returns the up vector of the current coordinate system.
+
+  #### Returns Float32Array\<ArrayBufferLike> | [number, number, number]
+
+  The up vector of the current coordinate system.
+
+  Inherited from CoordinateSystemAPI.getCoordinateSystemUpVector
+
+### getDrawingPlaneData
+
+* getDrawingPlaneData(drawingPlaneId: number): DrawingPlaneProperties
+
+  `Experimental`
+
+  Returns the DrawingPlane properties for the specified DrawingPlane ID.
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the DrawingPlane you want to get the Data for.
+
+  #### Returns DrawingPlaneProperties
+
+  The requested DrawingPlane properties.
+
+  Inherited from DrawingPlaneAPI.getDrawingPlaneData
+
+### getDrawingPlanes
+
+* getDrawingPlanes(): number[]
+
+  `Experimental`
+
+  Returns all available DrawingPlane IDs.
+
+  #### Returns number[]
+
+  An Array of all available DrawingPlane IDs.
+
+  Inherited from DrawingPlaneAPI.getDrawingPlanes
+
+### getDrawings
+
+* getDrawings(): number[]
+
+  Returns all available Drawing ids.
+
+  #### Returns number[]
+
+  An Array of all available Drawing ids.
+
+  Inherited from DrawingAPI.getDrawings
+
+### getEnabledAuxNodes
+
+* getEnabledAuxNodes(nodeID: number): Promise\<number[]>
+
+  #### Parameters
+
+  + nodeID: number
+
+    Specifies the entry point of the subtree traversal. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  An Array of all enabled aux node IDs
+
+  #### Deprecated
+
+  This function will no longer be available in future webvis releases. Use the QueryAPI instead.
+
+  Traverses the subtree of a given node ID and collects all enabled aux nodes.
+
+  Inherited from InstanceGraphAPI.getEnabledAuxNodes
+
+### getEnabledLayerFilters
+
+* getEnabledLayerFilters(): string[]
+
+  Returns the currently defined list of enabled layer filters.
+
+  #### Returns string[]
+
+  An array of strings representing the names of the enabled layer filters.
+
+  Inherited from LayerFilterAPI.getEnabledLayerFilters
+
+### getInteractionMode
+
+* getInteractionMode(): [InteractionMode](/api/webvis/enums/interactionmode)
+
+  Returns the current Interaction mode.
+
+  #### Returns [InteractionMode](/api/webvis/enums/interactionmode)
+
+  The current Interaction mode.
+
+  Inherited from InteractionAPI.getInteractionMode
+
+### getMaterialData
+
+* getMaterialData(materialId: number): MaterialProperties
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the properties of the material entity with the specified ID.
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material entity.
+
+  #### Returns MaterialProperties
+
+  The properties of the material entity.
+
+  Inherited from MaterialAPI.getMaterialData
+
+### getMaterials
+
+* getMaterials(): number[]
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Returns the IDs of all material entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all available materials
+
+  Inherited from MaterialAPI.getMaterials
+
+### getMeasurements
+
+* getMeasurements(): number[]
+
+  Returns the IDs of all measurement entities in the webvis context.
+
+  #### Returns number[]
+
+  The IDs of all measurement entities.
+
+  #### See
+
+  createMeasurement
+
+  Inherited from MeasurementAPI.getMeasurements
+
+### getMemberName
+
+* getMemberName(): string
+
+  `Experimental`
+
+  Gets the name of the local member.
+
+  #### Returns string
+
+  The name of the local member, or undefined if not set.
+
+  Inherited from MemberAPI.getMemberName
+
+### getMembers
+
+* getMembers(): number[]
+
+  `Experimental`
+
+  Gets a list of all member IDs in the current space.
+  The first entry of the list is always the local member (i.e. the client itself).
+
+  #### Returns number[]
+
+  An array of member IDs.
+
+  Inherited from MemberAPI.getMembers
+
+### getMetadata
+
+* getMetadata(nodeID: number): Promise<\{ [key: string]: string \}>
+
+  Returns a JSON object containing the metadata for the given node ID.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of a node.
+
+  #### Returns Promise<\{ [key: string]: string \}>
+
+  A JSON object containing the requested metadata.
+
+  Inherited from InstanceGraphAPI.getMetadata
+
+### getName
+
+* getName(): string
+
+  #### Returns string
+
+  The name of the context.
+
+### getProperties
+
+* getProperties<[T](#getpropertiest) extends string>(  
+      nodeID: number,  
+      properties: [T](#getpropertiest)[],  
+  ): Promise<[PropertyType](/api/webvis/types/propertytype)<[T](#getpropertiest)>[]>
+
+  Returns the values of the specified properties of the given node.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose properties should be read.
+  + properties: [T](#getpropertiest)[]
+
+    The names of the [Properties](/api/webvis/enums/property) whose values should be read.
+
+  #### Returns Promise<[PropertyType](/api/webvis/types/propertytype)<[T](#getpropertiest)>[]>
+
+  The retrieved values of the node's properties.
+
+  Inherited from InstanceGraphAPI.getProperties
+
+### getProperty
+
+* getProperty<[T](#getpropertyt) extends string>(  
+      nodeID: number,  
+      property: [T](#getpropertyt),  
+  ): Promise<[PropertyType](/api/webvis/types/propertytype)<[T](#getpropertyt)>>
+
+  Returns the value of the specified property of the given node.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID(s) of the node(s) whose property should be read.
+  + property: [T](#getpropertyt)
+
+    The name of the [Property](/api/webvis/enums/property) whose value should be read.
+
+  #### Returns Promise<[PropertyType](/api/webvis/types/propertytype)<[T](#getpropertyt)>>
+
+  The retrieved value of the node property.
+
+  Inherited from InstanceGraphAPI.getProperty
+
+### getRegisteredLayerFilters
+
+* getRegisteredLayerFilters(): \{ [key: string]: boolean \}
+
+  Returns the currently defined list of layer filters with their current state.
+
+  #### Returns \{ [key: string]: boolean \}
+
+  Returns a map of the registered layer filters and their states.
+
+  Inherited from LayerFilterAPI.getRegisteredLayerFilters
+
+### getRootNodeId
+
+* getRootNodeId(target: number | TopologyHandle, includeTarget?: boolean): number
+
+  Returns the root node ID of the given node or topology element.
+
+  #### Parameters
+
+  + target: number | TopologyHandle
+
+    Specifies the target node or topology element.
+  + `Optional`includeTarget: boolean
+
+    Controls if the target node itself can be returned as root node. If set to false and a
+    root node ID is passed in, it returns the next higher root node ID. Default: true
+
+  #### Returns number
+
+  The root node ID of the given node ID or topology handle.
+
+  Inherited from InstanceGraphAPI.getRootNodeId
+
+### getSelectedLeafNodes
+
+* getSelectedLeafNodes(): number[]
+
+  Returns a list of all selected leaf nodes.
+
+  #### Returns number[]
+
+  An array which contains the IDs of all leaf nodes in the current selection.
+
+  Inherited from SelectionAPI.getSelectedLeafNodes
+
+### getSelectedNodes
+
+* getSelectedNodes(): number[]
+
+  Returns a list of all selected nodes.
+  When a whole subtree is selected, only the parent node will be included in the returned array.
+  To get the selected leaf nodes of the subtree, use getSelectedLeafNodes instead.
+
+  #### Returns number[]
+
+  An array which contains the IDs of all nodes in the current selection.
+
+  Inherited from SelectionAPI.getSelectedNodes
+
+### getSelectedTopologyHandles
+
+* getSelectedTopologyHandles(): TopologyHandle[]
+
+  Returns all selected topological entities.
+
+  #### Returns TopologyHandle[]
+
+  All selected topological entities.
+
+  #### See
+
+  + isTopologySelected
+  + setTopologySelection
+
+  Inherited from TopologyAPI.getSelectedTopologyHandles
+
+### getSelection
+
+* getSelection(): Promise\<number[]>
+
+  Returns a list of all selected nodes.
+
+  #### Returns Promise\<number[]>
+
+  An array which contains the IDs of all nodes in the current selection.
+
+  #### Deprecated
+
+  getSelection is deprecated, please use getSelectedNodes instead.
+
+  Inherited from SelectionAPI.getSelection
+
+### getShapeHandle
+
+* getShapeHandle(handle: TopologyHandle): TopologyHandle
+
+  Returns a handle for the shape that contains the given topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns TopologyHandle
+
+  A handle for the shape that contains the given topological entity.
+
+  Inherited from TopologyAPI.getShapeHandle
+
+### getSnapshotData
+
+* getSnapshotData(  
+      snapshotID: number,  
+  ): \{ attachmentID: number; name: string; order: number \}
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to request data for.
+
+  #### Returns \{ attachmentID: number; name: string; order: number \}
+
+  The data of the specified snapshot.
+
+  #### Deprecated
+
+  getSnapshotData is deprecated. Please use requestSnapshotData instead.
+
+  Inherited from SessionStorageAPI.getSnapshotData
+
+### getSnapshots
+
+* getSnapshots(): number[]
+
+  Returns the IDs of all available snapshots.
+
+  #### Returns number[]
+
+  An array of snapshot IDs.
+
+  Inherited from SessionStorageAPI.getSnapshots
+
+### getStatistics
+
+* getStatistics(  
+      nodeType?: [NodeType](/api/webvis/enums/nodetype),  
+      nodeID?: number,  
+      recursive?: boolean,  
+  ): Promise\<any>
+
+  Traverses the subtree of a given node ID and collects all statistics (currently only available for AUX nodes).
+
+  #### Parameters
+
+  + `Optional`nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+    Specifies the target node type. Default: [NodeType.ALL](/api/webvis/enums/nodetype#all)
+  + `Optional`nodeID: number
+
+    Specifies the node ID as the entry point of the subtree traversal. Default: 0
+  + `Optional`recursive: boolean
+
+  #### Returns Promise\<any>
+
+  An object of type/count pairs.
+
+  Inherited from InstanceGraphAPI.getStatistics
+
+### getTopologyType
+
+* getTopologyType(handle: TopologyHandle): [TopologyType](/api/webvis/enums/topologytype)
+
+  Returns the type of the given topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns [TopologyType](/api/webvis/enums/topologytype)
+
+  The type of the given topological entity.
+
+  Inherited from TopologyAPI.getTopologyType
+
+### getViewer
+
+* getViewer(id?: string): ViewerAPI
+
+  #### Parameters
+
+  + `Optional`id: string
+
+    The id of the viewer.
+
+  #### Returns ViewerAPI
+
+  The viewer element by the given id.
+
+### getViewers
+
+* getViewers(): ViewerAPI[]
+
+  #### Returns ViewerAPI[]
+
+  An array of all viewer elements.
+
+### getXRCapabilities
+
+* getXRCapabilities(): [XRCapability](/api/webvis/enums/xrcapability)[]
+
+  `Experimental`
+
+  Get the array of [XRCapability](/api/webvis/enums/xrcapability). The array of capabilities determines what parts of the API can be used. The capabilities
+  are mostly defined by the used device.
+
+  #### Returns [XRCapability](/api/webvis/enums/xrcapability)[]
+
+  Returns an Array<[XRCapability](/api/webvis/enums/xrcapability)> containing the XR system's capabilities.
+
+  Inherited from RealityAPI.getXRCapabilities
+
+### getXRPlaybackProperties
+
+* getXRPlaybackProperties(): XRPlaybackProperties
+
+  `Experimental`
+
+  Get static information about the playback sequence.
+
+  #### Returns XRPlaybackProperties
+
+  The current XRPlaybackProperties
+
+  Inherited from RealityAPI.getXRPlaybackProperties
+
+### getXRPlaybackState
+
+* getXRPlaybackState(): XRPlaybackState
+
+  `Experimental`
+
+  Get real-time information about the current state of the playback.
+
+  #### Returns XRPlaybackState
+
+  The current XRPlaybackState
+
+  Inherited from RealityAPI.getXRPlaybackState
+
+### getXRState
+
+* getXRState(): XRState
+
+  `Experimental`
+
+  Get the runtime state of the XR system.
+
+  #### Returns XRState
+
+  Returns either the current XRState or undefined if the XR system is not connected.
+
+  Inherited from RealityAPI.getXRState
+
+### hideXRBackgroundFeed
+
+* hideXRBackgroundFeed(): Promise\<void>
+
+  `Experimental`
+
+  Stops putting the image feed into the viewer's background. Also see showXRBackgroundFeed.
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.backgroundFeedVisible set to `false`.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.hideXRBackgroundFeed
+
+### importConfig
+
+* importConfig(  
+      config: \{  
+          aaSetting?: any;  
+          additionalCookies?: any;  
+          additionalRequestHeaders?: any;  
+          additionalWSQueryParameters?: any;  
+          applicationIdentifier?: any;  
+          auxModeRecursiveSearch?: any;  
+          auxModeUncolorFacesOnLeave?: any;  
+          backgroundColor?: any;  
+          batchedQueries?: any;  
+          boosterURL?: any;  
+          budgetingMode?: any;  
+          budgetingTargetFramerate?: any;  
+          cappingEffectEdgeColor?: any;  
+          cappingEffectEnabled?: any;  
+          cappingEffectInnerColor?: any;  
+          cappingGeometryColor?: any;  
+          colorComparisonFirstColor?: any;  
+          colorComparisonMatchingColor?: any;  
+          colorComparisonSecondColor?: any;  
+          colorizeEffect?: any;  
+          contextMenuFunction?: any;  
+          coordSys?: any;  
+          defaultFieldOfView?: any;  
+          defaultQueryLinkDepth?: any;  
+          disableDefaultInteraction?: any;  
+          disableSpecularHighlights?: any;  
+          doubleClickAnimationVolumeScale?: any;  
+          doubleClickTimeWindow?: any;  
+          drawingArrowheadEnd?: any;  
+          drawingArrowheadStart?: any;  
+          drawingColor?: any;  
+          drawingMode?: any;  
+          drawingSize?: any;  
+          dynamicAuxContrastEnabled?: any;  
+          dynamicClippingDistance?: any;  
+          dynamicClippingEnabled?: any;  
+          dynamicCOREnabled?: any;  
+          expandOnViewerSelection?: any;  
+          faceHighlightColor?: any;  
+          faceSelectionColor?: any;  
+          fitViewFactor?: any;  
+          flyNavigationSpeed?: any;  
+          flyToOnDoubleClick?: any;  
+          focusOnDoubleClick?: any;  
+          frontPlaneAxis?: any;  
+          frustumCulling?: any;  
+          ghostedSceneOpacity?: any;  
+          gizmoAxisLabelsEnabled?: any;  
+          gizmoScalingFactor?: any;  
+          gizmosEnabled?: any;  
+          gpuMemoryReleaseFactor?: any;  
+          hoverColor?: any;  
+          hubURL?: any;  
+          initialFit?: any;  
+          initialFitDirection?: any;  
+          initialStateActivation?: any;  
+          initView?: any;  
+          lightingEnvironment?: any;  
+          lineHighlightColor?: any;  
+          lineSelectionColor?: any;  
+          loadRemoteConfigFile?: any;  
+          logLevel?: any;  
+          maxActiveSceneVolumeDiameter?: any;  
+          maxConcurrentDownloads?: any;  
+          maxDynamicClipDistance?: any;  
+          maxGPUMemory?: any;  
+          maxSRCCPUMemory?: any;  
+          measurementAngularTolerance?: any;  
+          measurementMaterialDensities?: any;  
+          mouseInvertZoomingDirection?: any;  
+          navigationMode?: any;  
+          navigationSampling?: any;  
+          navigationSpeedFactor?: any;  
+          navigationSpeedThrottleFactor?: any;  
+          notificationLogLevels?: any;  
+          outlineColor?: any;  
+          outlineColorOccluded?: any;  
+          outlineInnerRadius?: any;  
+          outlineOuterRadius?: any;  
+          parentSelectEnabled?: any;  
+          preferXHRWithCredentials?: any;  
+          preSelectionColor?: any;  
+          projectionType?: any;  
+          renderAuxOnTop?: any;  
+          renderMode?: any;  
+          renderSetup?: any;  
+          sceneOpacity?: any;  
+          screenSpaceCoverageCalculationMethod?: any;  
+          selectionColor?: any;  
+          showAuxOnNavigation?: any;  
+          silhouetteEffect?: any;  
+          silhouetteEffectColor?: any;  
+          silhouetteEffectExclusiveEnabled?: any;  
+          skipSslVerify?: any;  
+          smallFeatureCulling?: any;  
+          smallFeaturePixelThreshold?: any;  
+          snapshotContentSelection?: any;  
+          soc?: any;  
+          spacemouseMultiplier?: any;  
+          ssaoEnabled?: any;  
+          taaEnabled?: any;  
+          topoGeometryColor?: any;  
+          topoGeometrySecondaryColor?: any;  
+          topoPointsEnabled?: any;  
+          transparencyMode?: any;  
+          turntableLowerVerticalLimit?: any;  
+          turntableUpperVerticalLimit?: any;  
+          turntableVerticalLimitsEnabled?: any;  
+          uriMap?: any;  
+          usageGroup?: any;  
+          useDevicePixelRatio?: any;  
+          vertexColorsEnabled?: any;  
+          viewPerspective?: any;  
+          webglPreserveDrawingbuffer?: any;  
+          xrEnableDebugImages?: any;  
+          xrFusionMode?: any;  
+          xrImageCompressionQuality?: any;  
+          xrImageResolutionProfile?: any;  
+          xrModelTrackerQualityThreshold?: any;  
+          xrModelTrackerSmoothingFactor?: any;  
+      \},  
+  ): void
+
+  Applies the specified set of settings to the context.
+
+  #### Parameters
+
+  + config: \{  
+        aaSetting?: any;  
+        additionalCookies?: any;  
+        additionalRequestHeaders?: any;  
+        additionalWSQueryParameters?: any;  
+        applicationIdentifier?: any;  
+        auxModeRecursiveSearch?: any;  
+        auxModeUncolorFacesOnLeave?: any;  
+        backgroundColor?: any;  
+        batchedQueries?: any;  
+        boosterURL?: any;  
+        budgetingMode?: any;  
+        budgetingTargetFramerate?: any;  
+        cappingEffectEdgeColor?: any;  
+        cappingEffectEnabled?: any;  
+        cappingEffectInnerColor?: any;  
+        cappingGeometryColor?: any;  
+        colorComparisonFirstColor?: any;  
+        colorComparisonMatchingColor?: any;  
+        colorComparisonSecondColor?: any;  
+        colorizeEffect?: any;  
+        contextMenuFunction?: any;  
+        coordSys?: any;  
+        defaultFieldOfView?: any;  
+        defaultQueryLinkDepth?: any;  
+        disableDefaultInteraction?: any;  
+        disableSpecularHighlights?: any;  
+        doubleClickAnimationVolumeScale?: any;  
+        doubleClickTimeWindow?: any;  
+        drawingArrowheadEnd?: any;  
+        drawingArrowheadStart?: any;  
+        drawingColor?: any;  
+        drawingMode?: any;  
+        drawingSize?: any;  
+        dynamicAuxContrastEnabled?: any;  
+        dynamicClippingDistance?: any;  
+        dynamicClippingEnabled?: any;  
+        dynamicCOREnabled?: any;  
+        expandOnViewerSelection?: any;  
+        faceHighlightColor?: any;  
+        faceSelectionColor?: any;  
+        fitViewFactor?: any;  
+        flyNavigationSpeed?: any;  
+        flyToOnDoubleClick?: any;  
+        focusOnDoubleClick?: any;  
+        frontPlaneAxis?: any;  
+        frustumCulling?: any;  
+        ghostedSceneOpacity?: any;  
+        gizmoAxisLabelsEnabled?: any;  
+        gizmoScalingFactor?: any;  
+        gizmosEnabled?: any;  
+        gpuMemoryReleaseFactor?: any;  
+        hoverColor?: any;  
+        hubURL?: any;  
+        initialFit?: any;  
+        initialFitDirection?: any;  
+        initialStateActivation?: any;  
+        initView?: any;  
+        lightingEnvironment?: any;  
+        lineHighlightColor?: any;  
+        lineSelectionColor?: any;  
+        loadRemoteConfigFile?: any;  
+        logLevel?: any;  
+        maxActiveSceneVolumeDiameter?: any;  
+        maxConcurrentDownloads?: any;  
+        maxDynamicClipDistance?: any;  
+        maxGPUMemory?: any;  
+        maxSRCCPUMemory?: any;  
+        measurementAngularTolerance?: any;  
+        measurementMaterialDensities?: any;  
+        mouseInvertZoomingDirection?: any;  
+        navigationMode?: any;  
+        navigationSampling?: any;  
+        navigationSpeedFactor?: any;  
+        navigationSpeedThrottleFactor?: any;  
+        notificationLogLevels?: any;  
+        outlineColor?: any;  
+        outlineColorOccluded?: any;  
+        outlineInnerRadius?: any;  
+        outlineOuterRadius?: any;  
+        parentSelectEnabled?: any;  
+        preferXHRWithCredentials?: any;  
+        preSelectionColor?: any;  
+        projectionType?: any;  
+        renderAuxOnTop?: any;  
+        renderMode?: any;  
+        renderSetup?: any;  
+        sceneOpacity?: any;  
+        screenSpaceCoverageCalculationMethod?: any;  
+        selectionColor?: any;  
+        showAuxOnNavigation?: any;  
+        silhouetteEffect?: any;  
+        silhouetteEffectColor?: any;  
+        silhouetteEffectExclusiveEnabled?: any;  
+        skipSslVerify?: any;  
+        smallFeatureCulling?: any;  
+        smallFeaturePixelThreshold?: any;  
+        snapshotContentSelection?: any;  
+        soc?: any;  
+        spacemouseMultiplier?: any;  
+        ssaoEnabled?: any;  
+        taaEnabled?: any;  
+        topoGeometryColor?: any;  
+        topoGeometrySecondaryColor?: any;  
+        topoPointsEnabled?: any;  
+        transparencyMode?: any;  
+        turntableLowerVerticalLimit?: any;  
+        turntableUpperVerticalLimit?: any;  
+        turntableVerticalLimitsEnabled?: any;  
+        uriMap?: any;  
+        usageGroup?: any;  
+        useDevicePixelRatio?: any;  
+        vertexColorsEnabled?: any;  
+        viewPerspective?: any;  
+        webglPreserveDrawingbuffer?: any;  
+        xrEnableDebugImages?: any;  
+        xrFusionMode?: any;  
+        xrImageCompressionQuality?: any;  
+        xrImageResolutionProfile?: any;  
+        xrModelTrackerQualityThreshold?: any;  
+        xrModelTrackerSmoothingFactor?: any;  
+    \}
+
+    Settings to import
+
+  #### Returns void
+
+  Inherited from SettingsAPI.importConfig
+
+### importSession
+
+* importSession(data: any, format?: "xscn"): Promise\<any>
+
+  Imports a session from the given data string in the specified format.
+
+  Supported formats: xscn.
+
+  #### Parameters
+
+  + data: any
+
+    The content of the session file.
+  + `Optional`format: "xscn"
+
+    The format of the session file. Default: "xscn".
+
+  #### Returns Promise\<any>
+
+  A Promise that resolves when the session is imported.
+
+  Inherited from SessionStorageAPI.importSession
+
+### importXRInitTemplate
+
+* importXRInitTemplate(template: string): Promise\<void>
+
+  `Experimental`
+
+  Imports an initialization template for model-based tracking.
+
+  In a model-based tracking scenario, initialization templates are captured during the tracking process.
+  This initialization data is linked to previously visited viewpoints along the traveled camera path.
+  Once the tracking is lost the templates are used to quickly reinitialize from similar viewpoints without the
+  user having to align the line model with the real object.
+
+  Once the initialization template data is imported, it will persist until enterXRInitMode with
+  XRInitOptions.resetInitTemplate set to `true` is called.
+
+  This method is only available if the XR system has the [XRCapability.SUPPORTS\_MODEL\_TRACKING](/api/webvis/enums/xrcapability#supports_model_tracking) capability.
+
+  The input data can be aquired via the exportXRInitTemplate method.
+
+  #### Parameters
+
+  + template: string
+
+    The base64 encoded initialization template data
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.importXRInitTemplate
+
+### invertEnabledStates
+
+* invertEnabledStates(): void
+
+  Inverts all enabled states.
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Returns void
+
+  Inherited from InstanceGraphAPI.invertEnabledStates
+
+### invertSelection
+
+* invertSelection(silent?: boolean): Promise\<ChangeSelectionResult>
+
+  Inverts the current selection.
+
+  Selected nodes will be unselected, and then all previously unselected leaf nodes will be selected.
+  When all child nodes of a parent are selected, the selection moves up the hierarchy as usual.
+
+  For example, consider the following hierarchy:
+
+  ```ts
+  Node 0  
+   |- Node 1  
+       |- Node 1.1  
+       |- Node 1.2  
+   |- Node 2  
+       |- Node 2.1  
+       |- Node 2.2
+  ```
+
+  If the initial selection is only `Node 2.1`, calling `invertSelection` will result in the selection including `Node 2.2`, `Node 1.1`, `Node 1.2`, and therefore also `Node 1`.
+  `Node 0` and `Node 2` will not become selected, even though they were not selected initially.
+  If getSelectedNodes is called at this point, it will return `[Node 1, Node 2.2]`.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+  Inherited from SelectionAPI.invertSelection
+
+### isColorComparisonActive
+
+* isColorComparisonActive(): boolean
+
+  Checks if the color comparison mode is active.
+
+  #### Returns boolean
+
+  true if the color comparison mode is active, otherwise false.
+
+  Inherited from InteractionAPI.isColorComparisonActive
+
+### isNodeDeletable
+
+* isNodeDeletable(nodeID: number): boolean
+
+  Checks if a node is deletable.
+
+  #### Parameters
+
+  + nodeID: number
+
+  #### Returns boolean
+
+  true if the node is deletable.
+
+  Inherited from InstanceGraphAPI.isNodeDeletable
+
+### isNodePartOfEnabledLayers
+
+* isNodePartOfEnabledLayers(nodeID: number): Promise\<boolean>
+
+  Returns true if the specified node ID is part of an enabled layer.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The node ID which should be checked.
+
+  #### Returns Promise\<boolean>
+
+  Returns a promise that resolves to true if the node is part of an enabled layer, false otherwise.
+
+  Inherited from LayerFilterAPI.isNodePartOfEnabledLayers
+
+### isNodePartOfEnabledVariant
+
+* isNodePartOfEnabledVariant(nodeId: number): Promise\<boolean>
+
+  #### Parameters
+
+  + nodeId: number
+
+    The ID of the Node.
+
+  #### Returns Promise\<boolean>
+
+  True, if the Node is Part of an enabled Variant. False otherwise.
+
+  Inherited from VariantsAPI.isNodePartOfEnabledVariant
+
+### isNodeType
+
+* isNodeType(nodeID: number, nodeType: [NodeType](/api/webvis/enums/nodetype)): boolean
+
+  Checks if a node is a specific type.
+
+  #### Parameters
+
+  + nodeID: number
+  + nodeType: [NodeType](/api/webvis/enums/nodetype)
+
+  #### Returns boolean
+
+  true if the node is of the specified type, otherwise false.
+
+  Inherited from InstanceGraphAPI.isNodeType
+
+### isOfflineStorageAvailable
+
+* isOfflineStorageAvailable(): Promise\<boolean>
+
+  #### Returns Promise\<boolean>
+
+  A Promise that always resolves to false, as offline storage is not used anymore.
+
+  #### Deprecated
+
+  isOfflineStorageAvailable is deprecated.
+
+  Checks if offline storage is currently available. This functionality is no longer relevant
+  as offline storage is not supported anymore.
+
+  Inherited from SessionStorageAPI.isOfflineStorageAvailable
+
+### isSelected
+
+* isSelected(nodeID: number): Promise\<boolean>
+
+  Checks if the specified node is part of the selection.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node to check for selection status.
+
+  #### Returns Promise\<boolean>
+
+  True if the given node is selected, otherwise false.
+
+  Inherited from SelectionAPI.isSelected
+
+### isTopologySelected
+
+* isTopologySelected(handle: TopologyHandle): boolean
+
+  Returns true if the specified topological entity is selected, false otherwise.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topology handle.
+
+  #### Returns boolean
+
+  True if the specified topological entity is selected, false otherwise.
+
+  #### See
+
+  + getSelectedTopologyHandles
+  + setTopologySelection
+
+  Inherited from TopologyAPI.isTopologySelected
+
+### mapInternalToOriginalTopologyHandles
+
+* mapInternalToOriginalTopologyHandles(  
+      handles: TopologyHandle[],  
+  ): Promise\<OriginalTopologyHandle[]>
+
+  Maps the given webvis topology handles to the corresponding original topology
+  handles.
+
+  #### Parameters
+
+  + handles: TopologyHandle[]
+
+    The webvis topology handles to be mapped.
+
+  #### Returns Promise\<OriginalTopologyHandle[]>
+
+  The corresponding original topology handles.
+
+  #### See
+
+  mapOriginalToInternalTopologyHandles
+
+  Inherited from TopologyAPI.mapInternalToOriginalTopologyHandles
+
+### mapOriginalToInternalTopologyHandles
+
+* mapOriginalToInternalTopologyHandles(  
+      nodeID: number,  
+      handles: OriginalTopologyHandle[],  
+  ): Promise\<TopologyHandle[]>
+
+  Maps the given original topology handles to the corresponding webvis topology
+  handles.
+
+  #### Parameters
+
+  + nodeID: number
+
+    The node which represents the part that contains the
+    topological entities.
+  + handles: OriginalTopologyHandle[]
+
+    The original topology handles to be mapped.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The corresponding webvis topology handles.
+
+  #### See
+
+  mapInternalToOriginalTopologyHandles
+
+  Inherited from TopologyAPI.mapOriginalToInternalTopologyHandles
+
+### measureBetween
+
+* measureBetween(  
+      target0: [MeasurementTarget](/api/webvis/types/measurementtarget),  
+      target1: [MeasurementTarget](/api/webvis/types/measurementtarget),  
+  ): Promise\<BetweenMeasurementResult>
+
+  Measures the distance and, if applicable, the angle between two measurement targets. The result also includes
+  the corresponding closest points on the targets.
+
+  If the targets intersect, the result will contain a representation of the intersection. Note that the
+  intersection is not available for measurements involving target classes
+  [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology) or [NODE](/api/webvis/enums/measurementtargetclass#node), except for
+  the cases plane-face and face-face.
+
+  #### Parameters
+
+  + target0: [MeasurementTarget](/api/webvis/types/measurementtarget)
+
+    The first measurement target.
+  + target1: [MeasurementTarget](/api/webvis/types/measurementtarget)
+
+    The second measurement target.
+
+  #### Returns Promise\<BetweenMeasurementResult>
+
+  The result of the measurement.
+
+  Inherited from MeasurementAPI.measureBetween
+
+### measureNormal
+
+* measureNormal(  
+      topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<NormalMeasurementResult>
+
+  Measures the normal of a face at a given point. The face is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the face, the closest
+  point on the face is used.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the face via a TopologyHandle.
+  + point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the normal should be measured.
+
+  #### Returns Promise\<NormalMeasurementResult>
+
+  The result of the normal measurement.
+
+  Inherited from MeasurementAPI.measureNormal
+
+### measurePointsByDistance
+
+* measurePointsByDistance(  
+      searchCurve: \{  
+          class: [CURVE](/api/webvis/enums/measurementtargetclass#curve);  
+          value: [[number, number, number], [number, number, number]][];  
+      \},  
+      distanceCurves: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}[],  
+      distance: number,  
+  ): Promise\<DistanceConstraintMatch[]>
+
+  `Experimental`
+
+  Attention: This function is experimental and may be changed or removed
+  in future versions.
+
+  Returns points from a search space that have the specified
+  distance to a set of measurement targets. The search space is
+  defined by a measurement target. Currently only supports
+  a search space that is defined by a curve and
+  edges as distance targets.
+
+  #### Parameters
+
+  + searchCurve: \{ class: [CURVE](/api/webvis/enums/measurementtargetclass#curve); value: [[number, number, number], [number, number, number]][] \}
+
+    The curve on which to search.
+  + distanceCurves: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}[]
+
+    The targets from which the distance is measured.
+  + distance: number
+
+    The distance.
+
+  #### Returns Promise\<DistanceConstraintMatch[]>
+
+  An array of points that match the distance constraint.
+
+  Inherited from MeasurementAPI.measurePointsByDistance
+
+### measureTangent
+
+* measureTangent(  
+      topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<TangentMeasurementResult>
+
+  Measures the tangent of an edge at a given point. The edge is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the edge, the closest
+  point on the edge is used.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the edge via a TopologyHandle.
+  + point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the tangent should be measured.
+
+  #### Returns Promise\<TangentMeasurementResult>
+
+  The result of the tangent measurement.
+
+  Inherited from MeasurementAPI.measureTangent
+
+### measureThickness
+
+* measureThickness(  
+      topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \},  
+      point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \},  
+  ): Promise\<ThicknessMeasurementResult>
+
+  Measures the thickness of a shape at a given point. The shape is specified by a measurement target that
+  points to a corresponding TopologyHandle. If the point does not lie on the shape, the closest
+  point on the shape is used. The thickness is measured along the line defined by the normal of the shape
+  at the given point.
+
+  #### Parameters
+
+  + topology: \{ class: [TOPOLOGY](/api/webvis/enums/measurementtargetclass#topology); value: TopologyHandle \}
+
+    The measurement target representing the shape via a TopologyHandle.
+  + point: \{ class: [POINT](/api/webvis/enums/measurementtargetclass#point); value: [number, number, number] \}
+
+    The point at which the thickness should be measured.
+
+  #### Returns Promise\<ThicknessMeasurementResult>
+
+  The result of the thickness measurement.
+
+  Inherited from MeasurementAPI.measureThickness
+
+### openSpace
+
+* openSpace(spaceHandle?: string | SpaceHandle): Promise\<void>
+
+  `Experimental`
+
+  Opens a 3D space, depending on the provided parameter:
+
+  + If a parameter is specified and a space with the referenced ID exists, switches to to that space.
+  + If a parameter is specified and no space with the referenced ID exists,
+    creates a new, empty space with that ID and switches to it.
+  + If no parameter is specified, creates a new, empty space and switches to it.
+    This space doesn't have an ID assigned (yet). Call requestSpaceHandle to get a handle for this space,
+    which contains a generated space ID.
+
+  In any of the above cases, the current space will be left and the current content will be overwritten by the
+  content of the opened space.
+
+  #### Parameters
+
+  + `Optional`spaceHandle: string | SpaceHandle
+
+    The handle of the space to open. Following formats are supported:
+
+    - A string representing a space URL.
+    - A string representing a space ID of the space to open.
+      Must satisfy the format rules for space IDs and might cause side-effects as described in the
+      [Space ID Format section](#space-id-format).
+    - A space handle object obtained from a previous call to requestSpaceHandle.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the space has been opened. If a space ID was provided that violates the
+  format rules for space IDs, the promise will be rejected with an error.
+
+  #### See
+
+  requestSpaceHandle to get a space handle.
+
+  Inherited from SpaceAPI.openSpace
+
+### performExplosion
+
+* performExplosion(explosionFactor: number): void
+
+  Performs the actual Explosion.
+
+  #### Parameters
+
+  + explosionFactor: number
+
+    The value by which the parts are expanded.
+
+  #### Returns void
+
+  Inherited from ExplosionAPI.performExplosion
+
+### processInteractionInput
+
+* processInteractionInput(interactionData: InteractionData): void
+
+  Triggers an interaction on the current active interaction mode.
+
+  #### Parameters
+
+  + interactionData: InteractionData
+
+    Definition of the triggered Interaction.
+
+  #### Returns void
+
+  Inherited from InteractionAPI.processInteractionInput
+
+### query
+
+* query(query: string | Query, nodeID?: number): Promise\<QueryResult>
+
+  Executes a query for metadata of structure or aux nodes. For an explanation of the query format, see the
+  QueryAPI.
+
+  #### Parameters
+
+  + query: string | Query
+
+    The query to execute. Can be either a query object or a JSON string.
+  + `Optional`nodeID: number
+
+    Optional node ID specifying a subtree to which the query should be scoped. If not provided,
+    the query is scoped to the whole space.
+
+  #### Returns Promise\<QueryResult>
+
+  A promise that resolves to an object containing the result data and any errors that have occurred
+  during query execution. If one or more errors have occurred, the result data must be considered incomplete.
+
+  Inherited from QueryAPI.query
+
+### readSetting
+
+* readSetting<[T](#readsettingt) extends string>(setting: [T](#readsettingt)): ContextSettingType<[T](#readsettingt)>
+
+  Returns the value of a setting.
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + setting: [T](#readsettingt)
+
+    The name of the setting that should be read
+
+  #### Returns ContextSettingType<[T](#readsettingt)>
+
+  The value of the specified setting
+
+  Inherited from SettingsAPI.readSetting
+
+### registerCustomProperty
+
+* registerCustomProperty(  
+      name: string,  
+      defaultValue: any,  
+      recursive?: boolean,  
+  ): void
+
+  Registers a new custom node property.
+
+  Custom properties allow developers to hook into the node hierarchy with custom data. This enables the creation
+  of custom behaviors and interactions that can benefit from the NODE\_\* events, like the [NodeChangedEvent](/api/webvis/classes/nodechangedevent),
+  emitted by the InstanceGraphAPI.
+
+  Triggers a [CustomPropertyRegisteredEvent](/api/webvis/classes/custompropertyregisteredevent)
+
+  #### Parameters
+
+  + name: string
+
+    The name of the new property.
+  + defaultValue: any
+
+    Specifies the default value.
+  + `Optional`recursive: boolean
+
+    Defines whether the property is recursive. Default: false
+
+  #### Returns void
+
+  Inherited from InstanceGraphAPI.registerCustomProperty
+
+### registerFrameListener
+
+* registerFrameListener(listener: [FrameListener](/api/webvis/types/framelistener)): void
+
+  Registers a frame listener which is executed on every tick of the
+  internal update loop of the webvis context.
+
+  #### Parameters
+
+  + listener: [FrameListener](/api/webvis/types/framelistener)
+
+    The listener to register.
+
+  #### Returns void
+
+  Inherited from FrameAPI.registerFrameListener
+
+### registerListener
+
+* registerListener<[T](#registerlistenert) extends [WebVisEvent](/api/webvis/classes/webvisevent) = [WebVisEvent](/api/webvis/classes/webvisevent)>(  
+      eventTypes: [EventType](/api/webvis/enums/eventtype)[],  
+      listener: IEventListener<[T](#registerlistenert)>,  
+      nodeID?: number,  
+      observeSubTree?: boolean,  
+  ): number
+
+  Registers a listener for a set of [EventType](/api/webvis/enums/eventtype)s. If the given event types array is empty, the
+  listener will react to all event types. The listener must implement the IEventListener
+  interface. It will be called with events that extend the [WebVisEvent](/api/webvis/classes/webvisevent) base class. An event's
+  `type` property specifies its [EventType](/api/webvis/enums/eventtype) and determines its structure.
+
+  ### Scoping listeners in the node hierarchy
+
+  Several [EventType](/api/webvis/enums/eventtype)s are linked to a specific node in the hierarchy. These include all that
+  have a `NODE_` or `TOPOLOGY_` prefix, as well as several animation-related event types.
+
+  When registering a listener for these event types, a listening scope must be specified in the node
+  hierarchy. This is done by setting the optional parameters `nodeID` and `observeSubTree`. The
+  `observeSubTree` flag determines whether the listener is scoped to only the specified node or the
+  entire subtree under the node.
+
+  By default, listeners are scoped to the global root node and `observeSubTree` is `false`, such that
+  listeners do not receive any events linked to added nodes. To listen to events from all nodes, set
+  `nodeID` to `0` and `observeSubTree` to `true`.
+
+  There are a few things to note when scoping listeners:
+
+  + [NODE\_ADDED](/api/webvis/enums/eventtype#node_added) events are linked to the parent node of the added node.
+  + [NODE\_CHANGED](/api/webvis/enums/eventtype#node_changed) events behave differently depending on the node property
+    that has changed. When the node property is recursive, the event is passed to all listeners in the
+    subtree. When the change to the node property affects the node's ancestors, events will also be
+    triggered for the ancestors.
+
+  #### Type Parameters
+
+  + T extends [WebVisEvent](/api/webvis/classes/webvisevent) = [WebVisEvent](/api/webvis/classes/webvisevent)
+
+    The type of event that the listener listens to. This can also be a union of multiple
+    event types.
+
+  #### Parameters
+
+  + eventTypes: [EventType](/api/webvis/enums/eventtype)[]
+
+    The types of events that the listener listens to. If an empty array is passed,
+    the listener will listen to all event types.
+  + listener: IEventListener<[T](#registerlistenert)>
+
+    The event listener.
+  + `Optional`nodeID: number
+
+    The ID of the node to which the listener should be scoped. Default: `0`
+  + `Optional`observeSubTree: boolean
+
+    If set to true, the listener will be scoped to the whole subtree under the
+    specified node. Default: `false`
+
+  #### Returns number
+
+  + The ID of the event listener.
+
+  Inherited from EventAPI.registerListener
+
+### remove
+
+* remove(nodeID?: number | number[], safe?: boolean): Promise<[RemoveState](/api/webvis/enums/removestate)>
+
+  Removes the node for the given node ID from the scene and all related snapshots. If no node ID is supplied, all nodes are deleted.
+
+  Triggers a [NodeRemovedEvent](/api/webvis/classes/noderemovedevent).
+
+  #### Parameters
+
+  + `Optional`nodeID: number | number[]
+
+    The ID of the node that should be removed or undefined to remove all nodes.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the node is part of one or more snapshots.
+    Default: false.
+
+  #### Returns Promise<[RemoveState](/api/webvis/enums/removestate)>
+
+  A promise that resolves with the [RemoveState](/api/webvis/enums/removestate) once the operation is complete.
+
+  #### See
+
+  SessionStorageAPI
+
+  Inherited from InstanceGraphAPI.remove
+
+### removeAnimationFrames
+
+* removeAnimationFrames(name: string): void
+
+  Removes an existing animation sequence.
+
+  #### Parameters
+
+  + name: string
+
+    Specifies the name of the animation frames.
+
+  #### Returns void
+
+  Inherited from AnimationAPI.removeAnimationFrames
+
+### removeAnnotation
+
+* removeAnnotation(annotationId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the Annotation from the scene and all related Snapshots and triggers an [AnnotationRemovedEvent](/api/webvis/classes/annotationremovedevent).
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Annotation is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  Inherited from AnnotationAPI.removeAnnotation
+
+### removeAppearancePattern
+
+* removeAppearancePattern(patternId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the appearance pattern from the scene and all related snapshots and triggers a [AppearancePatternRemovedEvent](/api/webvis/classes/appearancepatternremovedevent).
+
+  #### Parameters
+
+  + patternId: number
+
+    The ID of the appearance pattern.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the appearance pattern is part of
+    one or more snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.
+
+  Inherited from AppearancePatternAPI.removeAppearancePattern
+
+### removeAttachment
+
+* removeAttachment(attachmentID: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the Attachment from the scene and all related snapshots.
+
+  Triggers an [AttachmentRemovedEvent](/api/webvis/classes/attachmentremovedevent).
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the attachment is part of one or more snapshots. If no safe remove, a snapshot could link to missing data. Default: false.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The state of the removal process.
+
+  Inherited from AttachmentAPI.removeAttachment
+
+### removeCapping
+
+* removeCapping(clipPlaneId: number): Promise\<void>
+
+  `Experimental`
+
+  Completely removes the generated capping geometry for a clip plane.
+
+  This method permanently deletes any capping geometry that was previously created
+  for the specified clip plane. Unlike disableCapping, which merely hides the
+  geometry, this method removes it entirely from the scene.
+
+  If you later want to see capping geometry again, you'll need to call createCapping
+  to regenerate it.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Create a clip plane and generate capping geometry  
+  const clipPlaneId = context.createClipPlane({  
+    normal: [0, 0, 1],  
+    position: [0, 0, 0]  
+  });  
+    
+  await context.createCapping(clipPlaneId);  
+    
+  // Later, permanently remove the capping geometry  
+  await context.removeCapping(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane whose capping geometry should be removed
+
+  #### Returns Promise\<void>
+
+  Promise that resolves when the capping geometry has been removed
+
+  Inherited from ClipPlaneAPI.removeCapping
+
+### removeClippingRoom
+
+* removeClippingRoom(safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the clip room from the scene.
+
+  This method completely removes the clip room and disables its clipping effect.
+  Only one clip room can exist at a time, so there's no need to specify an ID.
+
+  When the `safe` parameter is set to true and the clip room is referenced by snapshots,
+  the removal will be prevented and the method will return `REFERENCED_BY_SNAPSHOT`.
+  By default (`safe` is false), the clip room will be forcibly removed even if it's
+  referenced by snapshots.
+
+  Triggers a [ClippingRoomRemovedEvent](/api/webvis/classes/clippingroomremovedevent) when the clip room is successfully removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Safe remove - will fail if referenced by snapshots  
+  const removeResult = context.removeClippingRoom(true);  
+    
+  if (removeResult === webvis.RemoveState.REFERENCED_BY_SNAPSHOT) {  
+    console.log("Cannot remove clip room - it's referenced by a snapshot");  
+  } else if (removeResult === webvis.RemoveState.OK) {  
+    console.log("Clip room successfully removed");  
+  }  
+    
+  // Force remove even if referenced by snapshots (default behavior)  
+  context.removeClippingRoom();
+  ```
+
+  #### Parameters
+
+  + `Optional`safe: boolean
+
+    Whether to prevent removal if the clip room is referenced by snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  A RemoveState value indicating the result of the removal operation
+
+  Inherited from ClipPlaneAPI.removeClippingRoom
+
+### removeClipPlane
+
+* removeClipPlane(clipPlaneId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes a clip plane from the scene.
+
+  This method completely removes the specified clip plane from the scene. Any capping
+  geometry associated with the clip plane will also be removed.
+
+  When the `safe` parameter is set to true and the clip plane is referenced by snapshots,
+  the removal will be prevented and the method will return `REFERENCED_BY_SNAPSHOT`.
+  By default (`safe` is false), clip planes will be forcibly removed even if they're
+  referenced by snapshots.
+
+  Triggers a [ClipPlaneRemovedEvent](/api/webvis/classes/clipplaneremovedevent) when the clip plane is successfully removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Safe remove - will fail if referenced by snapshots  
+  const removeResult = context.removeClipPlane(clipPlaneId, true);  
+    
+  if (removeResult === webvis.RemoveState.REFERENCED_BY_SNAPSHOT) {  
+    console.log("Cannot remove clip plane - it's referenced by a snapshot");  
+  } else if (removeResult === webvis.RemoveState.OK) {  
+    console.log("Clip plane successfully removed");  
+  }  
+    
+  // Force remove even if referenced by snapshots (default behavior)  
+  context.removeClipPlane(clipPlaneId);
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to remove
+  + `Optional`safe: boolean
+
+    Whether to prevent removal if the clip plane is referenced by snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  A RemoveState value indicating the result of the removal operation
+
+  Inherited from ClipPlaneAPI.removeClipPlane
+
+### removeCollection
+
+* removeCollection(collectionID: number): void
+
+  #### Parameters
+
+  + collectionID: number
+
+    Specifies which collection should be removed
+
+  #### Returns void
+
+  #### Deprecated
+
+  removeCollection is deprecated and will be removed in future versions.
+
+  Removes the collection with the given id.
+
+  Inherited from CollectionAPI.removeCollection
+
+### removeDrawing
+
+* removeDrawing(drawingId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes a Drawing with the specified id.
+  If a Drawing is part of a Snapshot the removal will fail with the State [RemoveState.REFERENCED\_BY\_SNAPSHOT](/api/webvis/enums/removestate#referenced_by_snapshot)
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the to be removed Drawing.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Drawing is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  Inherited from DrawingAPI.removeDrawing
+
+### removeDrawingPlane
+
+* removeDrawingPlane(drawingPlaneId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  `Experimental`
+
+  Removes a DrawingPlane with the specified ID.
+  If a DrawingPlane is part of a Snapshot the removal will fail with the State [RemoveState.REFERENCED\_BY\_SNAPSHOT](/api/webvis/enums/removestate#referenced_by_snapshot).
+
+  #### Parameters
+
+  + drawingPlaneId: number
+
+    The ID of the Drawing you want to remove.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupt the removal process if the Drawing is part of one or more Snapshots.
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  Inherited from DrawingPlaneAPI.removeDrawingPlane
+
+### removeFromCollection
+
+* removeFromCollection(  
+      collectionID: number,  
+      nodeID: number,  
+      recursive?: boolean,  
+  ): void
+
+  #### Parameters
+
+  + collectionID: number
+
+    Specifies from which collection the node should be removed
+  + nodeID: number
+
+    Specifies which node should be removed from the collection
+  + `Optional`recursive: boolean
+
+    Specifies whether the children of the node should be removed from the collection too
+
+  #### Returns void
+
+  #### Deprecated
+
+  removeFromCollection is deprecated and will be removed in future versions.
+
+  Removes a node given by nodeID from the collection with id collectionID. If recursive is true,
+  the descendants of the node are also removed.
+
+  Inherited from CollectionAPI.removeFromCollection
+
+### removeFromSelection
+
+* removeFromSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Removes the specified nodes from the current selection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to remove from the selection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+  Inherited from SelectionAPI.removeFromSelection
+
+### removeMaterial
+
+* removeMaterial(materialId: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  `Experimental`
+
+  *Experimental. May be changed in the future without notice.*
+
+  Removes the material from the scene and all related snapshots and triggers a [MaterialRemovedEvent](/api/webvis/classes/materialremovedevent).
+
+  #### Parameters
+
+  + materialId: number
+
+    The ID of the material.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the material is part of
+    one or more Snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.
+
+  Inherited from MaterialAPI.removeMaterial
+
+### removeMeasurement
+
+* removeMeasurement(measurementID: number, safe?: boolean): [RemoveState](/api/webvis/enums/removestate)
+
+  Removes the measurement entity with the specified ID from the webvis context and all related snapshots.
+
+  Triggers a [MeasurementRemovedEvent](/api/webvis/classes/measurementremovedevent) when the measurement entity has been removed.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity that should be removed.
+  + `Optional`safe: boolean
+
+    Performs a safe remove which interrupts the removal process if the measurement is part of one
+    or more snapshots. Default: false
+
+  #### Returns [RemoveState](/api/webvis/enums/removestate)
+
+  The resulting state of the removal process.
+
+  #### See
+
+  createMeasurement
+
+  Inherited from MeasurementAPI.removeMeasurement
+
+### removeSnapshot
+
+* removeSnapshot(snapshotID: number): void
+
+  Deletes the snapshot for the given snapshot ID.
+
+  Triggers a [SnapshotRemovedEvent](/api/webvis/classes/snapshotremovedevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to delete.
+
+  #### Returns void
+
+  Inherited from SessionStorageAPI.removeSnapshot
+
+### removeTopologyFromSelection
+
+* removeTopologyFromSelection(  
+      handle: TopologyHandle | TopologyHandle[],  
+  ): Promise\<void>
+
+  Removes one or more topological entities from the current selection.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological entities which
+    should be removed from the current selection.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + setTopologySelection
+  + addTopologyToSelection
+  + clearTopologySelection
+  + getSelectedTopologyHandles
+
+  Inherited from TopologyAPI.removeTopologyFromSelection
+
+### removeViewer
+
+* removeViewer(viewer: ViewerAPI): void
+
+  Removes a viewer element.
+
+  #### Parameters
+
+  + viewer: ViewerAPI
+
+    The id of the viewer.
+
+  #### Returns void
+
+### requestActiveSceneVolume
+
+* requestActiveSceneVolume(): Promise\<BoxVolume>
+
+  Returns the active volume of the current scene. It is the smallest volume that contains all nodes of the scene
+  that are enabled.
+
+  #### Returns Promise\<BoxVolume>
+
+  #### See
+
+  [Property.ENABLED](/api/webvis/enums/property#enabled)
+
+  Inherited from InstanceGraphAPI.requestActiveSceneVolume
+
+### requestAnnotationData
+
+* requestAnnotationData(annotationId: number): Promise\<AnnotationProperties>
+
+  Returns the AnnotationData for the specified Annotation ID.
+
+  #### Parameters
+
+  + annotationId: number
+
+    The ID of the Annotation you want to request the data for.
+
+  #### Returns Promise\<AnnotationProperties>
+
+  The requested Annotation data.
+
+  Inherited from AnnotationAPI.requestAnnotationData
+
+### requestAuxRootNodeIds
+
+* requestAuxRootNodeIds(scopeNodeId?: number): Promise\<number[]>
+
+  Returns a list of all existing AUX root node IDs below the specified subtree.
+
+  #### Parameters
+
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  A list of AUX root node IDs.
+
+  Inherited from InstanceGraphAPI.requestAuxRootNodeIds
+
+### requestBoxDescriptor
+
+* requestBoxDescriptor(  
+      nodeIds: number[],  
+  ): Promise<\{ descriptor: TopologyBoxDescriptor; type: [BOX](/api/webvis/enums/topologysubtype#box) \}>
+
+  Returns a box descriptor for the combined bounding box of the
+  specified nodes.
+
+  #### Parameters
+
+  + nodeIds: number[]
+
+    The nodes for which the box descriptor should
+    be created.
+
+  #### Returns Promise<\{ descriptor: TopologyBoxDescriptor; type: [BOX](/api/webvis/enums/topologysubtype#box) \}>
+
+  The box descriptor for the combined bounding box of
+  the specified nodes.
+
+  Inherited from TopologyAPI.requestBoxDescriptor
+
+### requestClipPlaneData
+
+* requestClipPlaneData(clipPlaneId: number): Promise\<ClipPlaneProperties>
+
+  Retrieves the properties of a specific clip plane.
+
+  This method asynchronously fetches the current configuration of a clip plane,
+  including its position, orientation, visibility settings, and any node exclusions.
+  The data is returned as a ClipPlaneProperties object that can be inspected or used
+  to create a similar clip plane.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  const properties = await context.requestClipPlaneData(clipPlaneId);  
+  console.log(`Clip plane position: [${properties.position}]`);  
+  console.log(`Clip plane normal: [${properties.normal}]`);  
+      
+  // Use the properties to create a similar clip plane  
+  const newClipPlaneId = context.createClipPlane({  
+    ...properties,  
+    name: properties.name + " (copy)"  
+  });
+  ```
+
+  #### Parameters
+
+  + clipPlaneId: number
+
+    The ID of the clip plane to get data for
+
+  #### Returns Promise\<ClipPlaneProperties>
+
+  Promise resolving to the clip plane's properties
+
+  Inherited from ClipPlaneAPI.requestClipPlaneData
+
+### requestClipRoomData
+
+* requestClipRoomData(): Promise\<ClipRoomProperties>
+
+  Retrieves the properties of the current clip room.
+
+  This method asynchronously fetches the current configuration of the clip room,
+  including its size, position, transformation matrix, and visibility settings.
+  The data is returned as a ClipRoomProperties object that can be inspected or used
+  to create a similar clip room after the current one is removed.
+
+  Example usage:
+
+  ```ts
+  // Get the webvis context  
+  const context = webvis.getContext();  
+    
+  // Get the clip room properties and display information  
+  const properties = await context.requestClipRoomData();  
+  console.log(`Clip room size: [${properties.size}]`);  
+  console.log(`Clip room transform: [${properties.transform}]`);  
+    
+  // Use the properties to create a similar clip room after removing the current one  
+  context.removeClippingRoom();  
+  context.createClippingRoom({  
+    ...properties,  
+    size: [properties.size[0] * 1.5, properties.size[1] * 1.5, properties.size[2] * 1.5],  
+    name: properties.name ? properties.name + " (enlarged)" : "Enlarged Room"  
+  });
+  ```
+
+  #### Returns Promise\<ClipRoomProperties>
+
+  Promise resolving to the clip room's properties
+
+  Inherited from ClipPlaneAPI.requestClipRoomData
+
+### requestDrawingData
+
+* requestDrawingData(drawingId: number): Promise\<DrawingData>
+
+  Returns the DrawingData for the specified Drawing id.
+
+  #### Parameters
+
+  + drawingId: number
+
+    The id of the Drawing from which the data is requested.
+
+  #### Returns Promise\<DrawingData>
+
+  The requested Drawing data.
+
+  Inherited from DrawingAPI.requestDrawingData
+
+### requestFullSceneVolume
+
+* requestFullSceneVolume(): Promise\<BoxVolume>
+
+  Returns the full volume of the current scene. It is the smallest volume that contains all nodes of the scene,
+  regardless of their [Property.ENABLED](/api/webvis/enums/property#enabled) state.
+
+  #### Returns Promise\<BoxVolume>
+
+  Inherited from InstanceGraphAPI.requestFullSceneVolume
+
+### requestHubVersion
+
+* requestHubVersion(): Promise\<string>
+
+  Request the current version of the connected instant3Dhub-backend. May return undefined for older versions.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains a string containing the version of the connected backend.
+
+  Inherited from HubAPI.requestHubVersion
+
+### requestL3DInformation
+
+* requestL3DInformation(targetNodeId: number): Promise\<any>
+
+  Returns the L3D information of the specified node.
+
+  #### Parameters
+
+  + targetNodeId: number
+
+    Specifies the target node ID.
+
+  #### Returns Promise\<any>
+
+  The L3D information of the specified node
+
+  Inherited from InstanceGraphAPI.requestL3DInformation
+
+### requestMeasurementData
+
+* requestMeasurementData(measurementID: number): Promise\<MeasurementProperties>
+
+  Returns the properties of the measurement entity with the specified ID. These include the result of the
+  measurement, as well as its type and targets.
+
+  #### Parameters
+
+  + measurementID: number
+
+    The ID of the measurement entity.
+
+  #### Returns Promise\<MeasurementProperties>
+
+  The properties of the measurement entity.
+
+  #### See
+
+  createMeasurement
+
+  Inherited from MeasurementAPI.requestMeasurementData
+
+### requestMemberActions
+
+* requestMemberActions(memberId: number): Promise<[MemberAction](/api/webvis/enums/memberaction)[]>
+
+  `Experimental`
+
+  Requests the actions available on a member.
+
+  Get notified about changes to available actions on a member via the
+  [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent) and [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent).
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to request actions for.
+
+  #### Returns Promise<[MemberAction](/api/webvis/enums/memberaction)[]>
+
+  A promise that resolves to an array of member actions.
+
+  Inherited from MemberAPI.requestMemberActions
+
+### requestMemberProperties
+
+* requestMemberProperties(memberId: number): Promise\<MemberProperties>
+
+  `Experimental`
+
+  Requests the properties of a member.
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to request the properties for.
+
+  #### Returns Promise\<MemberProperties>
+
+  A promise that resolves to the member properties, or undefined if the member does not exist.
+
+  Inherited from MemberAPI.requestMemberProperties
+
+### requestNeighboringEdges
+
+* requestNeighboringEdges(handle: TopologyHandle): Promise\<TopologyHandle[]>
+
+  Returns the neighboring edges of the specified topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity for which the neighboring edges should be requested.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The neighboring edges of the specified topological entity.
+
+  Inherited from TopologyAPI.requestNeighboringEdges
+
+### requestNeighboringFaces
+
+* requestNeighboringFaces(handle: TopologyHandle): Promise\<TopologyHandle[]>
+
+  Returns the neighboring faces of the specified topological entity.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity for which the neighboring faces should be requested.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The neighboring faces of the specified topological entity.
+
+  Inherited from TopologyAPI.requestNeighboringFaces
+
+### requestNodeIdsByBoxVolume
+
+* requestNodeIdsByBoxVolume(  
+      boxVolume: BoxVolume,  
+      includeOverlappingNodes?: boolean,  
+      includeDisabledNodes?: boolean,  
+      forceExpand?: boolean,  
+      scopeNodeId?: number,  
+  ): Promise\<number[]>
+
+  Returns a list of all node IDs that are included in or overlapped by the specified bounding volume.
+
+  #### Parameters
+
+  + boxVolume: BoxVolume
+
+    Specifies the bounding volume.
+  + `Optional`includeOverlappingNodes: boolean
+
+    Specifies whether the result should include nodes which overlap the specified bounding volume as well. Default: false
+  + `Optional`includeDisabledNodes: boolean
+
+    Specifies whether the result should include nodes which are disabled as well. Default: false
+  + `Optional`forceExpand: boolean
+
+    If set to true, L3D instances may be expanded to find their leaf nodes. Default: false
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+
+  #### Returns Promise\<number[]>
+
+  List of all node IDs which are included or overlapped by the specified bounding volume.
+
+  Inherited from InstanceGraphAPI.requestNodeIdsByBoxVolume
+
+### requestNodePathHandleMap
+
+* requestNodePathHandleMap(  
+      paths: string[],  
+      scope?: number,  
+  ): Promise\<NodePathHandleMap>
+
+  requestNodePathHandleMap Returns an object mapping from input paths to the respective handles.
+
+  #### Parameters
+
+  + paths: string[]
+
+    \{Array\<string | NodePathHandle>\} The array of node path strings or handles.
+  + `Optional`scope: number
+
+    \{number\} [scope=0] nodeID specifying the scope as starting point for the paths
+
+  #### Returns Promise\<NodePathHandleMap>
+
+  The resulting object mapping paths to handles
+
+  Inherited from NodePathAPI.requestNodePathHandleMap
+
+### requestNodePathStrings
+
+* requestNodePathStrings(  
+      handles: NodePathHandle[],  
+      scope?: number,  
+      typePriorities?: [NodePathFragmentType](/api/webvis/enums/nodepathfragmenttype)[],  
+  ): Promise\<string[]>
+
+  requestNodePathStrings Returns string representations for the respective node path handles.
+
+  #### Parameters
+
+  + handles: NodePathHandle[]
+
+    \{Array\}
+  + `Optional`scope: number
+
+    \{number\} nodeID specifying the scope as starting point for the path resolution
+  + `Optional`typePriorities: [NodePathFragmentType](/api/webvis/enums/nodepathfragmenttype)[]
+
+    \{Array\} Array of priorities to control the fragments for the path string assembly.
+
+  #### Returns Promise\<string[]>
+
+  String representation of the node path for the respective scope.
+
+  Inherited from NodePathAPI.requestNodePathStrings
+
+### requestRootNodeIds
+
+* requestRootNodeIds(scopeNodeId?: number, recursive?: boolean): Promise\<number[]>
+
+  Returns a list of all existing root node IDs below the specified subtree.
+
+  #### Parameters
+
+  + `Optional`scopeNodeId: number
+
+    Specifies the top one node ID of the subtree to be searched. Default: 0
+  + `Optional`recursive: boolean
+
+    Specifies if the subtree is traversed recursively. Default: false
+
+  #### Returns Promise\<number[]>
+
+  A list of root node IDs.
+
+  Inherited from InstanceGraphAPI.requestRootNodeIds
+
+### requestServiceStates
+
+* requestServiceStates(): Promise\<Map<[ServiceType](/api/webvis/enums/servicetype), [ServiceState](/api/webvis/enums/servicestate)>>
+
+  Requests all available services of the backend and their current state.
+
+  #### Returns Promise\<Map<[ServiceType](/api/webvis/enums/servicetype), [ServiceState](/api/webvis/enums/servicestate)>>
+
+  Returns a Promise which contains a map of all available services and their states.
+
+  Inherited from HubAPI.requestServiceStates
+
+### requestShapeHandles
+
+* requestShapeHandles(nodeId: number): Promise\<TopologyHandle[]>
+
+  Returns a list of shape handles for the specified node or subtree.
+
+  #### Parameters
+
+  + nodeId: number
+
+    The node ID which is used to collect the shape handles.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The list of shape handles for the specified node or subtree
+
+  Inherited from TopologyAPI.requestShapeHandles
+
+### requestSnapshotData
+
+* requestSnapshotData(snapshotID: number): Promise\<SnapshotProperties>
+
+  Requests the data of the specified snapshot.
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to request data for.
+
+  #### Returns Promise\<SnapshotProperties>
+
+  The data of the specified snapshot.
+
+  Inherited from SessionStorageAPI.requestSnapshotData
+
+### requestSpaceHandle
+
+* requestSpaceHandle(role?: [OWNER](/api/webvis/enums/memberrole#owner) | [EDITOR](/api/webvis/enums/memberrole#editor) | [VIEWER](/api/webvis/enums/memberrole#viewer)): Promise\<SpaceHandle>
+
+  `Experimental`
+
+  Requests a shareable space handle for the current space.
+
+  Note that after calling this method, the current space will definitely have an ID assigned to it.
+
+  #### Parameters
+
+  + `Optional`role: [OWNER](/api/webvis/enums/memberrole#owner) | [EDITOR](/api/webvis/enums/memberrole#editor) | [VIEWER](/api/webvis/enums/memberrole#viewer)
+
+    The role to assign when the space is opened via the handle. If undefined, the
+    [MemberRole.VIEWER](/api/webvis/enums/memberrole#viewer) role will be assigned when opening the space via the handle.
+
+  #### Returns Promise\<SpaceHandle>
+
+  A promise that resolves to the space handle.
+
+  Inherited from SpaceAPI.requestSpaceHandle
+
+### requestSupportedContentTypes
+
+* requestSupportedContentTypes(): Promise\<ContentType[]>
+
+  Request a list of (model) data formats which are supported by the connected instance3Dhub-backend.
+  If requested before the connection to the Hub is established, it will return the local list of content types.
+
+  #### Returns Promise\<ContentType[]>
+
+  Returns a Promise which contains the list of all supported data formats.
+
+  Inherited from HubAPI.requestSupportedContentTypes
+
+### requestSupportedRenderSetups
+
+* requestSupportedRenderSetups(): Promise<\{ name: string; value: string \}[]>
+
+  Request all supported render setups if one or more are available.
+  The render setup is a key value pair where the key is the name of the render setup and the value could be
+  used as an input value for the [ViewerSettingStrings.RENDER\_SETUP](/api/webvis/enums/viewersettingstrings#render_setup) setting.
+
+  #### Returns Promise<\{ name: string; value: string \}[]>
+
+  Returns a Promise which contains the list of supported render setups.
+
+  Inherited from HubAPI.requestSupportedRenderSetups
+
+### requestTopologyDescriptor
+
+* requestTopologyDescriptor(handle: TopologyHandle): Promise<[TopologyDescriptor](/api/webvis/types/topologydescriptor)>
+
+  Returns a detailed descriptor for the specified topological entity.
+  The descriptor contains the [subtype](/api/webvis/enums/topologysubtype) and an
+  object with a series of known attributes of the topological entity.
+  For example, a descriptor for a circle includes the center and
+  radius of the circle.
+
+  #### Parameters
+
+  + handle: TopologyHandle
+
+    The topological entity.
+
+  #### Returns Promise<[TopologyDescriptor](/api/webvis/types/topologydescriptor)>
+
+  A detailed descriptor for the specified topological entity.
+
+  Inherited from TopologyAPI.requestTopologyDescriptor
+
+### requestTopologyHandles
+
+* requestTopologyHandles(  
+      nodeId: number,  
+      types?: [TopologyType](/api/webvis/enums/topologytype)[],  
+  ): Promise\<TopologyHandle[]>
+
+  `Experimental`
+
+  Returns a list of topology handles for the specified node or subtree.
+
+  #### Parameters
+
+  + nodeId: number
+
+    The node ID that is used to collect the topology handles.
+  + `Optional`types: [TopologyType](/api/webvis/enums/topologytype)[]
+
+    The types of the topology handles that should be collected.
+
+  #### Returns Promise\<TopologyHandle[]>
+
+  The list of topology handles for the specified node or subtree
+
+  Inherited from TopologyAPI.requestTopologyHandles
+
+### requestVariants
+
+* requestVariants(nodeId: number): Promise\<VariantProperties[]>
+
+  #### Parameters
+
+  + nodeId: number
+
+    The ID of the Node.
+
+  #### Returns Promise\<VariantProperties[]>
+
+  The Variant(s) for a given nodeID.
+
+  Inherited from VariantsAPI.requestVariants
+
+### requestXRDeviceScreenshot
+
+* requestXRDeviceScreenshot(): Promise\<string>
+
+  `Experimental`
+
+  Request a screenshot of the webview's content inside the native XR device application.
+
+  #### Returns Promise\<string>
+
+  Returns a Promise which contains the base64 encoded image data when the operation
+  was successful or rejects in an error case.
+
+  Inherited from RealityAPI.requestXRDeviceScreenshot
+
+### requestXRScanshot
+
+* requestXRScanshot(): Promise\<XRScanshot>
+
+  `Experimental`
+
+  Requests a scanshot of the current view in the XR environment.
+
+  #### Returns Promise\<XRScanshot>
+
+  The scanshot data.
+
+  Inherited from RealityAPI.requestXRScanshot
+
+### resetInteractionMode
+
+* resetInteractionMode(keepColorCompareActive?: boolean): void
+
+  Sets the current interaction mode back to the Default mode.
+
+  #### Parameters
+
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. (Default: false)
+
+  #### Returns void
+
+  #### See
+
+  isColorComparisonActive
+
+  Inherited from InteractionAPI.resetInteractionMode
+
+### resetProperties
+
+* resetProperties(  
+      nodeID: number,  
+      properties: string[],  
+      recursive?: boolean,  
+  ): Promise\<void>
+
+  Resets the value of the specified properties of the given node.
+
+  Triggers a [NodePropertiesResetEvent](/api/webvis/classes/nodepropertiesresetevent). If the property has changed,
+  this will additionally trigger a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose [Property](/api/webvis/enums/property) should be reset.
+  + properties: string[]
+
+    List of [properties](/api/webvis/enums/property) which should be reset.
+  + `Optional`recursive: boolean
+
+    If set to true, the [properties](/api/webvis/enums/property) are reset recursively. Default: false
+
+  #### Returns Promise\<void>
+
+  Inherited from InstanceGraphAPI.resetProperties
+
+### resetProperty
+
+* resetProperty(  
+      nodeID: number,  
+      property: string,  
+      recursive?: boolean,  
+  ): Promise\<void>
+
+  Resets the value of the specified property of the given node.
+
+  Triggers a [NodePropertiesResetEvent](/api/webvis/classes/nodepropertiesresetevent). If the property has changed,
+  this will additionally trigger a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose [Property](/api/webvis/enums/property) should be reset.
+  + property: string
+
+    The [Property](/api/webvis/enums/property) that should be reset.
+  + `Optional`recursive: boolean
+
+    If set to true, the [properties](/api/webvis/enums/property) are reset recursively. Default: false
+
+  #### Returns Promise\<void>
+
+  Inherited from InstanceGraphAPI.resetProperty
+
+### resetSetting
+
+* resetSetting(setting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) | [SettingStrings](/api/webvis/enums/settingstrings)): void
+
+  Resets the value of a setting to the installation default.
+
+  #### Parameters
+
+  + setting: [ViewerSettingStrings](/api/webvis/enums/viewersettingstrings) | [SettingStrings](/api/webvis/enums/settingstrings)
+
+    The name of the setting that should be reset.
+
+  #### Returns void
+
+  Inherited from SettingsAPI.resetSetting
+
+### resetUserSettings
+
+* resetUserSettings(): void
+
+  #### Returns void
+
+  Inherited from SettingsAPI.resetUserSettings
+
+### restoreSession
+
+* restoreSession(handle: string): Promise\<void>
+
+  Restores a session for the given access handle from the infrastructure.
+
+  #### Parameters
+
+  + handle: string
+
+    The access handle of the session to restore.
+
+  #### Returns Promise\<void>
+
+  A Promise that resolves when the session is restored.
+
+  Inherited from SessionStorageAPI.restoreSession
+
+### restoreSnapshot
+
+* restoreSnapshot(  
+      snapshotID: number,  
+      options?: SnapshotRestoreOptions,  
+  ): Promise\<void>
+
+  Restores the snapshot for the given snapshot ID.
+
+  Triggers a [SnapshotRestoreStartedEvent](/api/webvis/classes/snapshotrestorestartedevent) and, if successful, a [SnapshotRestoredEvent](/api/webvis/classes/snapshotrestoredevent).
+
+  #### Parameters
+
+  + snapshotID: number
+
+    The ID of the snapshot to restore.
+  + `Optional`options: SnapshotRestoreOptions
+
+    Options to control the subset of snapshot data to restore.
+
+  #### Returns Promise\<void>
+
+  A Promise that resolves when the snapshot is restored.
+
+  Inherited from SessionStorageAPI.restoreSnapshot
+
+### searchByVolume
+
+* searchByVolume(  
+      selectionBox: BoxVolume,  
+      includeOverlappingNodes: boolean,  
+      rootNodeID?: number,  
+  ): Promise\<number>
+
+  #### Parameters
+
+  + selectionBox: BoxVolume
+
+    3-dimensional search volume.
+  + includeOverlappingNodes: boolean
+
+    Specifies whether the search result contains only those nodes which lie entirely in the search volume or if overlapping nodes are also included.
+  + `Optional`rootNodeID: number
+
+    Restricts the search to a subtree of a node with the given id.
+
+  #### Returns Promise\<number>
+
+  A the id of the created collection of nodes that are fitting the given search criteria.
+
+  #### Deprecated
+
+  searchByVolume is deprecated and will be removed in future versions. Please use InstanceGraphAPI.requestNodeIdsByBoxVolume instead.
+
+  Finds nodes within the given BoxVolume (created using the createBoxVolume() function).
+  If includeOverlappingNodes is false, only nodes fully contained by the box volume are returned.
+  The rootNodeID specifies the node from which the subtree is searched.
+
+  Inherited from CollectionAPI.searchByVolume
+
+### seekXRPlayback
+
+* seekXRPlayback(frameIndex: number): Promise\<void>
+
+  `Experimental`
+
+  Jump to the frame with the specified index in the playback sequence. To get the total amount of frames in the sequence,
+  see XRPlaybackProperties and getXRPlaybackProperties method.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + frameIndex: number
+
+    The index of the frame to jump to
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which reports wether the operation was successful or not
+
+  Inherited from RealityAPI.seekXRPlayback
+
+### selectCollection
+
+* selectCollection(  
+      collectionID: number,  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  #### Parameters
+
+  + collectionID: number
+
+    The ID of the collection.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  #### Deprecated
+
+  selectCollection is deprecated, please use setSelection instead.
+
+  Replaces the current selection with the nodes from the given collection.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  Inherited from SelectionAPI.selectCollection
+
+### setAttachmentData
+
+* setAttachmentData(attachmentID: number, data: [Serializable](/api/webvis/types/serializable)): void
+
+  Sets the attachment data.
+
+  Triggers an [AttachmentDataChangedEvent](/api/webvis/classes/attachmentdatachangedevent).
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + data: [Serializable](/api/webvis/types/serializable)
+
+    The new attachment data.
+
+  #### Returns void
+
+  Inherited from AttachmentAPI.setAttachmentData
+
+### setAttachmentDataURI
+
+* setAttachmentDataURI(attachmentID: number, dataURI: string): void
+
+  Sets the attachment data URI.
+
+  #### Parameters
+
+  + attachmentID: number
+
+    Specifies the attachment object.
+  + dataURI: string
+
+    The attachment data URI.
+
+  #### Returns void
+
+  Inherited from AttachmentAPI.setAttachmentDataURI
+
+### setInteractionMode
+
+* setInteractionMode(  
+      mode: string | string[],  
+      keepColorCompareActive?: boolean,  
+  ): void
+
+  Set the current interaction mode.
+
+  #### Parameters
+
+  + mode: string | string[]
+
+    Specifies the interaction mode you want set.
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. Default: false
+
+  #### Returns void
+
+  #### Deprecated
+
+  Calling setInteractionMode with the mode parameter of type string or string[] is deprecated, please use the InteractionMode enum instead.
+
+  #### See
+
+  isColorComparisonActive
+
+  Inherited from InteractionAPI.setInteractionMode
+* setInteractionMode(  
+      mode: [InteractionMode](/api/webvis/enums/interactionmode),  
+      keepColorCompareActive?: boolean,  
+  ): void
+
+  Set the current interaction mode.
+
+  #### Parameters
+
+  + mode: [InteractionMode](/api/webvis/enums/interactionmode)
+
+    Specifies the interaction mode you want set.
+  + `Optional`keepColorCompareActive: boolean
+
+    Specifies if the color comparison mode should stay active. Default: false
+
+  #### Returns void
+
+  #### See
+
+  isColorComparisonActive
+
+  Inherited from InteractionAPI.setInteractionMode
+
+### setLayerFilterEnabled
+
+* setLayerFilterEnabled(  
+      name: string,  
+      enabled: boolean,  
+  ): SetLayerFilterEnabledResult
+
+  Sets the enabled state of a single layer filter.
+
+  Triggers a [LayerFilterChangedEvent](/api/webvis/classes/layerfilterchangedevent).
+
+  #### Parameters
+
+  + name: string
+
+    The name of the layer filter
+  + enabled: boolean
+
+    The new enabled state.
+
+  #### Returns SetLayerFilterEnabledResult
+
+  The result of the operation.
+
+  Inherited from LayerFilterAPI.setLayerFilterEnabled
+
+### setMemberName
+
+* setMemberName(name: string): void
+
+  `Experimental`
+
+  Sets the name of the local member.
+
+  Triggers a [MemberChangedEvent](/api/webvis/classes/memberchangedevent) if the name changes.
+
+  #### Parameters
+
+  + name: string
+
+    The new name for the local member.
+
+  #### Returns void
+
+  Inherited from MemberAPI.setMemberName
+
+### setMemberProfileEntry
+
+* setMemberProfileEntry(key: string, value: [Serializable](/api/webvis/types/serializable)): Promise\<void>
+
+  `Experimental`
+
+  Sets a profile entry of the local member.
+
+  Triggers a [MemberProfileEntryChangedEvent](/api/webvis/classes/memberprofileentrychangedevent) if the profile entry changes or is created.
+
+  #### Parameters
+
+  + key: string
+
+    The key of the profile entry to set.
+  + value: [Serializable](/api/webvis/types/serializable)
+
+    The value to set for the profile entry.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the profile entry has been set.
+
+  Inherited from MemberAPI.setMemberProfileEntry
+
+### setParent
+
+* setParent(nodeID: number, newParentID: number): void
+
+  Sets a new parent for a given node ID.
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent).
+
+  #### Parameters
+
+  + nodeID: number
+
+    The ID of the node whose parent should be set.
+  + newParentID: number
+
+    The ID of the new parent node.
+
+  #### Returns void
+
+  Inherited from InstanceGraphAPI.setParent
+
+### setProperty
+
+* setProperty<[T](#setpropertyt) extends string>(  
+      nodeID: number | number[],  
+      property: [T](#setpropertyt),  
+      value: [PropertyType](/api/webvis/types/propertytype)<[T](#setpropertyt)>,  
+      silent?: boolean,  
+  ): Promise\<void>
+
+  Sets the specified property to the given value on the node(s) with the specified ID(s).
+
+  Triggers a [NodeChangedEvent](/api/webvis/classes/nodechangedevent). Depending on the property it can trigger additional events,
+  e.g. [ActiveSceneVolumeChangedEvent](/api/webvis/classes/activescenevolumechangedevent).
+
+  #### Type Parameters
+
+  + T extends string
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID(s) of the node(s) whose property has to be set.
+  + property: [T](#setpropertyt)
+
+    The name of the [Property](/api/webvis/enums/property) that has to be set.
+  + value: [PropertyType](/api/webvis/types/propertytype)<[T](#setpropertyt)>
+
+    The new value of the specified property.
+  + `Optional`silent: boolean
+
+    The silent flag indicates that no NODE\_CHANGED event is fired. Default: false
+
+  #### Returns Promise\<void>
+
+  Inherited from InstanceGraphAPI.setProperty
+
+### setSelection
+
+* setSelection(  
+      nodeID: number | number[],  
+      silent?: boolean,  
+  ): Promise\<ChangeSelectionResult>
+
+  Replaces the current selection with the specified nodes.
+
+  Triggers a [SelectionChangedEvent](/api/webvis/classes/selectionchangedevent) if silent is set to false.
+
+  #### Parameters
+
+  + nodeID: number | number[]
+
+    The ID or array of IDs of the nodes to select.
+  + `Optional`silent: boolean
+
+    If set to true, no event will be emitted. Default: false
+
+  #### Returns Promise\<ChangeSelectionResult>
+
+  The result of the selection change.
+
+  Inherited from SelectionAPI.setSelection
+
+### setTopologyProperty
+
+* setTopologyProperty<[T](#settopologypropertyt) extends keyof TopologyPropertyTypeMap>(  
+      handle: TopologyHandle | TopologyHandle[],  
+      property: [T](#settopologypropertyt),  
+      value: TopologyPropertyTypeMap[[T](#settopologypropertyt)],  
+  ): Promise\<PromiseSettledResult\<void>[]>
+
+  Sets a [property](/api/webvis/enums/topologyproperty) of one or more topological
+  entities.
+
+  #### Type Parameters
+
+  + T extends keyof TopologyPropertyTypeMap
+
+    The property which should be set.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    The topological entity or array of topological
+    entities which should be modified.
+  + property: [T](#settopologypropertyt)
+
+    The property which should be set.
+  + value: TopologyPropertyTypeMap[[T](#settopologypropertyt)]
+
+    The new value of the property.
+
+  #### Returns Promise\<PromiseSettledResult\<void>[]>
+
+  A promise which resolves when the operation is completed.
+
+  Inherited from TopologyAPI.setTopologyProperty
+
+### setTopologySelection
+
+* setTopologySelection(handle: TopologyHandle | TopologyHandle[]): Promise\<void>
+
+  Sets the current selection to the specified topological entities.
+
+  #### Parameters
+
+  + handle: TopologyHandle | TopologyHandle[]
+
+    One or more topological entities that should be selected.
+
+  #### Returns Promise\<void>
+
+  A promise which resolves when the operation is completed.
+
+  #### See
+
+  + addTopologyToSelection
+  + removeTopologyFromSelection
+  + clearTopologySelection
+  + getSelectedTopologyHandles
+
+  Inherited from TopologyAPI.setTopologySelection
+
+### setVariantEnabled
+
+* setVariantEnabled(variant: number, enabled: boolean): Promise\<void>
+
+  Enables or disables a given Variant.
+
+  #### Parameters
+
+  + variant: number
+
+    The ID of the Variant.
+  + enabled: boolean
+
+    The enabled state.
+
+  #### Returns Promise\<void>
+
+  Inherited from VariantsAPI.setVariantEnabled
+
+### setXRPlaybackBoomerang
+
+* setXRPlaybackBoomerang(boomerang: boolean): Promise\<void>
+
+  `Experimental`
+
+  Specify whether the playback should "boomerang" (play forward and backward in a loop).
+  This is useful for creating a seamless transition at the end of a sequence in terms of pose updates.
+
+  #### Parameters
+
+  + boomerang: boolean
+
+    Whether the playback should boomerang or not
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which reports whether the operation was successful or not
+
+  Inherited from RealityAPI.setXRPlaybackBoomerang
+
+### setXRPlaybackFrameRange
+
+* setXRPlaybackFrameRange(startFrame: number, endFrame: number): Promise\<number>
+
+  `Experimental`
+
+  Sets the frame range to play back. The total amount of frames in a sequence can be found in the XRPlaybackProperties.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + startFrame: number
+
+    The index of the first frame to play back
+  + endFrame: number
+
+    The index of the last frame to play back
+
+  #### Returns Promise\<number>
+
+  Returns a Promise which resolves with the new amount of frames in the playback if successful
+  and rejects otherwise
+
+  Inherited from RealityAPI.setXRPlaybackFrameRange
+
+### setXRPlaybackSource
+
+* setXRPlaybackSource(url: string): Promise\<number>
+
+  `Experimental`
+
+  Set the URL pointing to the `manifest.json` file of the frame sequence to be played back.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + url: string
+
+    The URL of the frame sequence
+
+  #### Returns Promise\<number>
+
+  Returns a Promise which resolves with the amount of frames in the playback if successful
+  and rejects otherwise
+
+  Inherited from RealityAPI.setXRPlaybackSource
+
+### setXRPlaybackSpeed
+
+* setXRPlaybackSpeed(speed: number): void
+
+  `Experimental`
+
+  Set the desired playback speed. The specified speed must be a value between 0 and 1.
+  It gives the playback speed as a fraction of the original FPS which is stored in the XRPlaybackProperties.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Parameters
+
+  + speed: number
+
+    The desired playback speed. Must be a value between 0 and 1.
+
+  #### Returns void
+
+  Inherited from RealityAPI.setXRPlaybackSpeed
+
+### showXRBackgroundFeed
+
+* showXRBackgroundFeed(): Promise\<void>
+
+  `Experimental`
+
+  Starts putting the image feed into the viewer's background. Also see hideXRBackgroundFeed.
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.backgroundFeedVisible set to `true`.
+
+  #### Returns Promise\<void>
+
+  Returns a Promise which resolved when the operation was successful or rejects in an error case
+
+  Inherited from RealityAPI.showXRBackgroundFeed
+
+### startXRPlayback
+
+* startXRPlayback(): void
+
+  `Experimental`
+
+  Start the XR playback.
+
+  Make sure to set the playback source before starting the playback.
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Returns void
+
+  Inherited from RealityAPI.startXRPlayback
+
+### stopXRPlayback
+
+* stopXRPlayback(): void
+
+  `Experimental`
+
+  Stop the XR playback.
+
+  Triggers a [XRPlaybackStateChangedEvent](/api/webvis/classes/xrplaybackstatechangedevent).
+
+  #### Returns void
+
+  Inherited from RealityAPI.stopXRPlayback
+
+### storeSession
+
+* storeSession(): Promise\<string>
+
+  Temporarily stores the session in the connected hub instance and returns an access handle.
+
+  This function does not transfer caches of referenced resources to the hub instance.
+  For transferring caches, see transferSession.
+
+  #### Returns Promise\<string>
+
+  The access handle of the stored session.
+
+  Inherited from SessionStorageAPI.storeSession
+
+### transferSession
+
+* transferSession(progressCallback: [StoreSessionProgressCallback](/api/webvis/types/storesessionprogresscallback)): Promise\<string>
+
+  `Experimental`
+
+  #### Parameters
+
+  + progressCallback: [StoreSessionProgressCallback](/api/webvis/types/storesessionprogresscallback)
+
+    Can be used to track the progress of the transfer.
+
+  #### Returns Promise\<string>
+
+  The access handle of the transferred session.
+
+  #### Deprecated
+
+  transferSession with progress callback is deprecated. Please use transferSession without
+  parameters and utilize the returned promise instead!
+
+  Transfers the session to the connected hub instance and returns an access handle.
+
+  Transfers caches of referenced resources to the hub instance if they are not already present.
+
+  Inherited from SessionStorageAPI.transferSession
+* transferSession(): Promise\<string>
+
+  `Experimental`
+
+  Transfers the session to the connected hub instance and returns an access handle.
+
+  Transfers caches of referenced resources to the hub instance if they are not already present.
+
+  #### Returns Promise\<string>
+
+  The access handle of the transferred session.
+
+  Inherited from SessionStorageAPI.transferSession
+
+### unanchorXR
+
+* unanchorXR(): void
+
+  `Experimental`
+
+  Unanchors the model. This will have the effect that the model will no longer be anchored to the real world.
+
+  This will trigger a [XRStateChangedEvent](/api/webvis/classes/xrstatechangedevent) with XRState.anchored set to `false`.
+
+  #### Returns void
+
+  Inherited from RealityAPI.unanchorXR
+
+### unregisterFrameListener
+
+* unregisterFrameListener(listener: [FrameListener](/api/webvis/types/framelistener)): void
+
+  Unregisters a frame listener which has previously been registered via
+  registerFrameListener.
+
+  #### Parameters
+
+  + listener: [FrameListener](/api/webvis/types/framelistener)
+
+    The listener to unregister.
+
+  #### Returns void
+
+  Inherited from FrameAPI.unregisterFrameListener
+
+### unregisterListener
+
+* unregisterListener(listenerID: number): void
+
+  Unregisters the event listener with the given ID.
+
+  #### Parameters
+
+  + listenerID: number
+
+    The ID of the event listener that should be unregistered.
+
+  #### Returns void
+
+  #### See
+
+  EventAPI
+
+  Inherited from EventAPI.unregisterListener
+
+### useMemberAction
+
+* useMemberAction<[A](#usememberactiona) extends [MemberAction](/api/webvis/enums/memberaction)>(  
+      memberId: number,  
+      action: [A](#usememberactiona),  
+      options?: MemberActionsToOptionsMap[[A](#usememberactiona)],  
+  ): Promise\<void>
+
+  `Experimental`
+
+  Uses an action on a member.
+
+  Get notified about changes to available actions on a member via the
+  [MemberActionAddedEvent](/api/webvis/classes/memberactionaddedevent) and [MemberActionRemovedEvent](/api/webvis/classes/memberactionremovedevent).
+
+  #### Type Parameters
+
+  + A extends [MemberAction](/api/webvis/enums/memberaction)
+
+  #### Parameters
+
+  + memberId: number
+
+    The ID of the member to use the action on.
+  + action: [A](#usememberactiona)
+
+    The action to use.
+  + `Optional`options: MemberActionsToOptionsMap[[A](#usememberactiona)]
+
+    Optional parameters for the action.
+
+  #### Returns Promise\<void>
+
+  A promise that resolves when the action has been used.
+
+  Inherited from MemberAPI.useMemberAction
+
+### waitFor
+
+* waitFor(state: [ContextState](/api/webvis/types/contextstate)): Promise\<void>
+
+  Register a callback to a specific state. The callback is executed once when the state is reached.
+  If webVis is already in that state the callback is triggered immediately.
+
+  #### Parameters
+
+  + state: [ContextState](/api/webvis/types/contextstate)
+
+    The state for which a callback is registered
+
+  #### Returns Promise\<void>
+
+  A promise which throws an error if the requested state is invalid
+
+  The following states are allowed as target
+  `init` - Is reached when webVis is fully configured and set up.  
+  `resourceStateUpdated` - Is reached when there is state information available for all resources (This information can also be "still transcoding").  
+  `resourceProcessed` - This is triggered when all resources are done transcoding.  
+  `renderingFinished` - This is triggered when webVis is done with rendering. So no more image changes are imminent.
+
+  Inherited from ContextStateAPI.waitFor

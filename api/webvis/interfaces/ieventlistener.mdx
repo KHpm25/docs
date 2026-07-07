@@ -1,0 +1,31 @@
+---
+title: "Interface IEventListener<T>"
+sidebarTitle: "IEventListener"
+description: "A listener for webvis events that can be registered via theEventAPI."
+---
+
+A listener for webvis events that can be registered via the EventAPI.
+
+The listener consumes an event that extends [WebVisEvent](/api/webvis/classes/webvisevent) and is expected
+to not return anything. If the listener returns a promise, the listener execution
+mechanism will not wait for the promise to resolve.
+
+The event's [type](/api/webvis/classes/webvisevent#type) property specifies its [EventType](/api/webvis/enums/eventtype)
+and determines its structure.
+
+#### Type Parameters
+
+* T extends [WebVisEvent](/api/webvis/classes/webvisevent) = [WebVisEvent](/api/webvis/classes/webvisevent)
+
+  The type of event that the listener listens to. This can also be
+  a union of multiple event types.
+
+* IEventListener(event: [T](#t)): void
+
+  #### Parameters
+
+  + event: [T](#t)
+
+    The event that has been fired.
+
+  #### Returns void

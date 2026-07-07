@@ -1,0 +1,86 @@
+---
+title: "Interface PointerInfo"
+sidebarTitle: "PointerInfo"
+description: "Holds the information about a pointer action in the viewer."
+---
+
+Holds the information about a pointer action in the viewer.
+
+An object of this type is propagated by all the events of the
+ViewerInteractionAPI interface.
+
+## Properties
+
+### actionTrigger
+
+actionTrigger: [PointerActionTrigger](/api/webvis/enums/pointeractiontrigger)
+
+The trigger of the pointer action.
+
+### actionType
+
+actionType: [PointerActionType](/api/webvis/enums/pointeractiontype)
+
+The type of the pointer action.
+
+### canvasCoords
+
+canvasCoords: [number, number]
+
+The canvas pointer coordinates in pixels.
+
+### nodeID
+
+nodeID: number
+
+The current node ID of the pointer action depending on the expanded state of the node structure.
+
+Note: The `nodeID` can be different from the `targetNodeID` depending on the expanded state of
+the instance graph. The `nodeID` property stores the deepest clicked node ID webvis can find that
+is not yet expanded whereas the `targetNodeID` property stores the leaf node ID at the current pointer
+position.
+
+### normal
+
+normal: [number, number, number]
+
+The 3D normal vector at the current pointer coordinates.
+
+### normalizedPointerCoords
+
+normalizedPointerCoords: [number, number]
+
+The normalized pointer coordinates between [0, 1].
+
+### position
+
+position: [number, number, number]
+
+The 3D position at the current pointer coordinates.
+
+### targetNodeID
+
+targetNodeID: number
+
+The target node ID of the pointer action.
+
+Note: The `targetNodeID` can be different from the `nodeID` depending on the expanded state of
+the instance graph. The `targetNodeID` property stores the leaf node ID at the current pointer
+position whereas the `nodeID` property stores the deepest clicked node ID webvis can find that
+is not yet expanded.
+
+### viewer
+
+viewer: ViewerAPI
+
+A reference to the related viewer.
+
+## Methods
+
+### requestTopologyHandle
+
+* requestTopologyHandle(): Promise\<TopologyHandle>
+
+  Returns the handle to the topological entity at the current pointer coordinates
+
+  #### Returns Promise\<TopologyHandle>

@@ -1,0 +1,97 @@
+---
+title: "Enumeration InteractionMode"
+sidebarTitle: "InteractionMode"
+description: "The available interaction modes. They determine how interactions with the space and its entities are processed."
+---
+
+The available interaction modes. They determine how interactions with the space and its entities are processed.
+
+#### See
+
+[InteractionAPI](/api/webvis/interfaces/interactionapi)
+
+## Enumeration Members
+
+### AREA\_SELECTION
+
+AREA\_SELECTION: 0
+
+Allows to define a 2D box on the canvas. Entities contained by this box will be selected.
+
+### AREA\_ZOOM
+
+AREA\_ZOOM: 1
+
+Allows to define a 2D box on the canvas. The viewer will zoom into the defined area.
+
+### AUX
+
+AUX: 2
+
+Allows to identify relations between PMI's and faces.
+
+### CLIP\_PLANE
+
+CLIP\_PLANE: 3
+
+Allows to create clip planes from geometrical features.
+
+### COLOR\_COMPARISON
+
+COLOR\_COMPARISON: 4
+
+Allows to compare two nodes.
+
+### DEFAULT
+
+DEFAULT: 5
+
+The default interaction mode. Will also be set when [InteractionAPI.resetInteractionMode](/api/webvis/interfaces/interactionapi#resetinteractionmode) is being called.
+
+### EXPLOSION
+
+EXPLOSION: 6
+
+Allows to perform an explosion.
+
+### MEASUREMENT\_ARC
+
+MEASUREMENT\_ARC: 7
+
+Allows to perform an arc measurement based on three points on a geometry.
+
+### MEASUREMENT\_DOUBLE
+
+MEASUREMENT\_DOUBLE: 8
+
+Allows to perform a double measurement between two geometrical features.
+
+### MEASUREMENT\_SINGLE
+
+MEASUREMENT\_SINGLE: 9
+
+Allows to perform a single measurement on a geometry.
+
+### MEASUREMENT\_THICKNESS
+
+MEASUREMENT\_THICKNESS: 10
+
+Allows to perform a thickness measurement on a geometry.
+
+### NONE
+
+NONE: 11
+
+Mode to disable all interaction.
+
+### PAINT
+
+PAINT: 12
+
+Allows to draw on geometries.
+
+### TRANSFORMATION
+
+TRANSFORMATION: 13
+
+Allows to transform nodes.

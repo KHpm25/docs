@@ -1,0 +1,27 @@
+---
+title: "Interface QueryResult"
+sidebarTitle: "QueryResult"
+description: "The result of aQuerythat has been executed via theQueryAPI. Thedataproperty is an array with one entry for each node that matches the query conditions. Each entry is an array conta"
+---
+
+The result of a Query that has been executed via the QueryAPI. The `data` property
+is an array with one entry for each node that matches the query conditions. Each entry is an array
+containing the values specified by the selectors of the query.
+
+The `errors` property contains error codes of any errors that occurred during query execution. If
+one or more errors have occurred, the result data must be considered incomplete.
+
+#### See
+
+* Query
+* QueryAPI
+
+## Properties
+
+### data
+
+data: any[]
+
+### errors
+
+errors: any[]
