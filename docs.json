@@ -49,6 +49,7 @@
             "tab": "Our Concepts",
             "pages": [
               "v3.14/concepts/getting-started",
+              "v3.14/concepts/overview",
               "v3.14/concepts/format-support",
               {
                 "group": "Feature Packages",
